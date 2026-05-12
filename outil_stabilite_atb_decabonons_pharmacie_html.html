@@ -1,0 +1,1536 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Outil stabilité anti-infectieux – Décarbonons la pharmacie</title>
+  <style>
+    :root {
+      --bg: #f6f4ef;
+      --card: #ffffff;
+      --ink: #1f2a24;
+      --muted: #68736d;
+      --green: #315f46;
+      --green-soft: #e6efe8;
+      --beige: #efe7d7;
+      --border: #d8d2c4;
+      --warning: #8a5a14;
+      --danger: #8c2f2f;
+      --shadow: 0 12px 35px rgba(31, 42, 36, 0.08);
+      --radius: 18px;
+    }
+
+    * { box-sizing: border-box; }
+
+    body {
+      margin: 0;
+      font-family: Inter, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      background: radial-gradient(circle at top left, #edf4ed, var(--bg) 42%);
+      color: var(--ink);
+      line-height: 1.45;
+    }
+
+    .page {
+      max-width: 1320px;
+      margin: 0 auto;
+      padding: 36px 22px 60px;
+    }
+
+    header { display: block; margin-bottom: 26px; }
+
+    .hero, .panel, .result-card {
+      background: rgba(255,255,255,0.88);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+    }
+
+    .hero { padding: 30px; }
+
+    .eyebrow {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 7px 12px;
+      border-radius: 999px;
+      background: var(--green-soft);
+      color: var(--green);
+      font-weight: 700;
+      font-size: 0.82rem;
+      margin-bottom: 18px;
+    }
+
+    h1 {
+      margin: 0 0 12px;
+      font-size: clamp(2rem, 4vw, 3.6rem);
+      line-height: 1.02;
+      letter-spacing: -0.055em;
+    }
+
+    .hero p {
+      max-width: 880px;
+      color: var(--muted);
+      font-size: 1.04rem;
+      margin: 0;
+    }
+
+    .disclaimer {
+      margin-top: 18px;
+      padding: 14px 16px;
+      border-radius: 14px;
+      background: #fff7ea;
+      border: 1px solid #e6d2a8;
+      color: #6d5318;
+      font-size: 0.92rem;
+      line-height: 1.45;
+    }
+
+    .panel {
+      padding: 20px;
+      margin-bottom: 22px;
+    }
+
+    .filters {
+      display: grid;
+      grid-template-columns: 1.4fr 1fr 1fr auto;
+      gap: 12px;
+      align-items: end;
+    }
+
+    label {
+      display: block;
+      font-size: 0.78rem;
+      color: var(--muted);
+      margin: 0 0 6px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.045em;
+    }
+
+    input, select, button {
+      width: 100%;
+      border-radius: 13px;
+      border: 1px solid var(--border);
+      padding: 12px 13px;
+      font: inherit;
+      background: #fff;
+      color: var(--ink);
+      outline: none;
+    }
+
+    input:focus, select:focus {
+      border-color: var(--green);
+      box-shadow: 0 0 0 3px rgba(49,95,70,0.12);
+    }
+
+    button {
+      cursor: pointer;
+      background: var(--green);
+      color: #fff;
+      border-color: var(--green);
+      font-weight: 800;
+      min-width: 120px;
+      transition: 0.18s ease;
+    }
+
+    button:hover { transform: translateY(-1px); filter: brightness(1.05); }
+
+    .summary-line {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      align-items: center;
+      margin: 14px 0 2px;
+      color: var(--muted);
+      font-size: 0.94rem;
+    }
+
+    .pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 6px 10px;
+      border-radius: 999px;
+      background: var(--beige);
+      color: var(--ink);
+      font-size: 0.82rem;
+      font-weight: 700;
+    }
+
+    .results { display: grid; gap: 16px; }
+
+    .result-card { overflow: hidden; background: #fff; }
+
+    .result-head {
+      padding: 18px 20px;
+      display: flex;
+      justify-content: space-between;
+      gap: 16px;
+      border-bottom: 1px solid var(--border);
+      background: linear-gradient(90deg, #ffffff, #f8f4ec);
+    }
+
+    .has-discordance .result-head { background: linear-gradient(90deg, #ffffff, #fff1f1); }
+
+    .result-head h3 {
+      margin: 0 0 4px;
+      font-size: 1.28rem;
+      letter-spacing: -0.02em;
+    }
+
+    .source {
+      color: var(--muted);
+      font-size: 0.9rem;
+      font-weight: 650;
+    }
+
+    .mode-tag {
+      align-self: flex-start;
+      padding: 7px 11px;
+      border-radius: 999px;
+      background: var(--green-soft);
+      color: var(--green);
+      font-size: 0.82rem;
+      font-weight: 800;
+      white-space: nowrap;
+      max-width: 420px;
+      text-align: right;
+    }
+
+    .recommendation {
+      padding: 14px 20px;
+      display: grid;
+      grid-template-columns: 180px 1fr;
+      gap: 12px;
+      border-top: 1px solid var(--border);
+      background: #ffffff;
+    }
+
+    .recommendation strong { color: var(--green); }
+
+    .device-grid {
+      display: grid;
+      grid-template-columns: repeat(5, minmax(0, 1fr));
+      gap: 0;
+    }
+
+    .device {
+      padding: 16px;
+      border-right: 1px solid var(--border);
+      min-height: 132px;
+    }
+
+    .device:last-child { border-right: none; }
+    .device.discordant { background: #fff8f8; }
+
+    .device h4 {
+      margin: 0 0 9px;
+      color: var(--green);
+      font-size: 0.86rem;
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+    }
+
+    .device p {
+      margin: 0;
+      color: var(--ink);
+      font-size: 0.91rem;
+    }
+
+    .empty {
+      color: #a09a90 !important;
+      font-style: italic;
+    }
+
+    .diff {
+      display: block;
+      border-left: 4px solid #b42323;
+      padding-left: 9px;
+      color: #8c2f2f;
+      font-weight: 750;
+    }
+
+    .notes {
+      border-top: 1px solid var(--border);
+      padding: 14px 20px;
+      color: var(--muted);
+      font-size: 0.91rem;
+      background: #fbfaf7;
+    }
+
+    .source-details {
+      margin-top: 10px;
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      background: #fff;
+      overflow: hidden;
+    }
+
+    .source-details summary {
+      cursor: pointer;
+      padding: 11px 13px;
+      font-weight: 800;
+      color: var(--green);
+    }
+
+    .source-content {
+      padding: 0 13px 13px;
+      color: var(--ink);
+    }
+
+    .source-content p { margin: 8px 0; }
+
+    .no-result {
+      padding: 26px;
+      text-align: center;
+      color: var(--muted);
+      border: 1px dashed var(--border);
+      border-radius: var(--radius);
+      background: rgba(255,255,255,0.65);
+    }
+
+    .mini-footer {
+      margin-top: 28px;
+      padding: 18px 20px;
+      color: var(--muted);
+      font-size: 0.9rem;
+      background: rgba(255,255,255,0.55);
+      border-radius: var(--radius);
+      border: 1px solid var(--border);
+    }
+
+    @media (max-width: 1100px) {
+      .device-grid { grid-template-columns: 1fr 1fr; }
+      .device { border-bottom: 1px solid var(--border); }
+    }
+
+    @media (max-width: 760px) {
+      .page { padding: 22px 14px 40px; }
+      .hero { padding: 22px; }
+      .filters { grid-template-columns: 1fr; }
+      .device-grid { grid-template-columns: 1fr; }
+      .device { border-right: none; border-bottom: 1px solid var(--border); }
+      .result-head { flex-direction: column; }
+      .recommendation { grid-template-columns: 1fr; }
+      .mode-tag { text-align: left; max-width: none; }
+    }
+  </style>
+</head>
+<body>
+  <main class="page">
+    <header>
+      <section class="hero">
+        <div class="eyebrow">Décarbonons la pharmacie · Outil pratique</div>
+        <h1>Stabilité des anti-infectieux injectables</h1>
+        <p>
+          Sélectionnez un anti-infectieux, une source ou un contenant pour visualiser rapidement les données de stabilité disponibles, les concentrations maximales et les recommandations pratiques d’administration.
+        </p>
+        <div class="disclaimer">
+          <strong>Important :</strong> cet outil est une synthèse de données issues de recommandations, documents institutionnels, données internes de laboratoire, fabricants et articles scientifiques sélectionnés via PubMed lorsque nécessaire. Il ne constitue pas une source officielle. Des erreurs, discordances ou données non transposables peuvent être présentes. Vérification locale indispensable avant toute protocolisation ou utilisation clinique.
+        </div>
+      </section>
+    </header>
+
+    <section class="panel">
+      <div class="filters">
+        <div>
+          <label for="search">Antibiotique / anti-infectieux</label>
+          <input id="search" type="search" placeholder="Ex. ceftazidime, vancomycine, méropénem…" />
+        </div>
+        <div>
+          <label for="device">Contenant / dispositif</label>
+          <select id="device">
+            <option value="">Tous</option>
+            <option value="poche">Poche soluté classique</option>
+            <option value="pse">PSE seringue PP</option>
+            <option value="elastomere">Diffuseur élastomère</option>
+            <option value="anapa">ANAPA</option>
+            <option value="micrel">Pompe Rythmic PVC / Micrel</option>
+          </select>
+        </div>
+        <div>
+          <label for="sourceFilter">Source</label>
+          <select id="sourceFilter">
+            <option value="">Toutes</option>
+            <option value="SPILF">SPILF/SFPC 2025</option>
+            <option value="Tourcoing">CH de Tourcoing 2017</option>
+            <option value="interne">Doc interne récent</option>
+            <option value="Centre Léon Bérard">Centre Léon Bérard – HAD</option>
+            <option value="ANAPA">ANAPA – données internes du laboratoire</option>
+            <option value="Micrel">Micrel – données internes du laboratoire</option>
+            <option value="NEOPUMP">NEOPUMP – données internes fabricant élastomère</option>
+            <option value="PubMed">PubMed – littérature sélectionnée</option>
+          </select>
+        </div>
+        <div class="button-wrap">
+          <button id="reset">Réinitialiser</button>
+        </div>
+      </div>
+      <div class="summary-line">
+        <span class="pill" id="countPill">0 résultat</span>
+        <span>Les champs “--” indiquent qu’aucune donnée exploitable n’a été retrouvée dans les sources intégrées.</span>
+      </div>
+    </section>
+
+    <section id="results" class="results"></section>
+
+    <section class="mini-footer">
+      <strong>Note d’usage :</strong> ne pas extrapoler une stabilité d’un contenant à un autre. Poche standard, seringue PP, diffuseur élastomère, ANAPA et Micrel PVC sont des dispositifs distincts.
+    </section>
+  </main>
+
+  <script>
+    const data = [
+      {
+        molecule: "Aciclovir",
+        source: "Centre Léon Bérard – HAD + doc interne récent",
+        mode: "Discontinue recommandée ; perfusion ≥60 min ; continu non standard",
+        poche: "NaCl/G5 ; conc max 5 mg/mL ; stab 12 h RT",
+        pse: "--",
+        elastomere: "--",
+        anapa: "--",
+        micrel: "--",
+        reco: "Discontinue",
+        note: "Perfusion lente recommandée ; vigilance rénale et extravasation."
+      },
+      {
+        molecule: "Aciclovir",
+        source: "ANAPA – données internes du laboratoire",
+        mode: "Administration ambulatoire testée sur diffuseur non élastomère ANAPA",
+        poche: "--",
+        pse: "--",
+        elastomere: "--",
+        anapa: "Soluté non précisé ; conc 10 mg/mL ; stab 3 j à 5°C ou 30°C + run-out 20 h ; 7 j RT + run-out",
+        micrel: "--",
+        reco: "ANAPA possible selon conditions testées",
+        note: "ANAPA est séparé des diffuseurs élastomères."
+      },
+      {
+        molecule: "Amikacine",
+        source: "CH de Tourcoing 2017 + doc interne récent",
+        mode: "Discontinue recommandée ; perfusion 30 min ; continu non recommandé",
+        poche: "NaCl/G5 ; conc max 20 mg/mL ; stab 24 h RT",
+        pse: "Pas de PSE continu ; IVSE intermittent uniquement",
+        elastomere: "--",
+        anapa: "--",
+        micrel: "--",
+        reco: "Discontinue",
+        note: "Aminoside : administration discontinue avec suivi pharmacologique."
+      },
+      {
+        molecule: "Amikacine",
+        source: "ANAPA – données internes du laboratoire",
+        mode: "Administration ambulatoire testée sur diffuseur non élastomère ANAPA",
+        poche: "--",
+        pse: "--",
+        elastomere: "--",
+        anapa: "Soluté non précisé ; conc 5 mg/mL ; stab 72 h à 30°C + run-out 20 h ; 72 h à 5°C + run-out ; 7 j RT + run-out",
+        micrel: "--",
+        reco: "ANAPA possible selon conditions testées",
+        note: "Stabilité physicochimique ≠ recommandation clinique de continu."
+      },
+      {
+        molecule: "Amikacine",
+        source: "Micrel – données internes du laboratoire",
+        mode: "Pompe Rythmic PVC",
+        poche: "--",
+        pse: "--",
+        elastomere: "--",
+        anapa: "--",
+        micrel: "NaCl 0,9 % ; conc 0,25–20 mg/mL ; stab FT 28 j ; RT 48 h",
+        reco: "Donnée contenant Micrel uniquement",
+        note: "Ne pas extrapoler hors consommables Rythmic compatibles."
+      },
+      {
+        molecule: "Amoxicilline",
+        source: "SPILF/SFPC 2025",
+        mode: "Continu possible mais fractionné",
+        poche: "NaCl 0,9 % ; conc 5 mg/mL ; stab 24 h / NaCl 0,9 % ; conc 20 mg/mL ; stab 12 h / G5 ; conc 10 mg/mL ; stab 2 h / G5 ; conc 50 mg/mL ; stab 1 h ; G5 déconseillé en prolongé",
+        pse: "NaCl 0,9 % ; conc max 20 mg/mL ; PSE 24 h non retenu ; préférer pompe/fractionnement 12 h",
+        elastomere: "--",
+        anapa: "--",
+        micrel: "--",
+        reco: "Continu fractionné",
+        note: "Forte dépendance à la concentration et au solvant."
+      },
+      {
+        molecule: "Amoxicilline",
+        source: "ANAPA – données internes du laboratoire",
+        mode: "Administration ambulatoire testée sur diffuseur non élastomère ANAPA",
+        poche: "--",
+        pse: "--",
+        elastomere: "--",
+        anapa: "NaCl 0,9 % ; conc 25 mg/mL ; stab 12 h",
+        micrel: "--",
+        reco: "ANAPA possible selon protocole",
+        note: "Donnée issue des études de stabilité ANAPA."
+      },
+      {
+        molecule: "Amoxicilline",
+        source: "Micrel – données internes du laboratoire",
+        mode: "Pompe Rythmic PVC ; donnée spécifique solutés de dialyse péritonéale",
+        poche: "--",
+        pse: "--",
+        elastomere: "--",
+        anapa: "--",
+        micrel: "Extraneal®/Dianéal® ; conc 0,125 mg/mL ; stab 48 h à 25°C, 24 h à 37°C, 14 j à 4°C selon soluté ; non directement transposable à l’IV standard",
+        reco: "Donnée Micrel non transposable IV standard",
+        note: "À ne pas assimiler aux données d’amoxicilline IV en NaCl 0,9 % pour perfusion continue."
+      },
+      {
+        molecule: "Amoxicilline/acide clavulanique",
+        source: "SPILF/SFPC 2025 + CH de Tourcoing 2017 + Centre Léon Bérard – HAD",
+        mode: "Continu non recommandé ; discontinue 30–60 min",
+        poche: "NaCl 0,9 % exclusivement ; conc max 20 mg/mL ; stab max 60 min après reconstitution/fin administration ; G5 incompatible",
+        pse: "PSE continu non recommandé",
+        elastomere: "--",
+        anapa: "--",
+        micrel: "--",
+        reco: "Discontinue uniquement",
+        note: "À exclure des stratégies continues prolongées."
+      },
+      {
+        molecule: "Aztréonam",
+        source: "SPILF/SFPC 2025",
+        mode: "Continu possible ; prolongée possible",
+        poche: "NaCl 0,9 % ou G5 ; conc 10–125 mg/mL ; stab >24 h",
+        pse: "NaCl 0,9 % ; conc max 125 mg/mL ; stab compatible pour prolongée ; ex 2 g/48 mL sur 3–4 h",
+        elastomere: "--",
+        anapa: "--",
+        micrel: "--",
+        reco: "Continu/prolongé possible",
+        note: "Bon candidat à l’administration prolongée."
+      },
+      {
+        molecule: "Aztréonam",
+        source: "Micrel – données internes du laboratoire",
+        mode: "Pompe Rythmic PVC",
+        poche: "--",
+        pse: "--",
+        elastomere: "--",
+        anapa: "--",
+        micrel: "NaCl 0,9 % ; conc 5–60 mg/mL ; stab FT 28 j ; RT 24 h",
+        reco: "Micrel possible",
+        note: "Donnée spécifique contenant."
+      },
+      {
+        molecule: "Ceftazidime",
+        source: "SPILF/SFPC 2025",
+        mode: "Continu possible",
+        poche: "NaCl 0,9 % ; conc 20–125 mg/mL ; stab 24 h / G5 ; conc 125 mg/mL ; stab 8 h",
+        pse: "NaCl 0,9 % ; conc max 125 mg/mL ; stab 12–24 h selon schéma",
+        elastomere: "--",
+        anapa: "--",
+        micrel: "--",
+        reco: "Continu possible avec vigilance",
+        note: "Vigilance température et concentration."
+      },
+      {
+        molecule: "Ceftazidime",
+        source: "CH de Tourcoing 2017",
+        mode: "Continu fractionné recommandé",
+        poche: "NaCl 0,9 % ou G5 ; conc max 80 mg/mL ; stab 8 h RT",
+        pse: "NaCl 0,9 % ou G5 ; conc max 80 mg/mL ; stab 6–8 h",
+        elastomere: "--",
+        anapa: "--",
+        micrel: "--",
+        reco: "Fractionnement 6–8 h",
+        note: "Source plus restrictive que SPILF."
+      },
+      {
+        molecule: "Ceftazidime",
+        source: "ANAPA – données internes du laboratoire",
+        mode: "Administration ambulatoire testée sur diffuseur non élastomère ANAPA",
+        poche: "--",
+        pse: "--",
+        elastomere: "--",
+        anapa: "NaCl 0,9 % ; conc 20 mg/mL ; stab 24 h RT + run-out 20 h",
+        micrel: "--",
+        reco: "ANAPA possible selon conditions testées",
+        note: "Attention >25°C et produits de dégradation."
+      },
+      {
+        molecule: "Ceftazidime",
+        source: "Micrel – données internes du laboratoire",
+        mode: "Pompe Rythmic PVC",
+        poche: "--",
+        pse: "--",
+        elastomere: "--",
+        anapa: "--",
+        micrel: "NaCl 0,9 % ; conc 5–40 mg/mL ; stab FT 10 j ; RT 24 h ; Fortum 4 mg/mL 25°C lumière 24 h ; 40 mg/mL 4°C abri lumière 7 j",
+        reco: "Micrel possible selon conditions",
+        note: "Donnée spécifique consommables Micrel."
+      },
+      {
+        molecule: "Ceftazidime",
+        source: "PubMed – littérature sélectionnée",
+        mode: "Perfusion continue ambulatoire ; diffuseur élastomère",
+        poche: "--",
+        pse: "Seringue PP ; données compatibles 12–24 h selon concentration/température",
+        elastomere: "NaCl 0,9 % ; diffuseur élastomère ; conc 25–120 mg/mL ; stabilité très dépendante température ; plusieurs études limitent le 24 h >25°C",
+        anapa: "--",
+        micrel: "--",
+        reco: "Perfusion continue possible avec vigilance thermique",
+        note: "Ne pas extrapoler les données élastomère aux poches classiques ni à ANAPA.",
+        pubmed: "https://pubmed.ncbi.nlm.nih.gov/22478981/"
+      },
+      {
+        molecule: "Céfépime",
+        source: "SPILF/SFPC 2025",
+        mode: "Continu possible ; prolongée possible",
+        poche: "NaCl 0,9 % ou G5 ; conc 2,5–125 mg/mL ; stab 24 h",
+        pse: "NaCl 0,9 % ; conc max 125 mg/mL ; stab 24 h possible ; ex 4–6 g/48 mL/24 h",
+        elastomere: "--",
+        anapa: "--",
+        micrel: "--",
+        reco: "Continu/prolongé possible",
+        note: "Comparer avec protocoles locaux si fractionnement plus court."
+      },
+      {
+        molecule: "Céfépime",
+        source: "Micrel – données internes du laboratoire",
+        mode: "Pompe Rythmic PVC",
+        poche: "--",
+        pse: "--",
+        elastomere: "--",
+        anapa: "--",
+        micrel: "NaCl 0,9 % ; conc 5–60 mg/mL ; stab FT 7 j ; RT 24 h",
+        reco: "Micrel possible",
+        note: "Donnée spécifique contenant."
+      },
+      {
+        molecule: "Céfazoline",
+        source: "SPILF/SFPC 2025",
+        mode: "Continu possible",
+        poche: "NaCl 0,9 % ; conc max 125 mg/mL ; stab >24 h / G5 ; conc 125 mg/mL ; stab 24 h",
+        pse: "NaCl 0,9 % ; conc max 125 mg/mL ; stab 24 h possible ; ex 6 g/48 mL/24 h ou 4 g/48 mL/12 h x2",
+        elastomere: "--",
+        anapa: "--",
+        micrel: "--",
+        reco: "Continu possible",
+        note: "Molécule favorable aux stratégies prolongées/continues."
+      },
+      {
+        molecule: "Céfotaxime",
+        source: "SPILF/SFPC 2025",
+        mode: "Continu possible ; stabilité concentration-dépendante",
+        poche: "NaCl 0,9 % ; conc 10–50 mg/mL ; stab 24 h / G5 ; conc 10–20 mg/mL ; stab 24 h / NaCl 0,9 % ou G5 ; conc 83,3–125 mg/mL ; stab 6 h",
+        pse: "NaCl 0,9 % ; conc max pratique 50 mg/mL ; PSE fractionné",
+        elastomere: "--",
+        anapa: "--",
+        micrel: "--",
+        reco: "Continu possible si concentration adaptée",
+        note: "Éviter extrapolation aux fortes concentrations."
+      },
+      {
+        molecule: "Ceftriaxone",
+        source: "SPILF/SFPC 2025",
+        mode: "Continu possible mais intermittent fréquent",
+        poche: "NaCl 0,9 % ou G5 ; conc 20–40 mg/mL ; stab 24 h",
+        pse: "NaCl 0,9 % ou G5 ; conc max 40 mg/mL ; PSE possible",
+        elastomere: "--",
+        anapa: "--",
+        micrel: "--",
+        reco: "Intermittent souvent suffisant",
+        note: "Attention incompatibilité calcium."
+      },
+      {
+        molecule: "Ceftriaxone",
+        source: "Micrel – données internes du laboratoire",
+        mode: "Pompe Rythmic PVC",
+        poche: "--",
+        pse: "--",
+        elastomere: "--",
+        anapa: "--",
+        micrel: "NaCl 0,9 % ; conc 40 mg/mL ; stab 3 j à 23°C, 30 j à 4°C abri lumière / G5 ; conc 40 mg/mL ; stab 1 j à 23°C, 14 j à 4°C / G5 ; conc 2 mg/mL ; stab 14 j",
+        reco: "Micrel possible selon conditions",
+        note: "Soluté et concentration modifient fortement la stabilité."
+      },
+      {
+        molecule: "Clindamycine",
+        source: "CH de Tourcoing 2017 + doc interne récent",
+        mode: "Continu 24 h possible",
+        poche: "NaCl 0,9 % ± G5 selon source ; conc max 75 mg/mL ; stab 24 h RT",
+        pse: "NaCl 0,9 % ; conc max 75 mg/mL ; stab 24 h ; 600 mg à 3,6 g/48 mL",
+        elastomere: "--",
+        anapa: "--",
+        micrel: "--",
+        reco: "Continu possible",
+        note: "Données favorables au PSE/pompe 24 h."
+      },
+      {
+        molecule: "Daptomycine",
+        source: "CH de Tourcoing 2017 + doc interne récent",
+        mode: "Discontinue recommandée ; perfusion 30–60 min ; IVD possible selon source",
+        poche: "NaCl 0,9 % exclusivement ; conc max 50 mg/mL ; stab 12 h RT ; G5 incompatible",
+        pse: "--",
+        elastomere: "--",
+        anapa: "--",
+        micrel: "--",
+        reco: "Discontinue",
+        note: "NaCl exclusivement."
+      },
+      {
+        molecule: "Ertapénem",
+        source: "CH de Tourcoing 2017 + doc interne récent",
+        mode: "Discontinue recommandée ; perfusion 30 min ; prolongée non standard",
+        poche: "NaCl 0,9 % exclusivement ; conc max 20 mg/mL ; stab 6 h RT ; G5 incompatible",
+        pse: "--",
+        elastomere: "--",
+        anapa: "--",
+        micrel: "--",
+        reco: "Discontinue",
+        note: "Molécule pratique en OPAT intermittent."
+      },
+      {
+        molecule: "Méropénem",
+        source: "CH de Tourcoing 2017 + doc interne récent",
+        mode: "Fractionnement 6–8 h recommandé",
+        poche: "NaCl 0,9 %/G5 selon source ; conc max 40 mg/mL ; stab 6–8 h RT",
+        pse: "NaCl 0,9 % ; conc max 40 mg/mL ; stab 6–8 h ; IVSE 8 h x3/j",
+        elastomere: "--",
+        anapa: "--",
+        micrel: "--",
+        reco: "Fractionnement court",
+        note: "Stabilité courte à température ambiante."
+      },
+      {
+        molecule: "Méropénem",
+        source: "Micrel – données internes du laboratoire",
+        mode: "Pompe Rythmic PVC",
+        poche: "--",
+        pse: "--",
+        elastomere: "--",
+        anapa: "--",
+        micrel: "NaCl 0,9 % ; conc 5–40 mg/mL ; stab FT 18 h ; RT 6 h",
+        reco: "Changement fréquent",
+        note: "Pas de 24 h à RT."
+      },
+      {
+        molecule: "Méropénem",
+        source: "PubMed – littérature sélectionnée",
+        mode: "Perfusion continue/prolongée ; OPAT ; diffuseur élastomère",
+        poche: "--",
+        pse: "Seringue PP ; fractionnement 6–8 h fréquemment recommandé",
+        elastomere: "NaCl 0,9 % ; diffuseur élastomère ; conc 6,25–25 mg/mL ; stabilité souvent <12 h à température ambiante",
+        anapa: "--",
+        micrel: "--",
+        reco: "Éviter extrapolation 24 h sans contrôle thermique",
+        note: "Ne pas extrapoler élastomère vers poche, ANAPA ou Micrel.",
+        pubmed: "https://pubmed.ncbi.nlm.nih.gov/31447546/"
+      },
+      {
+        molecule: "Pipéracilline/tazobactam",
+        source: "SPILF/SFPC 2025 + doc interne récent",
+        mode: "Continu 24 h possible ; prolongée possible",
+        poche: "NaCl 0,9 %/G5 ; conc max 80–200 mg/mL exprimé pipéracilline selon source ; stab 24 h RT",
+        pse: "NaCl 0,9 %/G5 ; conc max 80–200 mg/mL ; stab 12–24 h selon schéma",
+        elastomere: "--",
+        anapa: "--",
+        micrel: "--",
+        reco: "Continu/prolongé possible",
+        note: "Données favorables selon concentration."
+      },
+      {
+        molecule: "Pipéracilline/tazobactam",
+        source: "Micrel – données internes du laboratoire",
+        mode: "Pompe Rythmic PVC",
+        poche: "--",
+        pse: "--",
+        elastomere: "--",
+        anapa: "--",
+        micrel: "NaCl 0,9 % ; conc pipéracilline 10–80 mg/mL + tazobactam 1,25–10 mg/mL ; stab FT 7 j ; RT 24 h",
+        reco: "Micrel possible selon conditions",
+        note: "Donnée spécifique contenant."
+      },
+      {
+        molecule: "Pipéracilline/tazobactam",
+        source: "PubMed – littérature sélectionnée",
+        mode: "Perfusion continue ambulatoire ; diffuseur élastomère",
+        poche: "--",
+        pse: "Seringue PP ; données compatibles 24 h selon concentration",
+        elastomere: "NaCl 0,9 % ; diffuseur élastomère ; nombreuses études compatibles 24 h selon concentration/température",
+        anapa: "--",
+        micrel: "--",
+        reco: "Bon candidat perfusion continue",
+        note: "Donnée élastomère séparée d’ANAPA et des poches classiques.",
+        pubmed: "https://ejhp.bmj.com/content/29/4/212"
+      },
+      {
+        molecule: "Vancomycine",
+        source: "SPILF/SFPC 2025 + doc interne récent",
+        mode: "Continu 24 h possible",
+        poche: "NaCl 0,9 % ou G5 ; conc 25–37,5 mg/mL SPILF ; stab 24 h / doc interne : NaCl 0,9 % ; conc 80 mg/mL VVC ou 5 mg/mL VVP ; stab 24 h",
+        pse: "NaCl 0,9 % ; conc max 80 mg/mL VVC ou 5 mg/mL VVP ; stab 24 h selon doc interne",
+        elastomere: "--",
+        anapa: "--",
+        micrel: "--",
+        reco: "Continu possible",
+        note: "Adapter concentration à la voie veineuse."
+      },
+      {
+        molecule: "Vancomycine",
+        source: "PubMed – littérature sélectionnée",
+        mode: "Perfusion continue ; diffuseur élastomère et seringue PP",
+        poche: "--",
+        pse: "Seringue PP ; stabilité 24 h rapportée dans plusieurs études",
+        elastomere: "NaCl 0,9 % ou G5 ; diffuseur élastomère ; données compatibles 24 h selon concentration",
+        anapa: "--",
+        micrel: "--",
+        reco: "Très bon candidat à la perfusion continue",
+        note: "Élastomère séparé d’ANAPA.",
+        pubmed: "https://pmc.ncbi.nlm.nih.gov/articles/PMC2901781/"
+      },
+      {
+        molecule: "Linezolide",
+        source: "CH de Tourcoing 2017 + doc interne récent + Centre Léon Bérard – HAD",
+        mode: "Discontinue recommandée ; prêt à l’emploi ; perfusion 30–120 min",
+        poche: "Poche prête à l’emploi ; soluté de présentation ; conc commerciale 2 mg/mL ; stab 21 j RT ; NaCl/G5 compatibles selon source",
+        pse: "--",
+        elastomere: "--",
+        anapa: "--",
+        micrel: "--",
+        reco: "Discontinue",
+        note: "Donnée à vérifier selon présentation locale."
+      },
+      {
+        molecule: "Cotrimoxazole IV / Bactrim®",
+        source: "BACTRIM restriction hydrique + doc interne récent",
+        mode: "Discontinue recommandée ; perfusion 60 min ; durée max 90 min ; pas d’administration pure",
+        poche: "NaCl 0,9 % ou G5 ; dilution standard : 1 amp + 125 mL, 2 amp + 250 mL, 3 amp + 500 mL ; stab solution diluée 6 h RT à l’abri lumière ; sol. mère 1 h RT",
+        pse: "Restriction hydrique 1:15 : NaCl 0,9 % ou G5 ; 1 amp + 75 mL, 2 amp + 150 mL, 3 amp + 250 mL ; stab 2 h RT à l’abri lumière ; perfusion gravité recommandée, attention précipité dans tubulure si pompe",
+        elastomere: "--",
+        anapa: "--",
+        micrel: "--",
+        reco: "Discontinue ; attention restriction hydrique",
+        note: "Voie centrale préférable si disponible car très phlébogène ; jeter si trouble/cristaux."
+      },
+      {
+        molecule: "Gentamicine",
+        source: "Doc interne récent",
+        mode: "Discontinue recommandée ; aminoside ; IVSE sur 30 min",
+        poche: "NaCl 0,9 % ou G5 ; conc max 10 mg/mL ; stab 24 h RT",
+        pse: "NaCl 0,9 % ou G5 ; conc max 10 mg/mL ; stab 24 h RT ; IVSE intermittent 30 min",
+        elastomere: "--",
+        anapa: "--",
+        micrel: "--",
+        reco: "Discontinue",
+        note: "Suivi pic/résiduel selon protocole aminosides."
+      },
+      {
+        molecule: "Levofloxacine",
+        source: "CH de Tourcoing 2017 + doc interne récent",
+        mode: "Discontinue recommandée ; prêt à l’emploi ; perfusion 60 min",
+        poche: "Prêt à l’emploi ; soluté de présentation ; conc commerciale ; stab non détaillée dans source récente / Tourcoing : prêt à l’emploi",
+        pse: "--",
+        elastomere: "--",
+        anapa: "--",
+        micrel: "--",
+        reco: "Discontinue",
+        note: "Donnée de stabilité détaillée limitée dans les sources intégrées."
+      },
+      {
+        molecule: "Métronidazole",
+        source: "CH de Tourcoing 2017 + doc interne récent",
+        mode: "Discontinue recommandée ; prêt à l’emploi ; perfusion 30–60 min",
+        poche: "Prêt à l’emploi ; 500 mg/100 mL ; soluté de présentation ; stab non détaillée dans source récente / Tourcoing : prêt à l’emploi",
+        pse: "--",
+        elastomere: "--",
+        anapa: "--",
+        micrel: "--",
+        reco: "Discontinue",
+        note: "Ne pas inventer de stabilité si la source indique seulement prêt à l’emploi."
+      },
+      {
+        molecule: "Ofloxacine",
+        source: "CH de Tourcoing 2017 + doc interne récent",
+        mode: "Discontinue recommandée ; prêt à l’emploi ; perfusion 30 min",
+        poche: "Prêt à l’emploi ; 200 mg/40 mL ; soluté de présentation ; stab non détaillée",
+        pse: "--",
+        elastomere: "--",
+        anapa: "--",
+        micrel: "--",
+        reco: "Discontinue",
+        note: "Donnée limitée à la modalité d’administration dans les sources."
+      },
+      {
+        molecule: "Colistine",
+        source: "Doc interne récent",
+        mode: "Continu 24 h possible",
+        poche: "NaCl 0,9 % ; conc max 0,02 MUI/mL ; stab 24 h RT",
+        pse: "NaCl 0,9 % ; conc max 0,02 MUI/mL ; stab 24 h RT",
+        elastomere: "--",
+        anapa: "--",
+        micrel: "--",
+        reco: "Continu possible",
+        note: "Préparation très diluée selon document interne."
+      },
+      {
+        molecule: "Fosfomycine IV",
+        source: "Doc interne récent",
+        mode: "Continu 24 h possible ; IVSE ou pompe volumétrique",
+        poche: "NaCl 0,9 % ; conc max 40 mg/mL ; stab 24 h RT",
+        pse: "NaCl 0,9 % ; conc max 40 mg/mL ; stab 24 h RT ; IVSE/pompe possible",
+        elastomere: "--",
+        anapa: "--",
+        micrel: "--",
+        reco: "Continu possible",
+        note: "Exemples internes : 4 g/100 mL, 16 g/500 mL."
+      },
+      {
+        molecule: "Témocilline",
+        source: "Doc interne récent",
+        mode: "Continu 24 h possible ; IVSE ou pompe volumétrique",
+        poche: "NaCl 0,9 % ; conc max 80 mg/mL ; stab 24 h RT",
+        pse: "NaCl 0,9 % ; conc max 80 mg/mL ; stab 24 h RT ; ex 4–6 g/48 mL/24 h",
+        elastomere: "--",
+        anapa: "--",
+        micrel: "--",
+        reco: "Continu possible",
+        note: "Donnée exploitable pour stratégie continue."
+      },
+      {
+        molecule: "Teicoplanine",
+        source: "Doc interne récent",
+        mode: "Discontinue recommandée ; perfusion 60 min",
+        poche: "NaCl 0,9 % ; 100–200 mg/50 mL ou 400 mg/100 mL ; stab 24 h RT ; conc max non explicitée",
+        pse: "--",
+        elastomere: "--",
+        anapa: "--",
+        micrel: "--",
+        reco: "Discontinue",
+        note: "SPILF 2025 : pas de donnée de stabilité retenue pour perfusion prolongée/continue."
+      },
+      {
+        molecule: "Spiramycine",
+        source: "Doc interne récent",
+        mode: "Discontinue recommandée ; perfusion 60 min",
+        poche: "G5 ; conc non précisée ; stab 12 h RT",
+        pse: "--",
+        elastomere: "--",
+        anapa: "--",
+        micrel: "--",
+        reco: "Discontinue",
+        note: "NaCl non retenu dans l’extrait source."
+      },
+      {
+        molecule: "Rifampicine IV",
+        source: "Doc interne récent",
+        mode: "Discontinue recommandée ; perfusion 90 min",
+        poche: "G5 ; 600 mg/250 mL ; solvant fourni obligatoire ; NaCl incompatible ; stab non précisée",
+        pse: "--",
+        elastomere: "--",
+        anapa: "--",
+        micrel: "--",
+        reco: "Discontinue",
+        note: "Incompatibilité NaCl à afficher clairement."
+      },
+      {
+        molecule: "Voriconazole IV",
+        source: "Doc interne récent + Centre Léon Bérard – HAD",
+        mode: "Discontinue/prolongée ; perfusion 1–3 h ; débit max 3 mg/kg/h ; pas IVD",
+        poche: "NaCl 0,9 % ou G5 ; conc 0,5–5 mg/mL ; stab 24 h entre 2–8°C",
+        pse: "--",
+        elastomere: "--",
+        anapa: "--",
+        micrel: "--",
+        reco: "Discontinue/prolongée",
+        note: "Vitesse maximale à respecter."
+      },
+      {
+        molecule: "Caspofungine",
+        source: "Doc interne récent + Centre Léon Bérard – HAD",
+        mode: "Discontinue recommandée ; perfusion 60 min",
+        poche: "NaCl 0,9 % exclusivement ; 50 mg/100 mL ou 70 mg/250 mL ; stab 24 h RT ; G5 incompatible",
+        pse: "--",
+        elastomere: "--",
+        anapa: "--",
+        micrel: "--",
+        reco: "Discontinue",
+        note: "NaCl exclusivement."
+      },
+      {
+        molecule: "Fluconazole",
+        source: "Doc interne récent",
+        mode: "Discontinue recommandée ; prêt à l’emploi ; perfusion 60 min",
+        poche: "Prêt à l’emploi ; conc commerciale ; stabilité non précisée",
+        pse: "--",
+        elastomere: "--",
+        anapa: "--",
+        micrel: "--",
+        reco: "Discontinue",
+        note: "Donnée limitée à la présentation prête à l’emploi."
+      },
+      {
+        molecule: "Artesunate",
+        source: "Doc interne récent + CH de Tourcoing 2017",
+        mode: "Discontinue recommandée ; perfusion 30 min ou IV lente selon source",
+        poche: "NaCl 0,9 % ; conc max 10 mg/mL ; stab 6 h RT",
+        pse: "--",
+        elastomere: "--",
+        anapa: "--",
+        micrel: "--",
+        reco: "Discontinue",
+        note: "Solvant fourni / bicarbonate selon source."
+      },
+      {
+        molecule: "Pentamidine",
+        source: "Doc interne récent + CH de Tourcoing 2017",
+        mode: "Discontinue recommandée ; perfusion 60 min ; aérosol possible selon indication",
+        poche: "G5 ; 300 mg/100 mL selon doc interne ; NaCl incompatible ; stab non précisée",
+        pse: "--",
+        elastomere: "--",
+        anapa: "--",
+        micrel: "--",
+        reco: "Discontinue",
+        note: "NaCl incompatible."
+      },
+      {
+        molecule: "Aztréonam",
+        source: "Centre Léon Bérard – HAD",
+        mode: "Perfusion IV continue en diffuseur élastomère ; 24 h",
+        poche: "--",
+        pse: "--",
+        elastomere: "NaCl 0,9 % ; diffuseur élastomère ; conc max 100 mg/mL ; stab 24 h",
+        anapa: "--",
+        micrel: "--",
+        reco: "Diffuseur élastomère 24 h possible",
+        note: "Dans ce document, “diffuseur” = diffuseur élastomère ; à ne pas confondre avec ANAPA."
+      },
+      {
+        molecule: "Céfazoline",
+        source: "Centre Léon Bérard – HAD",
+        mode: "Perfusion IV continue en diffuseur élastomère ; 24 h ; abri lumière",
+        poche: "--",
+        pse: "--",
+        elastomere: "NaCl 0,9 % ou G5 ; diffuseur élastomère ; conc max 40 mg/mL ; stab 24 h ; abri lumière",
+        anapa: "--",
+        micrel: "--",
+        reco: "Diffuseur élastomère 24 h possible",
+        note: "Donnée Centre Léon Bérard – HAD."
+      },
+      {
+        molecule: "Céfépime",
+        source: "Centre Léon Bérard – HAD",
+        mode: "Perfusion IV continue en diffuseur élastomère ; changement toutes les 12 h ; abri lumière",
+        poche: "--",
+        pse: "--",
+        elastomere: "NaCl 0,9 % ; diffuseur élastomère ; stabilité 12 h ; abri lumière ; conc max non précisée dans l’extrait",
+        anapa: "--",
+        micrel: "--",
+        reco: "Diffuseur élastomère 12 h",
+        note: "Plus restrictif que SPILF/Micrel ; lié au dispositif et à la pratique HAD."
+      },
+      {
+        molecule: "Céfotaxime",
+        source: "Centre Léon Bérard – HAD",
+        mode: "Perfusion IV continue en diffuseur élastomère ; 24 h ; abri lumière",
+        poche: "--",
+        pse: "--",
+        elastomere: "NaCl 0,9 % ; diffuseur élastomère ; conc max 40 mg/mL ; stab 24 h ; abri lumière",
+        anapa: "--",
+        micrel: "--",
+        reco: "Diffuseur élastomère 24 h possible",
+        note: "Donnée Centre Léon Bérard – HAD."
+      },
+      {
+        molecule: "Céfoxitine",
+        source: "Centre Léon Bérard – HAD",
+        mode: "Perfusion IV continue en diffuseur élastomère ; 24 h ; abri lumière",
+        poche: "--",
+        pse: "--",
+        elastomere: "NaCl 0,9 % ; diffuseur élastomère ; conc max 40 mg/mL ; stab 24 h ; abri lumière",
+        anapa: "--",
+        micrel: "--",
+        reco: "Diffuseur élastomère 24 h possible",
+        note: "Donnée Centre Léon Bérard – HAD."
+      },
+      {
+        molecule: "Ceftazidime",
+        source: "Centre Léon Bérard – HAD",
+        mode: "Perfusion IV continue en diffuseur élastomère ; durée selon dose ; abri lumière",
+        poche: "--",
+        pse: "--",
+        elastomere: "NaCl 0,9 % ; diffuseur élastomère ; conc max 40 mg/mL ; si dose <6 g : stab 24 h ; si dose ≥6 g : changement q12 h ; abri lumière",
+        anapa: "--",
+        micrel: "--",
+        reco: "Diffuseur élastomère 12–24 h selon dose",
+        note: "Attention température >25°C et produits de dégradation."
+      },,
+      {
+        molecule: "Aciclovir",
+        source: "NEOPUMP – données internes fabricant élastomère",
+        mode: "Diffuseur élastomère Easyflow/NEOPUMP ; données internes fabricant Rev.11",
+        poche: "--",
+        pse: "--",
+        elastomere: "NaCl 0,9 % ; conc 10 mg/mL (1 g/100 mL) ; stab 24 h à 25°C et 32°C",
+        anapa: "--",
+        micrel: "--",
+        reco: "NEOPUMP élastomère 24 h",
+        note: "Donnée spécifique diffuseur élastomère NEOPUMP/Easyflow."
+      },
+      {
+        molecule: "Amikacine",
+        source: "NEOPUMP – données internes fabricant élastomère",
+        mode: "Diffuseur élastomère Easyflow/NEOPUMP ; données internes fabricant Rev.11",
+        poche: "--",
+        pse: "--",
+        elastomere: "NaCl 0,9 % ; conc 2 mg/mL (0,5 g/240 mL) et 5 mg/mL (0,5 g/100 mL) ; stab 24 h à 25°C et 32°C",
+        anapa: "--",
+        micrel: "--",
+        reco: "NEOPUMP élastomère 24 h physicochimique",
+        note: "Stabilité physicochimique ≠ recommandation clinique de perfusion continue pour aminoside."
+      },
+      {
+        molecule: "Amoxicilline",
+        source: "NEOPUMP – données internes fabricant élastomère",
+        mode: "Diffuseur élastomère Easyflow/NEOPUMP ; données internes fabricant Rev.11",
+        poche: "--",
+        pse: "--",
+        elastomere: "NaCl 0,9 % ; conc 10 mg/mL (2,4 g/240 mL) : stab 24 h à 25°C et 32°C ; conc 20 mg/mL (4,9 g/240 mL) : stab 6 h à 25°C et 32°C",
+        anapa: "--",
+        micrel: "--",
+        reco: "NEOPUMP : 24 h si 10 mg/mL ; 6 h si 20 mg/mL",
+        note: "Forte dépendance à la concentration."
+      },
+      {
+        molecule: "Amoxicilline/acide clavulanique",
+        source: "NEOPUMP – données internes fabricant élastomère",
+        mode: "Diffuseur élastomère Easyflow/NEOPUMP ; données internes fabricant Rev.11",
+        poche: "--",
+        pse: "--",
+        elastomere: "NaCl 0,9 % ; conc 10 mg/mL (1 g/100 mL) : stab 24 h à 4°C, 12 h à 25°C ; conc 12 mg/mL (3 g/240 mL) : stab 24 h à 4°C, 12 h à 25°C ; pas de donnée 32°C dans le tableau",
+        anapa: "--",
+        micrel: "--",
+        reco: "NEOPUMP : 12 h à 25°C ; pas 24 h RT",
+        note: "Discordant avec la recommandation pratique de ne pas utiliser en continu prolongé ; donnée fabricant à contextualiser."
+      },
+      {
+        molecule: "Ampicilline",
+        source: "NEOPUMP – données internes fabricant élastomère",
+        mode: "Diffuseur élastomère Easyflow/NEOPUMP ; données internes fabricant Rev.11",
+        poche: "--",
+        pse: "--",
+        elastomere: "NaCl 0,9 % ; conc 5 mg/mL (0,5 g/100 mL) et 20 mg/mL (5 g/240 mL) ; stab 24 h à 4°C, 25°C et 32°C",
+        anapa: "--",
+        micrel: "--",
+        reco: "NEOPUMP élastomère 24 h",
+        note: "Donnée spécifique diffuseur élastomère."
+      },
+      {
+        molecule: "Céfazoline",
+        source: "NEOPUMP – données internes fabricant élastomère",
+        mode: "Diffuseur élastomère Easyflow/NEOPUMP ; données internes fabricant Rev.11",
+        poche: "--",
+        pse: "--",
+        elastomere: "NaCl 0,9 % ; conc 1 mg/mL, 2 mg/mL et 25 mg/mL (6 g/240 mL) ; stab 24 h à 25°C et 32°C ; à 25 mg/mL : 7 j à 4°C",
+        anapa: "--",
+        micrel: "--",
+        reco: "NEOPUMP élastomère 24 h",
+        note: "Donnée spécifique diffuseur élastomère."
+      },
+      {
+        molecule: "Céfépime",
+        source: "NEOPUMP – données internes fabricant élastomère",
+        mode: "Diffuseur élastomère Easyflow/NEOPUMP ; données internes fabricant Rev.11",
+        poche: "--",
+        pse: "--",
+        elastomere: "NaCl 0,9 % ; conc 20 mg/mL (2 g/100 mL) ; stab 7 j à 4°C ; 24 h à 25°C et 32°C",
+        anapa: "--",
+        micrel: "--",
+        reco: "NEOPUMP élastomère 24 h",
+        note: "Donnée spécifique diffuseur élastomère."
+      },
+      {
+        molecule: "Céfotaxime",
+        source: "NEOPUMP – données internes fabricant élastomère",
+        mode: "Diffuseur élastomère Easyflow/NEOPUMP ; données internes fabricant Rev.11",
+        poche: "--",
+        pse: "--",
+        elastomere: "NaCl 0,9 % ; conc 10, 20 et 25 mg/mL ; stab 24 h à 25°C et 32°C ; 25 mg/mL = 6 g/240 mL",
+        anapa: "--",
+        micrel: "--",
+        reco: "NEOPUMP élastomère 24 h",
+        note: "Donnée spécifique diffuseur élastomère."
+      },
+      {
+        molecule: "Ceftazidime",
+        source: "NEOPUMP – données internes fabricant élastomère",
+        mode: "Diffuseur élastomère Easyflow/NEOPUMP ; données internes fabricant Rev.11",
+        poche: "--",
+        pse: "--",
+        elastomere: "NaCl 0,9 % ; conc 20 mg/mL (2 g/100 mL) et 25 mg/mL (6 g/240 mL) ; stab 7 j à 4°C et 25°C ; 24 h à 32°C",
+        anapa: "--",
+        micrel: "--",
+        reco: "NEOPUMP élastomère 24 h à 32°C ; 7 j à 25°C selon fabricant",
+        note: "À confronter à la vigilance clinique sur température et produits de dégradation."
+      },
+      {
+        molecule: "Ceftriaxone",
+        source: "NEOPUMP – données internes fabricant élastomère",
+        mode: "Diffuseur élastomère Easyflow/NEOPUMP ; données internes fabricant Rev.11",
+        poche: "--",
+        pse: "--",
+        elastomere: "NaCl 0,9 % ; conc 10 mg/mL (1 g/100 mL), 16 mg/mL (4 g/240 mL) et 20 mg/mL ; stab 14 j à 4°C ; 24 h à 25°C et 32°C",
+        anapa: "--",
+        micrel: "--",
+        reco: "NEOPUMP élastomère 24 h",
+        note: "Donnée spécifique diffuseur élastomère."
+      },
+      {
+        molecule: "Cefuroxime",
+        source: "NEOPUMP – données internes fabricant élastomère",
+        mode: "Diffuseur élastomère Easyflow/NEOPUMP ; données internes fabricant Rev.11",
+        poche: "--",
+        pse: "--",
+        elastomere: "NaCl 0,9 % ; conc 15 mg/mL ; stab 7 j à 4°C ; pas de donnée 25/32°C dans le tableau",
+        anapa: "--",
+        micrel: "--",
+        reco: "NEOPUMP : donnée réfrigérée uniquement",
+        note: "Pas de stabilité ambiante exploitable dans le tableau."
+      },
+      {
+        molecule: "Ciprofloxacine",
+        source: "NEOPUMP – données internes fabricant élastomère",
+        mode: "Diffuseur élastomère Easyflow/NEOPUMP ; données internes fabricant Rev.11",
+        poche: "--",
+        pse: "--",
+        elastomere: "NaCl 0,9 % ; conc 1 mg/mL et 2 mg/mL : stab 24 h à 25°C et 32°C ; 200 mg/100 mL : stab 12 j à 4°C et 25°C",
+        anapa: "--",
+        micrel: "--",
+        reco: "NEOPUMP élastomère 24 h",
+        note: "Donnée spécifique diffuseur élastomère."
+      },
+      {
+        molecule: "Clindamycine",
+        source: "NEOPUMP – données internes fabricant élastomère",
+        mode: "Diffuseur élastomère Easyflow/NEOPUMP ; données internes fabricant Rev.11",
+        poche: "--",
+        pse: "--",
+        elastomere: "NaCl 0,9 % ; conc 10 mg/mL ; stab 7 j à 4°C ; pas de donnée 25/32°C dans le tableau",
+        anapa: "--",
+        micrel: "--",
+        reco: "NEOPUMP : donnée réfrigérée uniquement",
+        note: "Pas de stabilité ambiante exploitable dans le tableau."
+      },
+      {
+        molecule: "Colistine",
+        source: "NEOPUMP – données internes fabricant élastomère",
+        mode: "Diffuseur élastomère Easyflow/NEOPUMP ; données internes fabricant Rev.11",
+        poche: "--",
+        pse: "--",
+        elastomere: "NaCl 0,9 % ; colistiméthate sodique ; conc 0,015 MUI/mL ; stab 7 j à 4°C ; pas de donnée 25/32°C dans le tableau",
+        anapa: "--",
+        micrel: "--",
+        reco: "NEOPUMP : donnée réfrigérée uniquement",
+        note: "Pas de stabilité ambiante exploitable dans le tableau."
+      },
+      {
+        molecule: "Daptomycine",
+        source: "NEOPUMP – données internes fabricant élastomère",
+        mode: "Diffuseur élastomère Easyflow/NEOPUMP ; données internes fabricant Rev.11",
+        poche: "--",
+        pse: "--",
+        elastomere: "NaCl 0,9 % ; conc 9 mg/mL ; stab 7 j à 4°C ; pas de donnée 25/32°C dans le tableau",
+        anapa: "--",
+        micrel: "--",
+        reco: "NEOPUMP : donnée réfrigérée uniquement",
+        note: "Pas de stabilité ambiante exploitable dans le tableau."
+      },
+      {
+        molecule: "Ertapénem",
+        source: "NEOPUMP – données internes fabricant élastomère",
+        mode: "Diffuseur élastomère Easyflow/NEOPUMP ; données internes fabricant Rev.11",
+        poche: "--",
+        pse: "--",
+        elastomere: "NaCl 0,9 % ; conc 10 mg/mL (1 g/100 mL) : stab 7 j à 4°C, 12 h à 25°C et 32°C ; conc 20 mg/mL (2 g/100 mL) : stab 1 h à 25°C et 32°C",
+        anapa: "--",
+        micrel: "--",
+        reco: "NEOPUMP : 12 h à 10 mg/mL ; 1 h à 20 mg/mL",
+        note: "Forte dépendance à la concentration."
+      },
+      {
+        molecule: "Fluconazole",
+        source: "NEOPUMP – données internes fabricant élastomère",
+        mode: "Diffuseur élastomère Easyflow/NEOPUMP ; données internes fabricant Rev.11",
+        poche: "--",
+        pse: "--",
+        elastomere: "NaCl 0,9 % ; conc 1 mg/mL et 2 mg/mL ; stab 24 h à 25°C et 32°C",
+        anapa: "--",
+        micrel: "--",
+        reco: "NEOPUMP élastomère 24 h",
+        note: "Donnée spécifique diffuseur élastomère."
+      },
+      {
+        molecule: "Fosfomycine IV",
+        source: "NEOPUMP – données internes fabricant élastomère",
+        mode: "Diffuseur élastomère Easyflow/NEOPUMP ; données internes fabricant Rev.11",
+        poche: "--",
+        pse: "--",
+        elastomere: "NaCl 0,9 % ; conc 2 mg/mL et 8 mg/mL : stab 24 h à 25°C et 32°C ; conc 30 mg/mL : stab 5 j à 25°C",
+        anapa: "--",
+        micrel: "--",
+        reco: "NEOPUMP élastomère 24 h",
+        note: "Donnée spécifique diffuseur élastomère."
+      },
+      {
+        molecule: "Gentamicine",
+        source: "NEOPUMP – données internes fabricant élastomère",
+        mode: "Diffuseur élastomère Easyflow/NEOPUMP ; données internes fabricant Rev.11",
+        poche: "--",
+        pse: "--",
+        elastomere: "NaCl 0,9 % ; conc 5 mg/mL et 8 mg/mL ; stab 24 h à 25°C et 32°C",
+        anapa: "--",
+        micrel: "--",
+        reco: "NEOPUMP élastomère 24 h physicochimique",
+        note: "Stabilité physicochimique ≠ recommandation clinique de perfusion continue pour aminoside."
+      },
+      {
+        molecule: "Imipénème/cilastatine",
+        source: "NEOPUMP – données internes fabricant élastomère",
+        mode: "Diffuseur élastomère Easyflow/NEOPUMP ; données internes fabricant Rev.11",
+        poche: "--",
+        pse: "--",
+        elastomere: "NaCl 0,9 % ; conc 5+5 mg/mL et 8+8 mg/mL ; stab 1 h à 25°C et 32°C",
+        anapa: "--",
+        micrel: "--",
+        reco: "NEOPUMP : stabilité très courte",
+        note: "Pas adapté à une perfusion continue longue sans changement très fréquent."
+      },
+      {
+        molecule: "Méropénem",
+        source: "NEOPUMP – données internes fabricant élastomère",
+        mode: "Diffuseur élastomère Easyflow/NEOPUMP ; données internes fabricant Rev.11",
+        poche: "--",
+        pse: "--",
+        elastomere: "NaCl 0,9 % ; conc 20 mg/mL : stab 7 j à 4°C, 12 h à 25°C, 1 h à 32°C ; conc 25 mg/mL : stab 12 h à 25°C, 1 h à 32°C ; conc 10 mg/mL : stab 4 j à 4°C, 24 h à 25°C et 32°C ; conc 4 mg/mL : stab 7 j à 4°C",
+        anapa: "--",
+        micrel: "--",
+        reco: "NEOPUMP : très concentration-dépendant",
+        note: "La stabilité 24 h à 32°C n’est rapportée que pour 10 mg/mL dans le tableau."
+      },
+      {
+        molecule: "Oxacilline",
+        source: "NEOPUMP – données internes fabricant élastomère",
+        mode: "Diffuseur élastomère Easyflow/NEOPUMP ; données internes fabricant Rev.11",
+        poche: "--",
+        pse: "--",
+        elastomere: "NaCl 0,9 % ; conc 5 mg/mL : stab 24 h à 25°C et 32°C ; conc 8 mg/mL : stab 12 h à 25°C et 32°C",
+        anapa: "--",
+        micrel: "--",
+        reco: "NEOPUMP : 24 h à 5 mg/mL ; 12 h à 8 mg/mL",
+        note: "Donnée spécifique diffuseur élastomère."
+      },
+      {
+        molecule: "Pipéracilline",
+        source: "NEOPUMP – données internes fabricant élastomère",
+        mode: "Diffuseur élastomère Easyflow/NEOPUMP ; données internes fabricant Rev.11",
+        poche: "--",
+        pse: "--",
+        elastomere: "NaCl 0,9 % ; conc 10 mg/mL et 33 mg/mL ; stab 24 h à 25°C et 32°C",
+        anapa: "--",
+        micrel: "--",
+        reco: "NEOPUMP élastomère 24 h",
+        note: "Donnée spécifique diffuseur élastomère."
+      },
+      {
+        molecule: "Pipéracilline/tazobactam",
+        source: "NEOPUMP – données internes fabricant élastomère",
+        mode: "Diffuseur élastomère Easyflow/NEOPUMP ; données internes fabricant Rev.11",
+        poche: "--",
+        pse: "--",
+        elastomere: "NaCl 0,9 % ; conc 45 mg/mL (4 g+0,5 g/100 mL) et 80 mg/mL (16 g+2 g/240 mL) : stab 24 h à 25°C et 32°C ; conc 40+5 mg/mL : stab 7 j à 4°C et 25°C",
+        anapa: "--",
+        micrel: "--",
+        reco: "NEOPUMP élastomère 24 h",
+        note: "Donnée spécifique diffuseur élastomère."
+      },
+      {
+        molecule: "Rifampicine IV",
+        source: "NEOPUMP – données internes fabricant élastomère",
+        mode: "Diffuseur élastomère Easyflow/NEOPUMP ; données internes fabricant Rev.11",
+        poche: "--",
+        pse: "--",
+        elastomere: "NaCl 0,9 % ; conc 0,5 mg/mL : stab 24 h à 25°C et 32°C ; conc 3 mg/mL : stab 6 h à 25°C et 32°C",
+        anapa: "--",
+        micrel: "--",
+        reco: "NEOPUMP : dépend concentration",
+        note: "Attention : autres sources indiquent incompatibilité NaCl pour la préparation usuelle ; donnée NEOPUMP à vérifier avant transposition."
+      },
+      {
+        molecule: "Teicoplanine",
+        source: "NEOPUMP – données internes fabricant élastomère",
+        mode: "Diffuseur élastomère Easyflow/NEOPUMP ; données internes fabricant Rev.11",
+        poche: "--",
+        pse: "--",
+        elastomere: "NaCl 0,9 % ; conc 4 mg/mL ; stab 24 h à 4°C ; pas de donnée 25/32°C dans le tableau",
+        anapa: "--",
+        micrel: "--",
+        reco: "NEOPUMP : donnée réfrigérée uniquement",
+        note: "Pas de stabilité ambiante exploitable dans le tableau."
+      },
+      {
+        molecule: "Tobramycine",
+        source: "NEOPUMP – données internes fabricant élastomère",
+        mode: "Diffuseur élastomère Easyflow/NEOPUMP ; données internes fabricant Rev.11",
+        poche: "--",
+        pse: "--",
+        elastomere: "NaCl 0,9 % ; conc 1 mg/mL et 7,5 mg/mL : stab 24 h à 25°C et 32°C ; conc 4 mg/mL : stab 10 j à 4°C",
+        anapa: "--",
+        micrel: "--",
+        reco: "NEOPUMP élastomère 24 h physicochimique",
+        note: "Stabilité physicochimique ≠ recommandation clinique de perfusion continue pour aminoside."
+      },
+      {
+        molecule: "Vancomycine",
+        source: "NEOPUMP – données internes fabricant élastomère",
+        mode: "Diffuseur élastomère Easyflow/NEOPUMP ; données internes fabricant Rev.11",
+        poche: "--",
+        pse: "--",
+        elastomere: "NaCl 0,9 % ; conc 5 mg/mL et 8 mg/mL : stab 24 h à 25°C et 32°C ; conc 4 mg/mL : stab 14 j à 4°C et 25°C",
+        anapa: "--",
+        micrel: "--",
+        reco: "NEOPUMP élastomère 24 h",
+        note: "Donnée spécifique diffuseur élastomère."
+      }
+    ];
+
+    const resultsEl = document.getElementById("results");
+    const searchEl = document.getElementById("search");
+    const deviceEl = document.getElementById("device");
+    const sourceEl = document.getElementById("sourceFilter");
+    const resetEl = document.getElementById("reset");
+    const countPill = document.getElementById("countPill");
+
+    function normalize(text) {
+      return (text || "")
+        .toString()
+        .toLowerCase()
+        .normalize("NFD")
+        .replace(/[\u0300-\u036f]/g, "");
+    }
+
+    function hasDeviceData(item, device) {
+      if (!device) return true;
+      return item[device] && item[device] !== "--";
+    }
+
+    function filterData() {
+      const q = normalize(searchEl.value);
+      const device = deviceEl.value;
+      const source = normalize(sourceEl.value);
+
+      const rows = data.filter(item => {
+        const haystack = normalize(`${item.molecule} ${item.source} ${item.mode} ${item.poche} ${item.pse} ${item.elastomere} ${item.anapa} ${item.micrel} ${item.reco} ${item.note}`);
+        const matchQuery = !q || haystack.includes(q);
+        const matchDevice = hasDeviceData(item, device);
+        const matchSource = !source || normalize(item.source).includes(source);
+        return matchQuery && matchDevice && matchSource;
+      });
+
+      const grouped = new Map();
+      rows.forEach(row => {
+        if (!grouped.has(row.molecule)) grouped.set(row.molecule, []);
+        grouped.get(row.molecule).push(row);
+      });
+      return Array.from(grouped.entries()).map(([molecule, sources]) => ({ molecule, sources }));
+    }
+
+    function deviceBlock(title, value, discordant = false) {
+      const empty = !value || value === "--";
+      return `
+        <div class="device ${discordant ? "discordant" : ""}">
+          <h4>${title}</h4>
+          <p class="${empty ? "empty" : ""}">${empty ? "--" : value}</p>
+        </div>
+      `;
+    }
+
+    function summarizeDevice(sources, key) {
+      const values = sources.map(s => s[key]).filter(v => v && v !== "--");
+      if (!values.length) return { text: "--", discordant: false };
+      const unique = [...new Set(values)];
+      return {
+        text: unique.map(v => `<span class="${unique.length > 1 ? "diff" : ""}">${v}</span>`).join("<br><br>"),
+        discordant: unique.length > 1
+      };
+    }
+
+    function sourceDetails(sources) {
+      return sources.map(s => `
+        <details class="source-details">
+          <summary>${s.source}</summary>
+          <div class="source-content">
+            <p><strong>Modalité :</strong> ${s.mode}</p>
+            <p><strong>Poche :</strong> ${s.poche || "--"}</p>
+            <p><strong>PSE :</strong> ${s.pse || "--"}</p>
+            <p><strong>Diffuseur élastomère :</strong> ${s.elastomere || "--"}</p>
+            <p><strong>ANAPA :</strong> ${s.anapa || "--"}</p>
+            <p><strong>Micrel :</strong> ${s.micrel || "--"}</p>
+            ${s.note ? `<p><strong>Remarque :</strong> ${s.note}</p>
+            ${s.pubmed ? `<p><strong>PubMed :</strong> <a href="${s.pubmed}" target="_blank" rel="noopener">ouvrir l’article</a></p>` : ""}` : ""}
+          </div>
+        </details>
+      `).join("");
+    }
+
+    function render() {
+      const grouped = filterData();
+      countPill.textContent = `${grouped.length} molécule${grouped.length > 1 ? "s" : ""}`;
+
+      if (!grouped.length) {
+        resultsEl.innerHTML = `<div class="no-result">Aucune donnée retrouvée pour ces critères.</div>`;
+        return;
+      }
+
+      resultsEl.innerHTML = grouped.map(group => {
+        const poche = summarizeDevice(group.sources, "poche");
+        const pse = summarizeDevice(group.sources, "pse");
+        const elastomere = summarizeDevice(group.sources, "elastomere");
+        const anapa = summarizeDevice(group.sources, "anapa");
+        const micrel = summarizeDevice(group.sources, "micrel");
+        const recos = [...new Set(group.sources.map(s => s.reco).filter(Boolean))].join(" · ");
+        const modes = [...new Set(group.sources.map(s => s.mode).filter(Boolean))].join("<br>");
+        const hasDiscordance = [poche, pse, elastomere, anapa, micrel].some(x => x.discordant);
+
+        return `
+          <article class="result-card ${hasDiscordance ? "has-discordance" : ""}">
+            <div class="result-head">
+              <div>
+                <h3>${group.molecule}</h3>
+                <div class="source">${group.sources.length} source${group.sources.length > 1 ? "s" : ""} intégrée${group.sources.length > 1 ? "s" : ""}${hasDiscordance ? " · discordance détectée" : ""}</div>
+              </div>
+              <div class="mode-tag">${recos || "--"}</div>
+            </div>
+            <div class="recommendation">
+              <strong>Recommandations / modalités</strong>
+              <div>${modes || "--"}</div>
+            </div>
+            <div class="device-grid">
+              ${deviceBlock("Poche soluté", poche.text, poche.discordant)}
+              ${deviceBlock("PSE seringue PP", pse.text, pse.discordant)}
+              ${deviceBlock("Diffuseur élastomère", elastomere.text, elastomere.discordant)}
+              ${deviceBlock("ANAPA", anapa.text, anapa.discordant)}
+              ${deviceBlock("Micrel PVC", micrel.text, micrel.discordant)}
+            </div>
+            <div class="notes">
+              <strong>Détail des sources :</strong>
+              ${sourceDetails(group.sources)}
+            </div>
+          </article>
+        `;
+      }).join("");
+    }
+
+    [searchEl, deviceEl, sourceEl].forEach(el => el.addEventListener("input", render));
+    resetEl.addEventListener("click", () => {
+      searchEl.value = "";
+      deviceEl.value = "";
+      sourceEl.value = "";
+      render();
+    });
+
+    render();
+  </script>
+</body>
+</html>
