@@ -195,6 +195,45 @@
       white-space: nowrap;
       max-width: 420px;
       text-align: right;
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+      justify-content: flex-end;
+    }
+
+    .badge {
+      display: inline-flex;
+      align-items: center;
+      padding: 6px 10px;
+      border-radius: 999px;
+      font-size: 0.78rem;
+      font-weight: 800;
+      letter-spacing: 0.01em;
+      border: 1px solid transparent;
+    }
+
+    .badge.ok {
+      background: #e7f5eb;
+      color: #1f6b3a;
+      border-color: #b9dfc5;
+    }
+
+    .badge.warn {
+      background: #fff4e8;
+      color: #8a5a14;
+      border-color: #efd0a3;
+    }
+
+    .badge.stop {
+      background: #fff0f0;
+      color: #a12d2d;
+      border-color: #e3b0b0;
+    }
+
+    .badge.lab {
+      background: #eef2ff;
+      color: #3949ab;
+      border-color: #c5cef8;
     }
 
     .recommendation {
@@ -1060,7 +1099,7 @@
       {
         molecule: "Aciclovir",
         source: "NEOPUMP – données internes fabricant élastomère",
-        mode: "Diffuseur élastomère Easyflow/NEOPUMP ; données internes fabricant Rev.11",
+        mode: "Diffuseur élastomère Easyflow/NEOPUMP ; données internes fabricant ",
         poche: "--",
         pse: "--",
         elastomere: "NaCl 0,9 % ; conc 10 mg/mL (1 g/100 mL) ; stab 24 h à 25°C et 32°C",
@@ -1072,7 +1111,7 @@
       {
         molecule: "Amikacine",
         source: "NEOPUMP – données internes fabricant élastomère",
-        mode: "Diffuseur élastomère Easyflow/NEOPUMP ; données internes fabricant Rev.11",
+        mode: "Diffuseur élastomère Easyflow/NEOPUMP ; données internes fabricant ",
         poche: "--",
         pse: "--",
         elastomere: "NaCl 0,9 % ; conc 2 mg/mL (0,5 g/240 mL) et 5 mg/mL (0,5 g/100 mL) ; stab 24 h à 25°C et 32°C",
@@ -1084,7 +1123,7 @@
       {
         molecule: "Amoxicilline",
         source: "NEOPUMP – données internes fabricant élastomère",
-        mode: "Diffuseur élastomère Easyflow/NEOPUMP ; données internes fabricant Rev.11",
+        mode: "Diffuseur élastomère Easyflow/NEOPUMP ; données internes fabricant ",
         poche: "--",
         pse: "--",
         elastomere: "NaCl 0,9 % ; conc 10 mg/mL (2,4 g/240 mL) : stab 24 h à 25°C et 32°C ; conc 20 mg/mL (4,9 g/240 mL) : stab 6 h à 25°C et 32°C",
@@ -1096,7 +1135,7 @@
       {
         molecule: "Amoxicilline/acide clavulanique",
         source: "NEOPUMP – données internes fabricant élastomère",
-        mode: "Diffuseur élastomère Easyflow/NEOPUMP ; données internes fabricant Rev.11",
+        mode: "Diffuseur élastomère Easyflow/NEOPUMP ; données internes fabricant ",
         poche: "--",
         pse: "--",
         elastomere: "NaCl 0,9 % ; conc 10 mg/mL (1 g/100 mL) : stab 24 h à 4°C, 12 h à 25°C ; conc 12 mg/mL (3 g/240 mL) : stab 24 h à 4°C, 12 h à 25°C ; pas de donnée 32°C dans le tableau",
@@ -1108,7 +1147,7 @@
       {
         molecule: "Ampicilline",
         source: "NEOPUMP – données internes fabricant élastomère",
-        mode: "Diffuseur élastomère Easyflow/NEOPUMP ; données internes fabricant Rev.11",
+        mode: "Diffuseur élastomère Easyflow/NEOPUMP ; données internes fabricant ",
         poche: "--",
         pse: "--",
         elastomere: "NaCl 0,9 % ; conc 5 mg/mL (0,5 g/100 mL) et 20 mg/mL (5 g/240 mL) ; stab 24 h à 4°C, 25°C et 32°C",
@@ -1120,7 +1159,7 @@
       {
         molecule: "Céfazoline",
         source: "NEOPUMP – données internes fabricant élastomère",
-        mode: "Diffuseur élastomère Easyflow/NEOPUMP ; données internes fabricant Rev.11",
+        mode: "Diffuseur élastomère Easyflow/NEOPUMP ; données internes fabricant ",
         poche: "--",
         pse: "--",
         elastomere: "NaCl 0,9 % ; conc 1 mg/mL, 2 mg/mL et 25 mg/mL (6 g/240 mL) ; stab 24 h à 25°C et 32°C ; à 25 mg/mL : 7 j à 4°C",
@@ -1132,7 +1171,7 @@
       {
         molecule: "Céfépime",
         source: "NEOPUMP – données internes fabricant élastomère",
-        mode: "Diffuseur élastomère Easyflow/NEOPUMP ; données internes fabricant Rev.11",
+        mode: "Diffuseur élastomère Easyflow/NEOPUMP ; données internes fabricant ",
         poche: "--",
         pse: "--",
         elastomere: "NaCl 0,9 % ; conc 20 mg/mL (2 g/100 mL) ; stab 7 j à 4°C ; 24 h à 25°C et 32°C",
@@ -1144,7 +1183,7 @@
       {
         molecule: "Céfotaxime",
         source: "NEOPUMP – données internes fabricant élastomère",
-        mode: "Diffuseur élastomère Easyflow/NEOPUMP ; données internes fabricant Rev.11",
+        mode: "Diffuseur élastomère Easyflow/NEOPUMP ; données internes fabricant ",
         poche: "--",
         pse: "--",
         elastomere: "NaCl 0,9 % ; conc 10, 20 et 25 mg/mL ; stab 24 h à 25°C et 32°C ; 25 mg/mL = 6 g/240 mL",
@@ -1156,7 +1195,7 @@
       {
         molecule: "Ceftazidime",
         source: "NEOPUMP – données internes fabricant élastomère",
-        mode: "Diffuseur élastomère Easyflow/NEOPUMP ; données internes fabricant Rev.11",
+        mode: "Diffuseur élastomère Easyflow/NEOPUMP ; données internes fabricant ",
         poche: "--",
         pse: "--",
         elastomere: "NaCl 0,9 % ; conc 20 mg/mL (2 g/100 mL) et 25 mg/mL (6 g/240 mL) ; stab 7 j à 4°C et 25°C ; 24 h à 32°C",
@@ -1168,7 +1207,7 @@
       {
         molecule: "Ceftriaxone",
         source: "NEOPUMP – données internes fabricant élastomère",
-        mode: "Diffuseur élastomère Easyflow/NEOPUMP ; données internes fabricant Rev.11",
+        mode: "Diffuseur élastomère Easyflow/NEOPUMP ; données internes fabricant ",
         poche: "--",
         pse: "--",
         elastomere: "NaCl 0,9 % ; conc 10 mg/mL (1 g/100 mL), 16 mg/mL (4 g/240 mL) et 20 mg/mL ; stab 14 j à 4°C ; 24 h à 25°C et 32°C",
@@ -1180,7 +1219,7 @@
       {
         molecule: "Cefuroxime",
         source: "NEOPUMP – données internes fabricant élastomère",
-        mode: "Diffuseur élastomère Easyflow/NEOPUMP ; données internes fabricant Rev.11",
+        mode: "Diffuseur élastomère Easyflow/NEOPUMP ; données internes fabricant ",
         poche: "--",
         pse: "--",
         elastomere: "NaCl 0,9 % ; conc 15 mg/mL ; stab 7 j à 4°C ; pas de donnée 25/32°C dans le tableau",
@@ -1192,7 +1231,7 @@
       {
         molecule: "Ciprofloxacine",
         source: "NEOPUMP – données internes fabricant élastomère",
-        mode: "Diffuseur élastomère Easyflow/NEOPUMP ; données internes fabricant Rev.11",
+        mode: "Diffuseur élastomère Easyflow/NEOPUMP ; données internes fabricant ",
         poche: "--",
         pse: "--",
         elastomere: "NaCl 0,9 % ; conc 1 mg/mL et 2 mg/mL : stab 24 h à 25°C et 32°C ; 200 mg/100 mL : stab 12 j à 4°C et 25°C",
@@ -1204,7 +1243,7 @@
       {
         molecule: "Clindamycine",
         source: "NEOPUMP – données internes fabricant élastomère",
-        mode: "Diffuseur élastomère Easyflow/NEOPUMP ; données internes fabricant Rev.11",
+        mode: "Diffuseur élastomère Easyflow/NEOPUMP ; données internes fabricant ",
         poche: "--",
         pse: "--",
         elastomere: "NaCl 0,9 % ; conc 10 mg/mL ; stab 7 j à 4°C ; pas de donnée 25/32°C dans le tableau",
@@ -1216,7 +1255,7 @@
       {
         molecule: "Colistine",
         source: "NEOPUMP – données internes fabricant élastomère",
-        mode: "Diffuseur élastomère Easyflow/NEOPUMP ; données internes fabricant Rev.11",
+        mode: "Diffuseur élastomère Easyflow/NEOPUMP ; données internes fabricant ",
         poche: "--",
         pse: "--",
         elastomere: "NaCl 0,9 % ; colistiméthate sodique ; conc 0,015 MUI/mL ; stab 7 j à 4°C ; pas de donnée 25/32°C dans le tableau",
@@ -1228,7 +1267,7 @@
       {
         molecule: "Daptomycine",
         source: "NEOPUMP – données internes fabricant élastomère",
-        mode: "Diffuseur élastomère Easyflow/NEOPUMP ; données internes fabricant Rev.11",
+        mode: "Diffuseur élastomère Easyflow/NEOPUMP ; données internes fabricant ",
         poche: "--",
         pse: "--",
         elastomere: "NaCl 0,9 % ; conc 9 mg/mL ; stab 7 j à 4°C ; pas de donnée 25/32°C dans le tableau",
@@ -1240,7 +1279,7 @@
       {
         molecule: "Ertapénem",
         source: "NEOPUMP – données internes fabricant élastomère",
-        mode: "Diffuseur élastomère Easyflow/NEOPUMP ; données internes fabricant Rev.11",
+        mode: "Diffuseur élastomère Easyflow/NEOPUMP ; données internes fabricant ",
         poche: "--",
         pse: "--",
         elastomere: "NaCl 0,9 % ; conc 10 mg/mL (1 g/100 mL) : stab 7 j à 4°C, 12 h à 25°C et 32°C ; conc 20 mg/mL (2 g/100 mL) : stab 1 h à 25°C et 32°C",
@@ -1252,7 +1291,7 @@
       {
         molecule: "Fluconazole",
         source: "NEOPUMP – données internes fabricant élastomère",
-        mode: "Diffuseur élastomère Easyflow/NEOPUMP ; données internes fabricant Rev.11",
+        mode: "Diffuseur élastomère Easyflow/NEOPUMP ; données internes fabricant ",
         poche: "--",
         pse: "--",
         elastomere: "NaCl 0,9 % ; conc 1 mg/mL et 2 mg/mL ; stab 24 h à 25°C et 32°C",
@@ -1264,7 +1303,7 @@
       {
         molecule: "Fosfomycine IV",
         source: "NEOPUMP – données internes fabricant élastomère",
-        mode: "Diffuseur élastomère Easyflow/NEOPUMP ; données internes fabricant Rev.11",
+        mode: "Diffuseur élastomère Easyflow/NEOPUMP ; données internes fabricant ",
         poche: "--",
         pse: "--",
         elastomere: "NaCl 0,9 % ; conc 2 mg/mL et 8 mg/mL : stab 24 h à 25°C et 32°C ; conc 30 mg/mL : stab 5 j à 25°C",
@@ -1276,7 +1315,7 @@
       {
         molecule: "Gentamicine",
         source: "NEOPUMP – données internes fabricant élastomère",
-        mode: "Diffuseur élastomère Easyflow/NEOPUMP ; données internes fabricant Rev.11",
+        mode: "Diffuseur élastomère Easyflow/NEOPUMP ; données internes fabricant ",
         poche: "--",
         pse: "--",
         elastomere: "NaCl 0,9 % ; conc 5 mg/mL et 8 mg/mL ; stab 24 h à 25°C et 32°C",
@@ -1288,7 +1327,7 @@
       {
         molecule: "Imipénème/cilastatine",
         source: "NEOPUMP – données internes fabricant élastomère",
-        mode: "Diffuseur élastomère Easyflow/NEOPUMP ; données internes fabricant Rev.11",
+        mode: "Diffuseur élastomère Easyflow/NEOPUMP ; données internes fabricant ",
         poche: "--",
         pse: "--",
         elastomere: "NaCl 0,9 % ; conc 5+5 mg/mL et 8+8 mg/mL ; stab 1 h à 25°C et 32°C",
@@ -1300,7 +1339,7 @@
       {
         molecule: "Méropénem",
         source: "NEOPUMP – données internes fabricant élastomère",
-        mode: "Diffuseur élastomère Easyflow/NEOPUMP ; données internes fabricant Rev.11",
+        mode: "Diffuseur élastomère Easyflow/NEOPUMP ; données internes fabricant ",
         poche: "--",
         pse: "--",
         elastomere: "NaCl 0,9 % ; conc 20 mg/mL : stab 7 j à 4°C, 12 h à 25°C, 1 h à 32°C ; conc 25 mg/mL : stab 12 h à 25°C, 1 h à 32°C ; conc 10 mg/mL : stab 4 j à 4°C, 24 h à 25°C et 32°C ; conc 4 mg/mL : stab 7 j à 4°C",
@@ -1312,7 +1351,7 @@
       {
         molecule: "Oxacilline",
         source: "NEOPUMP – données internes fabricant élastomère",
-        mode: "Diffuseur élastomère Easyflow/NEOPUMP ; données internes fabricant Rev.11",
+        mode: "Diffuseur élastomère Easyflow/NEOPUMP ; données internes fabricant ",
         poche: "--",
         pse: "--",
         elastomere: "NaCl 0,9 % ; conc 5 mg/mL : stab 24 h à 25°C et 32°C ; conc 8 mg/mL : stab 12 h à 25°C et 32°C",
@@ -1324,7 +1363,7 @@
       {
         molecule: "Pipéracilline",
         source: "NEOPUMP – données internes fabricant élastomère",
-        mode: "Diffuseur élastomère Easyflow/NEOPUMP ; données internes fabricant Rev.11",
+        mode: "Diffuseur élastomère Easyflow/NEOPUMP ; données internes fabricant ",
         poche: "--",
         pse: "--",
         elastomere: "NaCl 0,9 % ; conc 10 mg/mL et 33 mg/mL ; stab 24 h à 25°C et 32°C",
@@ -1336,7 +1375,7 @@
       {
         molecule: "Pipéracilline/tazobactam",
         source: "NEOPUMP – données internes fabricant élastomère",
-        mode: "Diffuseur élastomère Easyflow/NEOPUMP ; données internes fabricant Rev.11",
+        mode: "Diffuseur élastomère Easyflow/NEOPUMP ; données internes fabricant ",
         poche: "--",
         pse: "--",
         elastomere: "NaCl 0,9 % ; conc 45 mg/mL (4 g+0,5 g/100 mL) et 80 mg/mL (16 g+2 g/240 mL) : stab 24 h à 25°C et 32°C ; conc 40+5 mg/mL : stab 7 j à 4°C et 25°C",
@@ -1348,7 +1387,7 @@
       {
         molecule: "Rifampicine IV",
         source: "NEOPUMP – données internes fabricant élastomère",
-        mode: "Diffuseur élastomère Easyflow/NEOPUMP ; données internes fabricant Rev.11",
+        mode: "Diffuseur élastomère Easyflow/NEOPUMP ; données internes fabricant ",
         poche: "--",
         pse: "--",
         elastomere: "NaCl 0,9 % ; conc 0,5 mg/mL : stab 24 h à 25°C et 32°C ; conc 3 mg/mL : stab 6 h à 25°C et 32°C",
@@ -1360,7 +1399,7 @@
       {
         molecule: "Teicoplanine",
         source: "NEOPUMP – données internes fabricant élastomère",
-        mode: "Diffuseur élastomère Easyflow/NEOPUMP ; données internes fabricant Rev.11",
+        mode: "Diffuseur élastomère Easyflow/NEOPUMP ; données internes fabricant ",
         poche: "--",
         pse: "--",
         elastomere: "NaCl 0,9 % ; conc 4 mg/mL ; stab 24 h à 4°C ; pas de donnée 25/32°C dans le tableau",
@@ -1372,7 +1411,7 @@
       {
         molecule: "Tobramycine",
         source: "NEOPUMP – données internes fabricant élastomère",
-        mode: "Diffuseur élastomère Easyflow/NEOPUMP ; données internes fabricant Rev.11",
+        mode: "Diffuseur élastomère Easyflow/NEOPUMP ; données internes fabricant ",
         poche: "--",
         pse: "--",
         elastomere: "NaCl 0,9 % ; conc 1 mg/mL et 7,5 mg/mL : stab 24 h à 25°C et 32°C ; conc 4 mg/mL : stab 10 j à 4°C",
@@ -1384,7 +1423,7 @@
       {
         molecule: "Vancomycine",
         source: "NEOPUMP – données internes fabricant élastomère",
-        mode: "Diffuseur élastomère Easyflow/NEOPUMP ; données internes fabricant Rev.11",
+        mode: "Diffuseur élastomère Easyflow/NEOPUMP ; données internes fabricant ",
         poche: "--",
         pse: "--",
         elastomere: "NaCl 0,9 % ; conc 5 mg/mL et 8 mg/mL : stab 24 h à 25°C et 32°C ; conc 4 mg/mL : stab 14 j à 4°C et 25°C",
@@ -1489,7 +1528,18 @@
         const elastomere = summarizeDevice(group.sources, "elastomere");
         const anapa = summarizeDevice(group.sources, "anapa");
         const micrel = summarizeDevice(group.sources, "micrel");
-        const recos = [...new Set(group.sources.map(s => s.reco).filter(Boolean))].join(" · ");
+        const recoValues = [...new Set(group.sources.map(s => s.reco).filter(Boolean))];
+
+        function recoBadge(text) {
+          const lower = text.toLowerCase();
+          let cls = "ok";
+          if (lower.includes("discontinue") || lower.includes("non recommandé")) cls = "stop";
+          else if (lower.includes("fraction") || lower.includes("12 h") || lower.includes("temp") || lower.includes("vigilance")) cls = "warn";
+          else if (lower.includes("physicochimique")) cls = "lab";
+          return `<span class="badge ${cls}">${text}</span>`;
+        }
+
+        const recos = recoValues.map(recoBadge).join("");
         const modes = [...new Set(group.sources.map(s => s.mode).filter(Boolean))].join("<br>");
         const hasDiscordance = [poche, pse, elastomere, anapa, micrel].some(x => x.discordant);
 
@@ -1500,7 +1550,7 @@
                 <h3>${group.molecule}</h3>
                 <div class="source">${group.sources.length} source${group.sources.length > 1 ? "s" : ""} intégrée${group.sources.length > 1 ? "s" : ""}${hasDiscordance ? " · discordance détectée" : ""}</div>
               </div>
-              <div class="mode-tag">${recos || "--"}</div>
+              <div class="mode-tag">${recos || '<span class="badge warn">Pas de recommandation synthétique</span>'}</div>
             </div>
             <div class="recommendation">
               <strong>Recommandations / modalités</strong>
