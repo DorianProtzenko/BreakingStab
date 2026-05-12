@@ -276,6 +276,95 @@
       font-size: 0.91rem;
     }
 
+    .stab-block {
+      display: grid;
+      gap: 8px;
+    }
+
+    .stab-row {
+      padding: 11px 12px;
+      border-radius: 14px;
+      background: #ffffff;
+      border: 1px solid #e4ddd0;
+      display: grid;
+      gap: 9px;
+    }
+
+    .stab-row + .stab-row {
+      margin-top: 4px;
+    }
+
+    .stab-meta {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      gap: 7px;
+    }
+
+    .stab-index {
+      display: none;
+    }
+
+    .chip {
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      padding: 5px 9px;
+      border-radius: 999px;
+      font-size: 0.78rem;
+      font-weight: 800;
+      background: #f0eee8;
+      color: #3d453f;
+      border: 1px solid #e2dbcd;
+      line-height: 1.15;
+    }
+
+    .chip.solvent {
+      background: #e6efe8;
+      color: #315f46;
+      border-color: #bfd9c7;
+    }
+
+    .chip.conc {
+      background: #eef2ff;
+      color: #2845bd;
+      border-color: #c7cff7;
+    }
+
+    .chip.temp {
+      background: #f4f1ec;
+      color: #4c504d;
+      border-color: #ded7ca;
+    }
+
+    .chip.time-ok {
+      background: #e7f5eb;
+      color: #1f6b3a;
+      border-color: #b9dfc5;
+    }
+
+    .chip.time-warn {
+      background: #fff4e8;
+      color: #8a5a14;
+      border-color: #efd0a3;
+    }
+
+    .chip.time-stop {
+      background: #fff0f0;
+      color: #a12d2d;
+      border-color: #e3b0b0;
+    }
+
+    .stab-free {
+      color: var(--muted);
+      font-size: 0.82rem;
+      padding-left: 31px;
+    }
+
+    .stab-free:empty {
+      display: none;
+    }
+
     .empty {
       color: #a09a90 !important;
       font-style: italic;
@@ -520,7 +609,7 @@
         molecule: "Amoxicilline/acide clavulanique",
         source: "SPILF/SFPC 2025 + CH de Tourcoing 2017 + Centre Léon Bérard – HAD",
         mode: "Continu non recommandé ; discontinue 30–60 min",
-        poche: "NaCl 0,9 % exclusivement ; conc max 20 mg/mL ; stab max 60 min après reconstitution/fin administration ; G5 incompatible",
+        poche: "NaCl 0,9 % exclusivement ; conc max 20 mg/mL ; stab max 60 min après reconstitution/fin administration ; G5 contre-indiqué/incompatible",
         pse: "PSE continu non recommandé",
         elastomere: "--",
         anapa: "--",
@@ -834,15 +923,15 @@
       },
       {
         molecule: "Cotrimoxazole IV / Bactrim®",
-        source: "BACTRIM restriction hydrique + doc interne récent",
+        source: "Protocole Pharmacie Interjurassienne + doc interne récent",
         mode: "Discontinue recommandée ; perfusion 60 min ; durée max 90 min ; pas d’administration pure",
-        poche: "NaCl 0,9 % ou G5 ; dilution standard : 1 amp + 125 mL, 2 amp + 250 mL, 3 amp + 500 mL ; stab solution diluée 6 h RT à l’abri lumière ; sol. mère 1 h RT",
-        pse: "Restriction hydrique 1:15 : NaCl 0,9 % ou G5 ; 1 amp + 75 mL, 2 amp + 150 mL, 3 amp + 250 mL ; stab 2 h RT à l’abri lumière ; perfusion gravité recommandée, attention précipité dans tubulure si pompe",
+        poche: "NaCl 0,9 % ou G5 ; dilution standard : 1 amp + 125 mL, 2 amp + 250 mL, 3 amp + 500 mL ; stab solution diluée 6 h RT à l’abri lumière ; sol. mère 1 h RT / restriction hydrique : 1 amp + 75 mL, 2 amp + 150 mL, 3 amp + 250 mL ; stab 2 h RT à l’abri lumière",
+        pse: "--",
         elastomere: "--",
         anapa: "--",
         micrel: "--",
         reco: "Discontinue ; attention restriction hydrique",
-        note: "Voie centrale préférable si disponible car très phlébogène ; jeter si trouble/cristaux."
+        note: "voie centrale préférable si disponible car très phlébogène ; jeter si trouble/cristaux."
       },
       {
         molecule: "Gentamicine",
@@ -1095,7 +1184,7 @@
         micrel: "--",
         reco: "Diffuseur élastomère 12–24 h selon dose",
         note: "Attention température >25°C et produits de dégradation."
-      },,
+      },
       {
         molecule: "Aciclovir",
         source: "NEOPUMP – données internes fabricant élastomère",
@@ -1138,7 +1227,7 @@
         mode: "Diffuseur élastomère Easyflow/NEOPUMP ; données internes fabricant ",
         poche: "--",
         pse: "--",
-        elastomere: "NaCl 0,9 % ; conc 10 mg/mL (1 g/100 mL) : stab 24 h à 4°C, 12 h à 25°C ; conc 12 mg/mL (3 g/240 mL) : stab 24 h à 4°C, 12 h à 25°C ; pas de donnée 32°C dans le tableau",
+        elastomere: "NaCl 0,9 % exclusivement ; conc 10 mg/mL : stab 24 h à 4°C, 12 h à 25°C ; conc 12 mg/mL : stab 24 h à 4°C, 12 h à 25°C ; pas de donnée 32°C ; G5 contre-indiqué/incompatible",
         anapa: "--",
         micrel: "--",
         reco: "NEOPUMP : 12 h à 25°C ; pas 24 h RT",
@@ -1227,6 +1316,31 @@
         micrel: "--",
         reco: "NEOPUMP : donnée réfrigérée uniquement",
         note: "Pas de stabilité ambiante exploitable dans le tableau."
+      },
+      {
+        molecule: "Ciprofloxacine",
+        source: "CH de Tourcoing 2017 + doc interne récent",
+        mode: "Discontinue recommandée ; prêt à l’emploi ; perfusion 60 min",
+        poche: "Prêt à l’emploi ; NaCl 0,9 % ; conc commerciale 1–2 mg/mL ; stab 24 h RT",
+        pse: "--",
+        elastomere: "--",
+        anapa: "--",
+        micrel: "--",
+        reco: "Discontinue",
+        note: "Présentation prête à l’emploi la plus utilisée en pratique."
+      },
+      {
+        molecule: "Ciprofloxacine",
+        source: "PubMed – littérature sélectionnée",
+        mode: "Perfusion prolongée / diffuseur élastomère",
+        poche: "--",
+        pse: "Seringue PP ; données limitées mais compatibles courte durée",
+        elastomere: "Diffuseur élastomère ; conc 1–2 mg/mL ; stabilité 24 h rapportée dans plusieurs études OPAT",
+        anapa: "--",
+        micrel: "--",
+        reco: "Diffuseur élastomère possible",
+        note: "Attention photoprotection selon spécialité.",
+        pubmed: "https://pubmed.ncbi.nlm.nih.gov/20458106/"
       },
       {
         molecule: "Ciprofloxacine",
@@ -1431,6 +1545,162 @@
         micrel: "--",
         reco: "NEOPUMP élastomère 24 h",
         note: "Donnée spécifique diffuseur élastomère."
+      },
+      {
+        molecule: "Ciprofloxacine",
+        source: "Micrel – données internes du laboratoire",
+        mode: "Pompe Rythmic PVC",
+        poche: "--",
+        pse: "--",
+        elastomere: "--",
+        anapa: "--",
+        micrel: "NaCl 0,9 % ou G5 ; conc 1–2 mg/mL ; stab 30 j à 2–8°C abri lumière et 30 j à 21–24°C lumière ; conc 1,5 mg/mL : stab 48 h à 25°C",
+        reco: "Micrel possible selon conditions",
+        note: "Donnée spécifique consommables Micrel/Rythmic."
+      },
+      {
+        molecule: "Cefuroxime",
+        source: "Micrel – données internes du laboratoire",
+        mode: "Pompe Rythmic PVC",
+        poche: "--",
+        pse: "--",
+        elastomere: "--",
+        anapa: "--",
+        micrel: "NaCl 0,9 % ou G5 ; conc 5–10 mg/mL : stab 24 h à 25°C et 30 j à 5°C ; G5 conc 15 mg/mL : stab 11–15 j à 4°C selon conditions",
+        reco: "Micrel possible selon conditions",
+        note: "Donnée spécifique consommables Micrel/Rythmic."
+      },
+      {
+        molecule: "Oxacilline",
+        source: "Micrel – données internes du laboratoire",
+        mode: "Pompe Rythmic PVC",
+        poche: "--",
+        pse: "--",
+        elastomere: "--",
+        anapa: "--",
+        micrel: "NaCl 0,9 % ; conc 10–80 mg/mL ; stab FT 10 j ; RT 24 h",
+        reco: "Micrel possible selon conditions",
+        note: "Donnée spécifique consommables Micrel/Rythmic."
+      },
+      {
+        molecule: "Pipéracilline",
+        source: "Micrel – données internes du laboratoire",
+        mode: "Pompe Rythmic PVC",
+        poche: "--",
+        pse: "--",
+        elastomere: "--",
+        anapa: "--",
+        micrel: "NaCl 0,9 % ; conc 10–80 mg/mL ; stab FT 14 j ; RT 24 h",
+        reco: "Micrel possible selon conditions",
+        note: "Donnée spécifique consommables Micrel/Rythmic."
+      },
+      {
+        molecule: "Imipénème/cilastatine",
+        source: "Micrel – données internes du laboratoire",
+        mode: "Pompe Rythmic PVC",
+        poche: "--",
+        pse: "--",
+        elastomere: "--",
+        anapa: "--",
+        micrel: "NaCl 0,9 % ; conc 5 + 5 mg/mL ; stab FT 24 h ; RT 9 h",
+        reco: "Micrel : stabilité courte",
+        note: "Donnée spécifique consommables Micrel/Rythmic."
+      },
+      {
+        molecule: "Ticarcilline",
+        source: "Micrel – données internes du laboratoire",
+        mode: "Pompe Rythmic PVC",
+        poche: "--",
+        pse: "--",
+        elastomere: "--",
+        anapa: "--",
+        micrel: "NaCl 0,9 % ; conc 5–50 mg/mL ; stab FT 15 j ; RT 24 h",
+        reco: "Micrel possible selon conditions",
+        note: "Donnée spécifique consommables Micrel/Rythmic."
+      },
+      {
+        molecule: "Ticarcilline/acide clavulanique",
+        source: "Micrel – données internes du laboratoire",
+        mode: "Pompe Rythmic PVC",
+        poche: "--",
+        pse: "--",
+        elastomere: "--",
+        anapa: "--",
+        micrel: "NaCl 0,9 % ; conc ticarcilline 10 mg/mL + clavulanate 150 mg/mL selon tableau ; stab FT 10 j ; RT 20 h",
+        reco: "Micrel possible selon conditions",
+        note: "Vérifier l’expression exacte des concentrations avant usage clinique."
+      },
+      {
+        molecule: "Tobramycine",
+        source: "Micrel – données internes du laboratoire",
+        mode: "Pompe Rythmic PVC",
+        poche: "--",
+        pse: "--",
+        elastomere: "--",
+        anapa: "--",
+        micrel: "NaCl 0,9 % ; conc 0,5–5 mg/mL ; stab FT 7 j ; RT 48 h",
+        reco: "Micrel 48 h physicochimique",
+        note: "Stabilité physicochimique ≠ recommandation clinique de perfusion continue pour aminoside."
+      },
+      {
+        molecule: "Vancomycine",
+        source: "Micrel – données internes du laboratoire",
+        mode: "Pompe Rythmic PVC",
+        poche: "--",
+        pse: "--",
+        elastomere: "--",
+        anapa: "--",
+        micrel: "NaCl 0,9 % ; conc 10–20 mg/mL ; stab FT 10 j ; RT 24 h",
+        reco: "Micrel possible selon conditions",
+        note: "Donnée spécifique consommables Micrel/Rythmic."
+      },
+      {
+        molecule: "Dalbavancine",
+        source: "CH de Tourcoing 2017",
+        mode: "Discontinue recommandée ; perfusion lente ≥60 min",
+        poche: "G5 exclusivement ; conc finale 1–5 mg/mL ; stab reconstitué 24 h <25°C ; stab dilué 12 h <25°C ; NaCl incompatible",
+        pse: "--",
+        elastomere: "--",
+        anapa: "--",
+        micrel: "--",
+        reco: "Discontinue",
+        note: "Risque de précipitation avec NaCl."
+      },
+      {
+        molecule: "Tedizolide",
+        source: "CH de Tourcoing 2017",
+        mode: "Discontinue recommandée ; perfusion IV",
+        poche: "NaCl 0,9 % ; dilution 250 mL ; stab 4 h RT ; 24 h entre 2–8°C",
+        pse: "--",
+        elastomere: "--",
+        anapa: "--",
+        micrel: "--",
+        reco: "Discontinue",
+        note: "Utilisation immédiate préférable selon source."
+      },
+      {
+        molecule: "Isavuconazole",
+        source: "CH de Tourcoing 2017",
+        mode: "Discontinue recommandée ; perfusion ≥60 min ; filtre en ligne 0,2–1,2 µm",
+        poche: "NaCl 0,9 % ou G5 ; conc 0,8 mg/mL ; stab 6 h RT ; 24 h entre 2–8°C",
+        pse: "--",
+        elastomere: "--",
+        anapa: "--",
+        micrel: "--",
+        reco: "Discontinue",
+        note: "Ne pas agiter ; filtre sur ligne de perfusion."
+      },
+      {
+        molecule: "Micafungine",
+        source: "CH de Tourcoing 2017",
+        mode: "Discontinue recommandée ; perfusion 60 min ; abri lumière",
+        poche: "NaCl 0,9 % ou G5 ; poche 100 mL ; stab 24 h à 25°C à l’abri lumière selon source",
+        pse: "--",
+        elastomere: "--",
+        anapa: "--",
+        micrel: "--",
+        reco: "Discontinue",
+        note: "Ne pas agiter ; limiter la formation de mousse."
       }
     ];
 
@@ -1475,12 +1745,174 @@
       return Array.from(grouped.entries()).map(([molecule, sources]) => ({ molecule, sources }));
     }
 
+    function formatStabilityValue(value) {
+      if (typeof value !== "string") return value || "--";
+      if (!value || value === "--") return "--";
+
+      function addUnique(list, item) {
+        if (item && !list.includes(item)) list.push(item);
+      }
+
+      function normalizeLocal(text) {
+        return (text || "").toString().toLowerCase();
+      }
+
+      function isSolventOnly(text) {
+        const low = normalizeLocal(text);
+        const hasConc = low.includes("mg/ml") || low.includes("mui/ml");
+        const hasStab = low.includes("stab") || low.includes(" h") || low.includes(" j") || low.includes("min") || low.includes("rt") || low.includes("°c");
+        const hasSolvent = low.includes("nacl") || low.includes("g5") || low.includes("eppi") || low.includes("eau ppi") || low.includes("soluté non précisé") || low.includes("solvant fourni") || low.includes("prêt") || low.includes("pret") || low.includes("extraneal") || low.includes("dianéal") || low.includes("dianeal");
+        return hasSolvent && !hasConc && !hasStab;
+      }
+
+      function getSolvent(text) {
+        const low = normalizeLocal(text);
+        if (low.includes("nacl") && low.includes("g5")) return "NaCl/G5";
+        if (low.includes("nacl")) return low.includes("exclusivement") ? "NaCl 0,9 % exclusivement" : "NaCl 0,9 %";
+        if (low.includes("g5")) return low.includes("exclusivement") ? "G5 exclusivement" : "G5";
+        if (low.includes("eppi") || low.includes("eau ppi")) return "EPPI";
+        if (low.includes("soluté non précisé")) return "Soluté non précisé";
+        if (low.includes("prêt") || low.includes("pret")) return "Prêt à l’emploi";
+        if (low.includes("extraneal")) return "Extraneal®";
+        if (low.includes("dianéal") || low.includes("dianeal")) return "Dianéal®";
+        if (low.includes("solvant fourni")) return "Solvant fourni";
+        return "Soluté non précisé";
+      }
+
+      function hasConcentration(text) {
+        const low = normalizeLocal(text);
+        return low.includes("mg/ml") || low.includes("mui/ml") || low.includes("conc") || low.includes("dilution") || low.includes("restriction hydrique");
+      }
+
+      function hasStability(text) {
+        const low = normalizeLocal(text);
+        return low.includes("stab") || low.includes(" h") || low.includes(" j") || low.includes("jour") || low.includes("min") || low.includes("rt") || low.includes("°c") || low.includes("ft");
+      }
+
+      function cleanConcentration(text) {
+        let out = text || "";
+        const colonIndex = out.indexOf(":");
+        if (colonIndex >= 0) out = out.slice(0, colonIndex);
+        const parIndex = out.indexOf("(");
+        if (parIndex >= 0) out = out.slice(0, parIndex);
+        ["conc max", "Conc max", "conc", "Conc", "concentration", "Concentration", ":"].forEach(function(token) {
+          out = out.split(token).join("");
+        });
+        out = out.trim();
+        if (!out) out = "C° non précisée";
+        if (normalizeLocal(text).includes("max") && !normalizeLocal(out).includes("max")) out += " max";
+        return out;
+      }
+
+      function cleanStability(text) {
+        let out = text || "";
+        const colonIndex = out.indexOf(":");
+        if (colonIndex >= 0) out = out.slice(colonIndex + 1);
+        ["stabilité", "Stabilité", "stab", "Stab", ":"].forEach(function(token) {
+          out = out.split(token).join("");
+        });
+        out = out.trim();
+        return out || "Stab non précisée";
+      }
+
+      function classifyStability(text) {
+        const low = normalizeLocal(text);
+        if (low.includes("1 h") || low.includes("2 h") || low.includes("4 h") || low.includes("6 h") || low.includes("60 min")) return "time-stop";
+        if (low.includes("8 h") || low.includes("9 h") || low.includes("12 h") || low.includes("32°")) return "time-warn";
+        return "time-ok";
+      }
+
+      function newBlock(solvent) {
+        return { solvent: solvent || "Soluté non précisé", conc: "", stabs: [], extras: [] };
+      }
+
+      const blocks = [];
+      let activeSolvent = "Soluté non précisé";
+
+      value.split(" / ").forEach(function(part) {
+        let current = newBlock(activeSolvent);
+
+        part.split(" ; ").forEach(function(pieceRaw) {
+          const piece = pieceRaw.trim();
+          if (!piece) return;
+          const low = normalizeLocal(piece);
+
+          const warningOnly = (low.includes("g5") || low.includes("nacl")) && (low.includes("déconseillé") || low.includes("deconseille") || low.includes("incompatible") || low.includes("contre-indiqué") || low.includes("contre indique"));
+
+          if (isSolventOnly(piece) && !warningOnly) {
+            activeSolvent = getSolvent(piece);
+            if (current.conc || current.stabs.length || current.extras.length) {
+              blocks.push(current);
+              current = newBlock(activeSolvent);
+            } else {
+              current.solvent = activeSolvent;
+            }
+            return;
+          }
+
+          if (hasConcentration(piece)) {
+            if (current.conc || current.stabs.length || current.extras.length) {
+              blocks.push(current);
+              current = newBlock(activeSolvent);
+            }
+            const solventFromPiece = getSolvent(piece);
+            if (solventFromPiece !== "Soluté non précisé") {
+              current.solvent = solventFromPiece;
+              activeSolvent = solventFromPiece;
+            }
+            current.conc = cleanConcentration(piece);
+            if (piece.indexOf(":") >= 0 && hasStability(piece)) {
+              addUnique(current.stabs, cleanStability(piece));
+            }
+            return;
+          }
+
+          if (hasStability(piece)) {
+            if (current.stabs.length) {
+              blocks.push(current);
+              const clone = newBlock(current.solvent);
+              clone.conc = current.conc || "C° non précisée";
+              clone.extras = current.extras.slice();
+              current = clone;
+            }
+            addUnique(current.stabs, cleanStability(piece));
+            return;
+          }
+
+          if (warningOnly || (!low.includes("g/") && !low.includes("amp +") && !low.includes("diffuseur élastomère") && !low.includes("poche") && !low.includes("pse"))) {
+            addUnique(current.extras, piece);
+          }
+        });
+
+        if (current.conc || current.stabs.length || current.extras.length) blocks.push(current);
+      });
+
+      const finalBlocks = blocks.map(function(block) {
+        return {
+          solvent: block.solvent || "Soluté non précisé",
+          conc: block.conc || "C° non précisée",
+          stab: block.stabs[0] || "Stab non précisée",
+          extras: block.extras || []
+        };
+      });
+
+      return '<div class="stab-block">' + finalBlocks.map(function(block) {
+        return '<div class="stab-row"><div class="stab-meta">'
+          + '<span class="chip solvent">' + block.solvent + '</span>'
+          + '<span class="chip conc">' + block.conc + '</span>'
+          + '<span class="chip ' + classifyStability(block.stab) + '">' + block.stab + '</span>'
+          + '</div>'
+          + (block.extras.length ? '<div class="stab-free">' + block.extras.join(' · ') + '</div>' : '')
+          + '</div>';
+      }).join('') + '</div>';
+    }
+
     function deviceBlock(title, value, discordant = false) {
       const empty = !value || value === "--";
       return `
         <div class="device ${discordant ? "discordant" : ""}">
           <h4>${title}</h4>
-          <p class="${empty ? "empty" : ""}">${empty ? "--" : value}</p>
+          <div class="${empty ? "empty" : ""}">${empty ? "--" : formatStabilityValue(value)}</div>
         </div>
       `;
     }
