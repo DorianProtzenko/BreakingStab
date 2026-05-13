@@ -672,6 +672,54 @@
       border: 1px solid var(--border);
     }
 
+
+
+    .y-local-check {
+      margin-top: 12px;
+      padding: 12px;
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      background: #fbfaf7;
+      display: grid;
+      gap: 8px;
+    }
+
+    .y-local-check label {
+      margin: 0;
+    }
+
+    .y-specific-result {
+      padding: 9px 10px;
+      border-radius: 10px;
+      border: 1px solid #e4ddd0;
+      background: #fff;
+      font-size: 0.86rem;
+      font-weight: 750;
+    }
+
+    .y-specific-result.y-ok {
+      background: #e7f5eb;
+      border-color: #b9dfc5;
+      color: #1f6b3a;
+    }
+
+    .y-specific-result.y-cond {
+      background: #fff4e8;
+      border-color: #efd0a3;
+      color: #8a5a14;
+    }
+
+    .y-specific-result.y-stop {
+      background: #fff0f0;
+      border-color: #e3b0b0;
+      color: #a12d2d;
+    }
+
+    .y-specific-result.y-unknown {
+      background: #f4f1ec;
+      border-color: #ded7ca;
+      color: #4c504d;
+    }
     @media (max-width: 1100px) {
       .device-grid { grid-template-columns: 1fr 1fr; }
       .device { border-bottom: 1px solid var(--border); }
@@ -769,12 +817,6 @@
             <option value="avoidDanger">Sans alerte critique</option>
           </select>
         </div>
-        <div>
-          <label for="yDrug">Choisir une molécule</label>
-          <select id="yDrug">
-            <option value="">Choisir une molécule</option>
-          </select>
-        </div>
       </div>
       <div class="toggle-row">
         <label class="toggle-chip"><input type="checkbox" id="showComparison" checked /> Comparaison sources</label>
@@ -794,7 +836,17 @@
   </main>
 
   <script>
-    const data = [
+    
+    function escapeHtml(str = "") {
+      return String(str)
+        .replaceAll("&", "&amp;")
+        .replaceAll("<", "&lt;")
+        .replaceAll(">", "&gt;")
+        .replaceAll('"', "&quot;")
+        .replaceAll("'", "&#039;");
+    }
+
+const data = [
       {
         molecule: "Aciclovir",
         source: "Centre Léon Bérard – HAD + doc interne récent",
@@ -1029,7 +1081,7 @@
         source: "SPILF/SFPC 2025",
         mode: "Continu possible ; stabilité concentration-dépendante",
         poche: "NaCl 0,9 % ; conc 10–50 mg/mL ; stab 24 h / G5 ; conc 10–20 mg/mL ; stab 24 h / NaCl 0,9 % ou G5 ; conc 83,3–125 mg/mL ; stab 6 h",
-        pse: "NaCl 0,9 % ; conc max pratique 50 mg/mL ; PSE fractionné ; exceptionnelement si restriction 2g/48 mL 3/j",
+        pse: "NaCl 0,9 % ; conc max pratique 50 mg/mL ; PSE fractionné",
         elastomere: "--",
         anapa: "--",
         micrel: "--",
@@ -1319,7 +1371,7 @@
         molecule: "Spiramycine",
         source: "Doc interne récent",
         mode: "Discontinue recommandée ; perfusion 60 min",
-        poche: "G5 ; mini 100 mL par ampoule ; stab 12 h RT",
+        poche: "G5 ; conc non précisée ; stab 12 h RT",
         pse: "--",
         elastomere: "--",
         anapa: "--",
@@ -3367,7 +3419,6 @@
     const countPill = document.getElementById("countPill");
     const useCaseEl = document.getElementById("useCase");
     const decisionEl = document.getElementById("decisionDevice");
-    const yDrugEl = document.getElementById("yDrug");
     const showComparisonEl = document.getElementById("showComparison");
     const showYEl = document.getElementById("showY");
 
@@ -3488,8 +3539,6 @@
       const source = normalize(sourceEl.value);
       const useCase = useCaseEl.value;
       const decision = decisionEl.value;
-      const selectedY = yDrugEl.value;
-
       const rows = data.filter(item => {
         const text = rowText(item);
         const haystack = normalize(text);
@@ -3500,8 +3549,7 @@
           || (useCase === "had" && isHomeCompatible(item))
           || (useCase === "summer" && isSummerCompatible(item));
         const matchDecision = passesDecision(item, decision);
-        const matchY = !selectedY || isYCompatibleStatus(yPairStatus(item.molecule, selectedY));
-        return matchQuery && matchDevice && matchSource && matchUse && matchDecision && matchY;
+        return matchQuery && matchDevice && matchSource && matchUse && matchDecision;
       });
 
       const grouped = new Map();
@@ -3928,39 +3976,68 @@
 
     const antiInfectiveYNames = new Set(data.map(d => yKey(d.molecule)));
 
+    function allYNames() {
+      return [...new Set(Object.keys(yCompat).flatMap(n => [n, ...Object.keys(yCompat[n] || {})]))]
+        .sort((a,b) => a.localeCompare(b, "fr"));
+    }
+
+    function yDrugOptions(currentMolecule) {
+      const currentKey = yKey(currentMolecule);
+      return '<option value="">Tester une molécule en particulier</option>' +
+        allYNames()
+          .filter(n => yKey(n) !== currentKey)
+          .map(n => `<option value="${escapeHtml(n)}">${escapeHtml(n)}</option>`)
+          .join("");
+    }
+
+    function yRowsHtml(entries) {
+      if (!entries.length) {
+        return '<tr><td colspan="2" class="empty">Aucune donnée retrouvée dans le tableau fourni.</td></tr>';
+      }
+      return entries.map(([name, status]) => `<tr><td>${escapeHtml(name)}</td><td class="${yStatusClass(status)}">${yStatusLabel(status)}</td></tr>`).join("");
+    }
+
     function yCompatibilityPanel(molecule) {
       if (!showYEl.checked) return "";
       const sourceName = findYName(molecule);
       if (!sourceName) return "";
-      const selected = yDrugEl.value;
-      const selectedName = selected ? findYName(selected) : "";
-      let entries = Object.entries(yCompat[sourceName] || {});
+      const entries = Object.entries(yCompat[sourceName] || {});
+      const preferred = new Set(frequentSupportYDrugs.map(yKey));
+      const priorityOrder = frequentSupportYDrugs.map(yKey);
+      const classicEntries = entries
+        .filter(([name]) => preferred.has(yKey(name)) && !antiInfectiveYNames.has(yKey(name)))
+        .sort((a, b) => priorityOrder.indexOf(yKey(a[0])) - priorityOrder.indexOf(yKey(b[0])))
+        .slice(0, 12);
 
-      if (selectedName) {
-        entries = entries.filter(([name]) => yKey(name) === yKey(selectedName));
-      } else {
-        const preferred = new Set(frequentSupportYDrugs.map(yKey));
-        entries = entries
-          .filter(([name]) => preferred.has(yKey(name)) && !antiInfectiveYNames.has(yKey(name)))
-          .sort((a, b) => frequentSupportYDrugs.map(yKey).indexOf(yKey(a[0])) - frequentSupportYDrugs.map(yKey).indexOf(yKey(b[0])));
-      }
-
-      if (!entries.length) return "";
-      const priority = { I: 0, "C/I": 1, "?": 2, C: 3 };
-      const shown = selectedName
-        ? entries.sort((a,b) => (priority[a[1]] ?? 9) - (priority[b[1]] ?? 9)).slice(0, 50)
-        : entries.slice(0, 10);
-
-      return `<details class="source-details">
-        <summary>Compatibilités en Y — molécules fréquemment associées</summary>
+      return `<details class="source-details y-details">
+        <summary>Compatibilités en Y — molécules support fréquentes</summary>
         <div class="source-content">
           <table class="y-table">
             <thead><tr><th>Avec</th><th>Statut</th></tr></thead>
-            <tbody>${shown.map(([name, status]) => `<tr><td>${name}</td><td class="${yStatusClass(status)}">${yStatusLabel(status)}</td></tr>`).join("")}</tbody>
+            <tbody>${yRowsHtml(classicEntries)}</tbody>
           </table>
-          ${selected ? "" : '<p class="info-line">Affichage centré sur les molécules support fréquemment coadministrées avec les anti-infectieux, hors associations ATB/ATB.</p>'}
+          <div class="y-local-check">
+            <label>Vérifier une molécule spécifique</label>
+            <select class="local-y-select" data-source-molecule="${escapeHtml(sourceName)}">${yDrugOptions(sourceName)}</select>
+            <div class="y-specific-result empty">Sélectionnez une molécule pour afficher la compatibilité en Y.</div>
+          </div>
+          <p class="info-line">Affichage centré sur les molécules support fréquemment coadministrées avec les anti-infectieux, hors associations ATB/ATB. Le menu permet de vérifier n’importe quelle autre molécule du tableau fourni.</p>
         </div>
       </details>`;
+    }
+
+    function updateLocalYCheck(selectEl) {
+      const source = selectEl.dataset.sourceMolecule || "";
+      const target = selectEl.value || "";
+      const box = selectEl.closest(".y-local-check").querySelector(".y-specific-result");
+      if (!target) {
+        box.className = "y-specific-result empty";
+        box.textContent = "Sélectionnez une molécule pour afficher la compatibilité en Y.";
+        return;
+      }
+      const status = yPairStatus(source, target) || "?";
+      box.className = `y-specific-result ${yStatusClass(status)}`;
+      box.innerHTML = `<strong>${escapeHtml(target)}</strong> : ${yStatusLabel(status)}`;
     }
 
     function render() {
@@ -3968,7 +4045,7 @@
       countPill.textContent = `${grouped.length} molécule${grouped.length > 1 ? "s" : ""}`;
 
       if (!grouped.length) {
-        resultsEl.innerHTML = `<div class="no-result">Aucune molécule de la base stabilité ne répond à ces critères ou n’est compatible en Y avec la molécule sélectionnée.</div>`;
+        resultsEl.innerHTML = `<div class="no-result">Aucune molécule de la base stabilité ne répond à ces critères.</div>`;
         return;
       }
 
@@ -4010,27 +4087,22 @@
       }).join("");
     }
 
-    function populateYDrugFilter() {
-      const names = [...new Set(Object.keys(yCompat).flatMap(n => [n, ...Object.keys(yCompat[n] || {})]))]
-        .sort((a,b) => a.localeCompare(b, "fr"));
-      yDrugEl.innerHTML = '<option value="">Choisir une molécule</option>' + names.map(n => `<option value="${n}">${n}</option>`).join("");
-    }
 
-    [searchEl, deviceEl, sourceEl, useCaseEl, decisionEl, yDrugEl, showComparisonEl, showYEl].forEach(el => el.addEventListener("input", render));
+    [searchEl, deviceEl, sourceEl, useCaseEl, decisionEl, showComparisonEl, showYEl].forEach(el => el.addEventListener("input", render));
+    resultsEl.addEventListener("change", (event) => {
+      if (event.target.classList.contains("local-y-select")) updateLocalYCheck(event.target);
+    });
     resetEl.addEventListener("click", () => {
       searchEl.value = "";
       deviceEl.value = "";
       sourceEl.value = "";
       useCaseEl.value = "";
       decisionEl.value = "";
-      yDrugEl.value = "";
       showComparisonEl.checked = true;
       showYEl.checked = true;
-      populateYDrugFilter();
-    render();
+      render();
     });
 
-    populateYDrugFilter();
     render();
   </script>
 </body>
