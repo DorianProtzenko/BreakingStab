@@ -747,6 +747,112 @@
       border-color: #ded7ca;
       color: #4c504d;
     }
+
+
+    .tabs {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin: 18px 0 22px;
+    }
+
+    .tab-button {
+      width: auto;
+      min-width: 170px;
+      background: #ffffff;
+      color: var(--green);
+      border-color: var(--border);
+      box-shadow: 0 8px 20px rgba(23, 38, 55, 0.06);
+    }
+
+    .tab-button.active {
+      background: var(--green);
+      color: #ffffff;
+      border-color: var(--green);
+    }
+
+    .tab-panel { display: none; }
+    .tab-panel.active { display: block; }
+
+    .reverse-intro {
+      margin: 0 0 16px;
+      color: var(--muted);
+      max-width: 980px;
+    }
+
+    .reverse-grid {
+      display: grid;
+      grid-template-columns: 1.4fr 0.7fr 0.7fr 1fr 0.9fr auto;
+      gap: 12px;
+      align-items: end;
+    }
+
+    .reverse-results {
+      display: grid;
+      gap: 14px;
+      margin-top: 18px;
+    }
+
+    .reverse-card {
+      background: #fff;
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      overflow: hidden;
+      box-shadow: 0 8px 24px rgba(23, 38, 55, 0.07);
+    }
+
+    .reverse-card-head {
+      display: flex;
+      justify-content: space-between;
+      gap: 12px;
+      padding: 14px 16px;
+      background: linear-gradient(90deg, #ffffff, #eef7ff);
+      border-bottom: 1px solid var(--border);
+    }
+
+    .reverse-card-head h3 {
+      margin: 0 0 3px;
+      font-size: 1.02rem;
+      color: var(--green);
+    }
+
+    .reverse-card-body { padding: 14px 16px; }
+
+    .reverse-table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 0.84rem;
+    }
+
+    .reverse-table th, .reverse-table td {
+      border: 1px solid #e4ddd0;
+      padding: 8px;
+      text-align: left;
+      vertical-align: top;
+    }
+
+    .reverse-table th {
+      background: #f6f1e8;
+      color: var(--green);
+    }
+
+    .reverse-ok { color: #1f6b3a; font-weight: 850; }
+    .reverse-warn { color: #8a5a14; font-weight: 850; }
+    .reverse-stop { color: #a12d2d; font-weight: 850; }
+
+    .reverse-source {
+      color: var(--muted);
+      font-size: 0.78rem;
+      font-weight: 650;
+    }
+
+    .reverse-hidden { display: none; }
+
+    @media (max-width: 760px) {
+      .reverse-grid { grid-template-columns: 1fr; }
+      .tab-button { width: 100%; }
+    }
+
     @media (max-width: 1100px) {
       .device-grid { grid-template-columns: 1fr 1fr; }
       .device { border-bottom: 1px solid var(--border); }
@@ -794,6 +900,12 @@
       </section>
     </header>
 
+    <nav class="tabs" aria-label="Modes de recherche">
+      <button type="button" class="tab-button active" data-tab="browseTab">Base stabilité</button>
+      <button type="button" class="tab-button" data-tab="reverseTab">Moteur inversé dose → dilution</button>
+    </nav>
+
+    <section id="browseTab" class="tab-panel active">
     <section class="panel">
       <div class="filters">
         <div>
@@ -860,6 +972,65 @@
     </section>
 
     <section id="results" class="results"></section>
+    </section>
+
+    <section id="reverseTab" class="tab-panel">
+      <section class="panel">
+        <p class="reverse-intro">
+          Moteur inversé : sélectionner un anti-infectieux, une dose journalière et le mode d’administration, puis vérifier les dilutions théoriquement possibles selon les données de stabilité intégrées. Les volumes imposés sont préparamétrés avec solvant séparé : poches NaCl 0,9 % ou G5 50/100/250/500 mL, PSE 48 mL NaCl 0,9 % ou G5, pompe Rythmic/Micrel 100/200 mL NaCl 0,9 % ou G5, NEOPUMP 500 mL sur 12 h NaCl 0,9 % ou G5 et ANAPA 250 mL sur 12 h NaCl 0,9 % ou G5.
+        </p>
+        <div class="reverse-grid">
+          <div>
+            <label for="reverseMolecule">Antibiotique / anti-infectieux</label>
+            <input id="reverseMolecule" list="reverseMoleculeList" placeholder="Ex. ceftazidime, vancomycine…" />
+            <datalist id="reverseMoleculeList"></datalist>
+          </div>
+          <div>
+            <label for="reverseDose">Dose</label>
+            <input id="reverseDose" type="number" min="0" step="0.01" placeholder="Ex. 6000" />
+          </div>
+          <div>
+            <label for="reverseUnit">Unité</label>
+            <select id="reverseUnit">
+              <option value="mg">mg</option>
+              <option value="g">g</option>
+              <option value="MUI">MUI</option>
+            </select>
+          </div>
+          <div>
+            <label for="reverseAdminMode">Mode</label>
+            <select id="reverseAdminMode">
+              <option value="continuous">Continu / perfusion prolongée</option>
+              <option value="discontinuous">Discontinu</option>
+            </select>
+          </div>
+          <div id="reverseFreqWrap">
+            <label for="reverseFreq">Si discontinu</label>
+            <select id="reverseFreq">
+              <option value="1">1 fois/jour</option>
+              <option value="2">2 fois/jour</option>
+              <option value="3">3 fois/jour</option>
+              <option value="4">4 fois/jour</option>
+              <option value="6">6 fois/jour</option>
+            </select>
+          </div>
+          <div>
+            <label>Fractionnement</label>
+            <label class="toggle-chip" style="width:100%; justify-content:flex-start; border-radius:13px; padding:11px 13px;">
+              <input type="checkbox" id="reverseRcp" /> Selon RCP / usage standard
+            </label>
+          </div>
+          <div>
+            <button id="reverseRun" type="button">Calculer</button>
+          </div>
+        </div>
+        <div class="summary-line">
+          <span class="pill" id="reverseCountPill">0 option</span>
+          <span>Résultat indicatif : la dose saisie est interprétée comme dose journalière. En discontinu, la dose par administration est calculée selon la fréquence choisie ou, si la case est cochée, selon le fractionnement RCP/usuel intégré. Vérifier la source originale, le dispositif, la température, le solvant et la procédure locale.</span>
+        </div>
+      </section>
+      <section id="reverseResults" class="reverse-results"></section>
+    </section>
 
     <section class="mini-footer">
       <strong>Note d’usage :</strong> ne pas extrapoler une stabilité d’un contenant à un autre. Poche standard, seringue PP, diffuseur élastomère, ANAPA et Micrel PVC sont des dispositifs distincts. Breaking Stab est un outil de compilation non officiel rattaché au projet <a href="https://dorianprotzenko.github.io/decarboner-pharmacie/" target="_blank" rel="noopener">Décarbonons la pharmacie</a>.
@@ -3452,6 +3623,19 @@ const data = [
     const decisionEl = document.getElementById("decisionDevice");
     const showComparisonEl = document.getElementById("showComparison");
     const showYEl = document.getElementById("showY");
+    const tabButtons = document.querySelectorAll(".tab-button");
+    const tabPanels = document.querySelectorAll(".tab-panel");
+    const reverseMoleculeEl = document.getElementById("reverseMolecule");
+    const reverseMoleculeListEl = document.getElementById("reverseMoleculeList");
+    const reverseDoseEl = document.getElementById("reverseDose");
+    const reverseUnitEl = document.getElementById("reverseUnit");
+    const reverseAdminModeEl = document.getElementById("reverseAdminMode");
+    const reverseFreqEl = document.getElementById("reverseFreq");
+    const reverseRcpEl = document.getElementById("reverseRcp");
+    const reverseFreqWrapEl = document.getElementById("reverseFreqWrap");
+    const reverseRunEl = document.getElementById("reverseRun");
+    const reverseResultsEl = document.getElementById("reverseResults");
+    const reverseCountPill = document.getElementById("reverseCountPill");
 
     function normalize(text) {
       return (text || "")
@@ -4071,6 +4255,353 @@ const data = [
       box.innerHTML = `<strong>${escapeHtml(target)}</strong> : ${yStatusLabel(status)}`;
     }
 
+
+
+    const rcpFractionation = {
+      "Aciclovir": { freq: 3, label: "RCP usuel : q8h, soit 3 administrations/jour", source: "RCP/SmPC – fractionnement indicatif à vérifier selon indication, fonction rénale et dose." },
+      "Amikacine": { freq: 1, label: "RCP usuel : dose unique quotidienne privilégiée", source: "RCP/SmPC – adaptation au poids, à la fonction rénale et au suivi pharmacologique." },
+      "Gentamicine": { freq: 1, label: "RCP usuel : dose unique quotidienne souvent privilégiée", source: "RCP/SmPC – adaptation au contexte clinique et monitoring." },
+      "Amoxicilline": { freq: 3, label: "RCP usuel : q8h, soit 3 administrations/jour", source: "RCP/SmPC – peut varier selon indication et dose totale." },
+      "Amoxicilline/acide clavulanique": { freq: 3, label: "RCP usuel : q8h, soit 3 administrations/jour", source: "RCP/SmPC – administration discontinue ; G5 non retenu dans la base." },
+      "Ampicilline": { freq: 4, label: "RCP usuel : q6h, soit 4 administrations/jour", source: "RCP/SmPC – schéma indicatif selon indication." },
+      "Aztréonam": { freq: 3, label: "RCP usuel : q8h, soit 3 administrations/jour", source: "RCP/SmPC – adaptation selon sévérité et fonction rénale." },
+      "Ceftazidime": { freq: 3, label: "RCP usuel : q8h, soit 3 administrations/jour", source: "RCP/SmPC – hors stratégie continue/prolongée." },
+      "Céfépime": { freq: 2, label: "RCP usuel : q12h, soit 2 administrations/jour", source: "RCP/SmPC – q8h possible selon indication/sévérité." },
+      "Céfazoline": { freq: 3, label: "RCP usuel : q8h, soit 3 administrations/jour", source: "RCP/SmPC – souvent q8h, à adapter au protocole." },
+      "Céfotaxime": { freq: 3, label: "RCP usuel : q8h, soit 3 administrations/jour", source: "RCP/SmPC – q6h possible selon sévérité." },
+      "Céfoxitine": { freq: 4, label: "RCP usuel : q6h, soit 4 administrations/jour", source: "RCP/SmPC – schéma indicatif." },
+      "Ceftriaxone": { freq: 1, label: "RCP usuel : 1 administration/jour", source: "RCP/SmPC – parfois 2 administrations/jour selon indication." },
+      "Clindamycine": { freq: 3, label: "RCP usuel : q8h, soit 3 administrations/jour", source: "RCP/SmPC – q6h possible selon dose." },
+      "Daptomycine": { freq: 1, label: "RCP usuel : 1 administration/jour", source: "RCP/SmPC – adaptation rénale." },
+      "Ertapénem": { freq: 1, label: "RCP usuel : 1 administration/jour", source: "RCP/SmPC – adaptation rénale." },
+      "Méropénem": { freq: 3, label: "RCP usuel : q8h, soit 3 administrations/jour", source: "RCP/SmPC – perfusion prolongée possible selon protocole." },
+      "Pipéracilline/tazobactam": { freq: 4, label: "RCP usuel : q6h, soit 4 administrations/jour", source: "RCP/SmPC – q8h possible selon indication/protocole." },
+      "Vancomycine": { freq: 2, label: "RCP usuel discontinu : q12h, soit 2 administrations/jour", source: "RCP/SmPC – adaptation impérative aux concentrations résiduelles/AUC et à la fonction rénale." },
+      "Linezolide": { freq: 2, label: "RCP usuel : q12h, soit 2 administrations/jour", source: "RCP/SmPC." },
+      "Cotrimoxazole IV / Bactrim®": { freq: 3, label: "RCP usuel : 2 à 4 administrations/jour selon indication ; défaut q8h", source: "RCP/SmPC – dose exprimée en sulfaméthoxazole/triméthoprime à vérifier." },
+      "Levofloxacine": { freq: 1, label: "RCP usuel : 1 administration/jour", source: "RCP/SmPC – selon dose et indication." },
+      "Métronidazole": { freq: 3, label: "RCP usuel : q8h, soit 3 administrations/jour", source: "RCP/SmPC." },
+      "Ofloxacine": { freq: 2, label: "RCP usuel : q12h, soit 2 administrations/jour", source: "RCP/SmPC." },
+      "Colistine": { freq: 3, label: "RCP usuel : 2 à 3 administrations/jour ; défaut q8h", source: "RCP/SmPC – attention dose exprimée en UI/MUI et adaptation rénale." },
+      "Fosfomycine IV": { freq: 3, label: "RCP usuel : q8h, soit 3 administrations/jour", source: "RCP/SmPC – q6h possible selon dose." },
+      "Témocilline": { freq: 2, label: "RCP usuel : q12h, soit 2 administrations/jour", source: "RCP/SmPC – adaptation selon indication/fonction rénale." },
+      "Teicoplanine": { freq: 1, label: "RCP usuel entretien : 1 administration/jour", source: "RCP/SmPC – doses de charge souvent q12h au début." },
+      "Spiramycine": { freq: 3, label: "RCP usuel : 3 administrations/jour", source: "RCP/SmPC." },
+      "Rifampicine IV": { freq: 1, label: "RCP usuel : 1 administration/jour", source: "RCP/SmPC – selon indication et association." },
+      "Voriconazole IV": { freq: 2, label: "RCP usuel : q12h, soit 2 administrations/jour", source: "RCP/SmPC – dose de charge puis entretien." },
+      "Caspofungine": { freq: 1, label: "RCP usuel : 1 administration/jour", source: "RCP/SmPC." },
+      "Fluconazole": { freq: 1, label: "RCP usuel : 1 administration/jour", source: "RCP/SmPC – selon indication et fonction rénale." },
+      "Artesunate": { freq: 1, label: "RCP/protocole usuel : administrations à H0, H12, H24 puis quotidien", source: "RCP/protocole – schéma non réductible à une fréquence stable simple." },
+      "Pentamidine": { freq: 1, label: "RCP usuel : 1 administration/jour selon indication", source: "RCP/SmPC." }
+    };
+
+    function rcpRecommendationFor(molecule) {
+      const key = Object.keys(rcpFractionation).find(k => yKey(k) === yKey(molecule));
+      return key ? rcpFractionation[key] : null;
+    }
+
+    function applyRcpFrequencyIfNeeded() {
+      if (!reverseRcpEl || !reverseRcpEl.checked) return null;
+      const molecule = findReverseMolecule(reverseMoleculeEl.value);
+      const rec = rcpRecommendationFor(molecule);
+      if (rec && reverseAdminModeEl.value === "discontinuous") {
+        reverseFreqEl.value = String(rec.freq);
+      }
+      return rec;
+    }
+
+    const reverseDevices = [
+      ...[50, 100, 250, 500].flatMap(volume => [
+        { key: "poche", label: `Poche NaCl 0,9 % ${volume} mL`, volume, solvent: "nacl", sourceFilter: null, forcedTime: "Discontinu prioritaire", modes: ["discontinuous"] },
+        { key: "poche", label: `Poche G5 ${volume} mL`, volume, solvent: "g5", sourceFilter: null, forcedTime: "Discontinu prioritaire", modes: ["discontinuous"] }
+      ]),
+      { key: "pse", label: "PSE seringue PP 48 mL · NaCl 0,9 %", volume: 48, solvent: "nacl", sourceFilter: null, forcedTime: "Continu fractionnable selon stabilité", modes: ["continuous", "discontinuous"] },
+      { key: "pse", label: "PSE seringue PP 48 mL · G5", volume: 48, solvent: "g5", sourceFilter: null, forcedTime: "Continu fractionnable selon stabilité", modes: ["continuous", "discontinuous"] },
+      { key: "micrel", label: "Pompe Rythmic / Micrel 100 mL · NaCl 0,9 %", volume: 100, solvent: "nacl", sourceFilter: "micrel", forcedTime: "Continu fractionnable selon stabilité", modes: ["continuous"] },
+      { key: "micrel", label: "Pompe Rythmic / Micrel 100 mL · G5", volume: 100, solvent: "g5", sourceFilter: "micrel", forcedTime: "Continu fractionnable selon stabilité", modes: ["continuous"] },
+      { key: "micrel", label: "Pompe Rythmic / Micrel 200 mL · NaCl 0,9 %", volume: 200, solvent: "nacl", sourceFilter: "micrel", forcedTime: "Continu fractionnable selon stabilité", modes: ["continuous"] },
+      { key: "micrel", label: "Pompe Rythmic / Micrel 200 mL · G5", volume: 200, solvent: "g5", sourceFilter: "micrel", forcedTime: "Continu fractionnable selon stabilité", modes: ["continuous"] },
+      { key: "elastomere", label: "NEOPUMP diffuseur 500 mL · NaCl 0,9 %", volume: 500, solvent: "nacl", sourceFilter: "neopump", forcedTime: "12 h forcées", forcedHours: 12, modes: ["continuous"] },
+      { key: "elastomere", label: "NEOPUMP diffuseur 500 mL · G5", volume: 500, solvent: "g5", sourceFilter: "neopump", forcedTime: "12 h forcées", forcedHours: 12, modes: ["continuous"] },
+      { key: "anapa", label: "ANAPA 250 mL · NaCl 0,9 %", volume: 250, solvent: "nacl", sourceFilter: "anapa", forcedTime: "12 h forcées", forcedHours: 12, modes: ["continuous"] },
+      { key: "anapa", label: "ANAPA 250 mL · G5", volume: 250, solvent: "g5", sourceFilter: "anapa", forcedTime: "12 h forcées", forcedHours: 12, modes: ["continuous"] }
+    ];
+
+    function doseToMg(value, unit) {
+      const n = Number(value);
+      if (!Number.isFinite(n) || n <= 0) return null;
+      if (unit === "g") return n * 1000;
+      if (unit === "MUI") return n;
+      return n;
+    }
+
+    function findReverseMolecule(value) {
+      const target = yKey(value);
+      if (!target) return null;
+      const names = [...new Set(data.map(d => d.molecule))];
+      return names.find(n => yKey(n) === target) || names.find(n => yKey(n).includes(target)) || null;
+    }
+
+    function parseConcentrationRules(text) {
+      const raw = String(text || "");
+      if (!raw || raw === "--") return [];
+      const cleaned = raw.replace(/,/g, ".");
+      const rules = [];
+      const rangeRegex = /(\d+(?:\.\d+)?)\s*[–-]\s*(\d+(?:\.\d+)?)\s*mg\s*\/\s*mL/gi;
+      let match;
+      while ((match = rangeRegex.exec(cleaned))) {
+        rules.push({ min: Number(match[1]), max: Number(match[2]), type: "range" });
+      }
+      const maxRegex = /(?:max(?:imum)?|≤|<=|jusqu(?:’|'|’)à)\s*(\d+(?:\.\d+)?)\s*mg\s*\/\s*mL/gi;
+      while ((match = maxRegex.exec(cleaned))) {
+        rules.push({ min: 0, max: Number(match[1]), type: "max" });
+      }
+      const concRegex = /(?:conc(?:entration)?(?:\s*(?:finale|pipéracilline|commerciale))?\s*)?(\d+(?:\.\d+)?)\s*mg\s*\/\s*mL/gi;
+      while ((match = concRegex.exec(cleaned))) {
+        const n = Number(match[1]);
+        if (!rules.some(r => Math.abs((r.max || 0) - n) < 0.001 || Math.abs((r.min || 0) - n) < 0.001)) {
+          rules.push({ min: n, max: n, type: "point" });
+        }
+      }
+      return rules.filter(r => Number.isFinite(r.min) && Number.isFinite(r.max));
+    }
+
+    function concentrationAssessment(text, conc) {
+      if (!text || text === "--") return { status: "stop", label: "Aucune donnée", detail: "Pas de donnée exploitable pour ce contenant." };
+      const lower = normalize(text);
+      if (lower.includes("incompatible") || lower.includes("contre-indique")) {
+        return { status: "stop", label: "Non retenu", detail: "Incompatibilité/contre-indication mentionnée dans la source." };
+      }
+      const rules = parseConcentrationRules(text);
+      if (!rules.length) return { status: "warn", label: "À vérifier", detail: "Stabilité présente mais concentration non extractible automatiquement." };
+      if (rules.some(r => r.type !== "point" && conc >= r.min - 0.001 && conc <= r.max + 0.001)) {
+        return { status: "ok", label: "Compatible concentration", detail: `Concentration calculée ${formatNumber(conc)} mg/mL dans la plage ou sous le maximum extrait.` };
+      }
+      if (rules.some(r => r.type === "point" && Math.abs(conc - r.max) <= Math.max(0.5, r.max * 0.05))) {
+        return { status: "ok", label: "Concentration documentée", detail: `Concentration calculée ${formatNumber(conc)} mg/mL proche d’une concentration documentée.` };
+      }
+      if (rules.some(r => r.type === "point" && conc < r.max)) {
+        return { status: "warn", label: "Dilution plus faible", detail: `Concentration calculée ${formatNumber(conc)} mg/mL inférieure à une concentration ponctuelle documentée : vérifier l’extrapolation.` };
+      }
+      return { status: "stop", label: "Hors concentration", detail: `Concentration calculée ${formatNumber(conc)} mg/mL hors des concentrations extraites.` };
+    }
+
+    function formatNumber(n) {
+      return Number(n).toLocaleString("fr-FR", { maximumFractionDigits: 2 });
+    }
+
+    function stabilityExcerpt(text) {
+      const raw = String(text || "");
+      const parts = raw.split(";").map(x => x.trim()).filter(Boolean);
+      const stab = parts.filter(x => /stab|\d+\s*h|\d+\s*j|RT|°C|abri|lumi/i.test(x));
+      return (stab.length ? stab : parts).slice(0, 4).join(" ; ") || "--";
+    }
+
+    function parseStabilityHours(text) {
+      const raw = String(text || "");
+      if (!raw || raw === "--") return [];
+      const cleaned = raw.replace(/,/g, ".").replace(/\bRT\b/gi, "température ambiante");
+      const hours = [];
+      const dayRangeRegex = /(\d+(?:\.\d+)?)\s*[–-]\s*(\d+(?:\.\d+)?)\s*j(?:our|ours)?\b/gi;
+      let match;
+      while ((match = dayRangeRegex.exec(cleaned))) hours.push(Number(match[2]) * 24);
+      const dayRegex = /(\d+(?:\.\d+)?)\s*j(?:our|ours)?\b/gi;
+      while ((match = dayRegex.exec(cleaned))) hours.push(Number(match[1]) * 24);
+      const hourRangeRegex = /(\d+(?:\.\d+)?)\s*[–-]\s*(\d+(?:\.\d+)?)\s*h\b/gi;
+      while ((match = hourRangeRegex.exec(cleaned))) hours.push(Number(match[2]));
+      const hourRegex = /(\d+(?:\.\d+)?)\s*h\b/gi;
+      while ((match = hourRegex.exec(cleaned))) hours.push(Number(match[1]));
+      return hours.filter(h => Number.isFinite(h) && h > 0);
+    }
+
+    function bestStabilityHours(text) {
+      const h = parseStabilityHours(text);
+      return h.length ? Math.max(...h) : null;
+    }
+
+    function renewalPlan(device, sourceText, adminMode, discontinuousFreq) {
+      if (adminMode === "discontinuous") {
+        return {
+          intervalHours: null,
+          administrationsPerDay: discontinuousFreq,
+          doseFraction: 1 / discontinuousFreq,
+          label: `${discontinuousFreq} administration${discontinuousFreq > 1 ? "s" : ""}/jour`,
+          detail: "Mode discontinu : concentration calculée par administration.",
+          allowed: true
+        };
+      }
+
+      const forced = device.forcedHours || null;
+      const stable = bestStabilityHours(sourceText);
+      if (forced) {
+        return {
+          intervalHours: forced,
+          administrationsPerDay: Math.ceil(24 / forced),
+          doseFraction: forced / 24,
+          label: `${Math.ceil(24 / forced)} changement${Math.ceil(24 / forced) > 1 ? "s" : ""}/jour · q${forced}h`,
+          detail: `Temps imposé dispositif : ${forced} h.`,
+          allowed: !stable || stable >= forced - 0.001,
+          stabilityHours: stable
+        };
+      }
+
+      const candidateIntervals = [24, 12, 8, 6, 4];
+      const interval = stable ? candidateIntervals.find(h => stable >= h - 0.001) : 24;
+      if (!interval) {
+        return {
+          intervalHours: stable,
+          administrationsPerDay: null,
+          doseFraction: Math.max(stable || 0, 0) / 24,
+          label: stable ? `Stabilité ${formatNumber(stable)} h insuffisante` : "Stabilité non extractible",
+          detail: "Aucun schéma continu simple q24h/q12h/q8h/q6h/q4h retenu automatiquement.",
+          allowed: false,
+          stabilityHours: stable
+        };
+      }
+      const changes = Math.ceil(24 / interval);
+      return {
+        intervalHours: interval,
+        administrationsPerDay: changes,
+        doseFraction: interval / 24,
+        label: changes === 1 ? "1 changement/jour · q24h" : `${changes} changements/jour · q${interval}h`,
+        detail: stable ? `Stabilité extraite : jusqu’à ${formatNumber(stable)} h.` : "Stabilité non extractible : schéma q24h indicatif à vérifier.",
+        allowed: true,
+        stabilityHours: stable
+      };
+    }
+
+    function sourceMatchesDevice(source, device) {
+      const s = normalize(source.source || "");
+      if (!device.sourceFilter) return true;
+      return s.includes(device.sourceFilter);
+    }
+
+    function solventLabel(solvent) {
+      if (solvent === "g5") return "G5";
+      if (solvent === "nacl") return "NaCl 0,9 %";
+      return "Solvant non précisé";
+    }
+
+    function sourceValueMatchesSolvent(text, solvent) {
+      if (!solvent) return { ok: true, status: "ok", label: "Solvant non contraint" };
+      const raw = String(text || "");
+      const lower = normalize(raw);
+      const hasNaCl = /nacl|chlorure de sodium|sodium chloride|0,9|0\.9/.test(lower);
+      const hasG5 = /\bg5\b|glucose|dextrose|d5w/.test(lower);
+      const g5Bad = /(g5|glucose|dextrose).*?(incompatible|contre-indique|deconseille)|(?:incompatible|contre-indique|deconseille).*?(g5|glucose|dextrose)/.test(lower);
+      const naclBad = /(nacl|chlorure de sodium|sodium chloride).*?(incompatible|contre-indique|deconseille)|(?:incompatible|contre-indique|deconseille).*?(nacl|chlorure de sodium|sodium chloride)/.test(lower);
+      if (solvent === "g5") {
+        if (g5Bad) return { ok: false, status: "stop", label: "G5 incompatible/déconseillé" };
+        if (hasG5) return { ok: true, status: "ok", label: "G5 documenté" };
+        return { ok: false, status: "stop", label: "Pas de donnée G5" };
+      }
+      if (solvent === "nacl") {
+        if (naclBad) return { ok: false, status: "stop", label: "NaCl incompatible/déconseillé" };
+        if (hasNaCl) return { ok: true, status: "ok", label: "NaCl documenté" };
+        return { ok: false, status: "stop", label: "Pas de donnée NaCl" };
+      }
+      return { ok: true, status: "ok", label: "Solvant non contraint" };
+    }
+
+    function reverseRowsForDevice(moleculeSources, device, dailyDoseMg, adminMode, discontinuousFreq) {
+      return moleculeSources
+        .filter(s => sourceMatchesDevice(s, device))
+        .map(s => ({ source: s, value: s[device.key] || "--", conf: confidenceLevel(s) }))
+        .filter(x => x.value && x.value !== "--")
+        .map(x => {
+          const plan = renewalPlan(device, x.value, adminMode, discontinuousFreq);
+          const doseForContainer = dailyDoseMg * plan.doseFraction;
+          const conc = doseForContainer / device.volume;
+          const solvent = sourceValueMatchesSolvent(x.value, device.solvent);
+          const assessment = solvent.ok
+            ? concentrationAssessment(x.value, conc)
+            : { status: solvent.status, label: solvent.label, detail: `${solventLabel(device.solvent)} non documenté ou incompatible dans cette ligne source.` };
+          if (!plan.allowed && assessment.status === "ok") {
+            assessment.status = "warn";
+            assessment.label = "Stabilité insuffisante";
+            assessment.detail = `${assessment.detail} ${plan.detail}`;
+          } else if (plan.allowed && adminMode === "continuous" && plan.administrationsPerDay > 1 && assessment.status === "ok") {
+            assessment.label = `Possible avec ${plan.label}`;
+            assessment.detail = `${assessment.detail} ${plan.detail}`;
+          } else {
+            assessment.detail = `${assessment.detail} ${plan.detail}`;
+          }
+          return { ...x, assessment, conc, plan, doseForContainer };
+        });
+    }
+
+    function renderReverse() {
+      const molecule = findReverseMolecule(reverseMoleculeEl.value);
+      const dailyDoseMg = doseToMg(reverseDoseEl.value, reverseUnitEl.value);
+      const adminMode = reverseAdminModeEl.value;
+      const rcpRec = applyRcpFrequencyIfNeeded();
+      const discontinuousFreq = Math.max(1, Number(reverseFreqEl.value) || 1);
+
+      if (!molecule || !dailyDoseMg) {
+        reverseCountPill.textContent = "0 option";
+        reverseResultsEl.innerHTML = `<div class="no-result">Renseigner une molécule de la base et une dose journalière pour lancer le moteur inversé.</div>`;
+        return;
+      }
+
+      const sources = data.filter(d => d.molecule === molecule);
+      const devices = reverseDevices.filter(device => !device.modes || device.modes.includes(adminMode));
+      const cards = devices.map(device => {
+        const rows = reverseRowsForDevice(sources, device, dailyDoseMg, adminMode, discontinuousFreq);
+        const okCount = rows.filter(r => r.assessment.status === "ok").length;
+        const warnCount = rows.filter(r => r.assessment.status === "warn").length;
+        const bestBadge = okCount ? '<span class="badge ok">Possible</span>' : warnCount ? '<span class="badge warn">À vérifier</span>' : '<span class="badge stop">Non documenté</span>';
+        const calculatedDose = adminMode === "discontinuous" ? dailyDoseMg / discontinuousFreq : null;
+        const rowHtml = rows.length ? rows.map(r => `
+          <tr>
+            <td class="reverse-${r.assessment.status}">${escapeHtml(r.assessment.label)}</td>
+            <td>${formatNumber(r.doseForContainer)} mg / ${device.volume} mL<br><span class="reverse-source">${formatNumber(r.conc)} mg/mL · ${escapeHtml(solventLabel(device.solvent))}</span></td>
+            <td>${escapeHtml(r.plan.label)}<br><span class="reverse-source">${escapeHtml(r.assessment.detail)}</span></td>
+            <td>${escapeHtml(stabilityExcerpt(r.value))}</td>
+            <td>${escapeHtml(r.source.source)}<br><span class="reverse-source">${escapeHtml(r.conf.label)} · ${escapeHtml(device.forcedTime)}</span></td>
+          </tr>
+        `).join("") : `<tr><td colspan="5" class="empty">Aucune donnée intégrée pour ce dispositif/source.</td></tr>`;
+        const rcpLine = rcpRec
+          ? `<br><span class="reverse-source">Fractionnement RCP indicatif : ${escapeHtml(rcpRec.label)} · ${escapeHtml(rcpRec.source)}</span>`
+          : (reverseRcpEl && reverseRcpEl.checked ? `<br><span class="reverse-source">Fractionnement RCP : aucune recommandation intégrée pour cette molécule.</span>` : "");
+        const doseLine = adminMode === "discontinuous"
+          ? `Dose par administration ${formatNumber(calculatedDose)} mg · ${discontinuousFreq} fois/jour${rcpLine}`
+          : `Dose journalière ${formatNumber(dailyDoseMg)} mg · calcul par contenant selon renouvellement${rcpLine}`;
+        return `
+          <article class="reverse-card">
+            <div class="reverse-card-head">
+              <div><h3>${escapeHtml(device.label)}</h3><div class="source">Volume ${device.volume} mL · solvant ${escapeHtml(solventLabel(device.solvent))} · ${doseLine}</div></div>
+              <div>${bestBadge}</div>
+            </div>
+            <div class="reverse-card-body">
+              <table class="reverse-table">
+                <thead><tr><th>Conclusion</th><th>Dose / concentration</th><th>Schéma proposé</th><th>Stabilité / condition</th><th>Source / preuve</th></tr></thead>
+                <tbody>${rowHtml}</tbody>
+              </table>
+            </div>
+          </article>
+        `;
+      }).join("");
+      const possible = (cards.match(/badge ok/g) || []).length;
+      reverseCountPill.textContent = `${possible} option${possible > 1 ? "s" : ""} possible${possible > 1 ? "s" : ""}`;
+      reverseResultsEl.innerHTML = cards;
+    }
+
+    function updateReverseModeUI() {
+      const isDiscontinuous = reverseAdminModeEl.value === "discontinuous";
+      reverseFreqWrapEl.classList.toggle("reverse-hidden", !isDiscontinuous);
+    }
+
+    function initReverseMoleculeList() {
+      const names = [...new Set(data.map(d => d.molecule))].sort((a,b) => a.localeCompare(b, "fr"));
+      reverseMoleculeListEl.innerHTML = names.map(n => `<option value="${escapeHtml(n)}"></option>`).join("");
+    }
+
+    function switchTab(tabId) {
+      tabButtons.forEach(btn => btn.classList.toggle("active", btn.dataset.tab === tabId));
+      tabPanels.forEach(panel => panel.classList.toggle("active", panel.id === tabId));
+      if (tabId === "reverseTab") renderReverse();
+    }
+
     function render() {
       const grouped = filterData();
       countPill.textContent = `${grouped.length} molécule${grouped.length > 1 ? "s" : ""}`;
@@ -4119,6 +4650,13 @@ const data = [
     }
 
 
+    tabButtons.forEach(btn => btn.addEventListener("click", () => switchTab(btn.dataset.tab)));
+    [reverseMoleculeEl, reverseDoseEl, reverseUnitEl, reverseAdminModeEl, reverseFreqEl, reverseRcpEl].forEach(el => el.addEventListener("input", () => {
+      updateReverseModeUI();
+      renderReverse();
+    }));
+    reverseRunEl.addEventListener("click", renderReverse);
+
     [searchEl, deviceEl, sourceEl, useCaseEl, decisionEl, showComparisonEl, showYEl].forEach(el => el.addEventListener("input", render));
     resultsEl.addEventListener("change", (event) => {
       if (event.target.classList.contains("local-y-select")) updateLocalYCheck(event.target);
@@ -4134,6 +4672,9 @@ const data = [
       render();
     });
 
+    initReverseMoleculeList();
+    updateReverseModeUI();
+    renderReverse();
     render();
   </script>
 </body>
