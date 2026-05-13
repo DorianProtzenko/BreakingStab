@@ -3,20 +3,20 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Outil stabilité anti-infectieux – Décarbonons la pharmacie</title>
+  <title>Breaking Stab – Outil de compilation de données de stabilité</title>
   <style>
     :root {
-      --bg: #f6f4ef;
+      --bg: #f4f8fb;
       --card: #ffffff;
-      --ink: #1f2a24;
-      --muted: #68736d;
-      --green: #315f46;
-      --green-soft: #e6efe8;
-      --beige: #efe7d7;
-      --border: #d8d2c4;
+      --ink: #172637;
+      --muted: #64748b;
+      --green: #1d5f8f;
+      --green-soft: #e3f0fb;
+      --beige: #e9f3fb;
+      --border: #cddbe8;
       --warning: #8a5a14;
       --danger: #8c2f2f;
-      --shadow: 0 12px 35px rgba(31, 42, 36, 0.08);
+      --shadow: 0 14px 38px rgba(23, 38, 55, 0.10);
       --radius: 18px;
     }
 
@@ -25,7 +25,7 @@
     body {
       margin: 0;
       font-family: Inter, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
-      background: radial-gradient(circle at top left, #edf4ed, var(--bg) 42%);
+      background: radial-gradient(circle at top left, #dceffd, var(--bg) 42%);
       color: var(--ink);
       line-height: 1.45;
     }
@@ -78,11 +78,38 @@
       margin-top: 18px;
       padding: 14px 16px;
       border-radius: 14px;
-      background: #fff7ea;
-      border: 1px solid #e6d2a8;
-      color: #6d5318;
+      background: #eef7ff;
+      border: 1px solid #bad7ee;
+      color: #234761;
       font-size: 0.92rem;
       line-height: 1.45;
+    }
+
+    .hero-meta {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 9px;
+      margin-top: 18px;
+    }
+
+    .hero-meta a,
+    .hero-meta span {
+      display: inline-flex;
+      align-items: center;
+      gap: 7px;
+      padding: 8px 11px;
+      border-radius: 999px;
+      background: #ffffff;
+      color: var(--green);
+      border: 1px solid var(--border);
+      font-size: 0.84rem;
+      font-weight: 800;
+      text-decoration: none;
+    }
+
+    .hero-meta a:hover {
+      border-color: var(--green);
+      box-shadow: 0 0 0 3px rgba(29, 95, 143, 0.10);
     }
 
     .panel {
@@ -753,12 +780,16 @@
     <header>
       <section class="hero">
         <div class="eyebrow">Décarbonons la pharmacie · Outil pratique</div>
-        <h1>Stabilité des anti-infectieux injectables</h1>
+        <h1>Breaking Stab</h1>
         <p>
-          Sélectionnez un anti-infectieux, une source ou un contenant pour visualiser rapidement les données de stabilité disponibles, les concentrations maximales et les recommandations pratiques d’administration.
+          Outil de compilation de données de stabilité pour perfusion en intra et extra-hospitalier.
         </p>
+        <div class="hero-meta">
+          <a href="https://dorianprotzenko.github.io/decarboner-pharmacie/" target="_blank" rel="noopener">Rattaché au projet “Décarbonons la pharmacie”</a>
+          <span>Développé par Dorian Protzenko</span>
+        </div>
         <div class="disclaimer">
-          <strong>Important :</strong> cet outil est une synthèse de données issues de recommandations, documents institutionnels, données internes de laboratoire, fabricants et articles scientifiques sélectionnés via PubMed lorsque nécessaire. Il ne constitue pas une source officielle. Des erreurs, discordances ou données non transposables peuvent être présentes. Vérification locale indispensable avant toute protocolisation ou utilisation clinique.
+          <strong>Base de données de travail :</strong> cet outil compile des données utilisées dans nos travaux sur l’impact économique et écologique des différentes méthodes de perfusion. Il ne constitue pas une base officielle, exhaustive ou opposable. Toute utilisation clinique, organisationnelle ou protocolisation impose une double vérification à partir des sources originales, des recommandations en vigueur, des RCP et des procédures locales.
         </div>
       </section>
     </header>
@@ -831,7 +862,7 @@
     <section id="results" class="results"></section>
 
     <section class="mini-footer">
-      <strong>Note d’usage :</strong> ne pas extrapoler une stabilité d’un contenant à un autre. Poche standard, seringue PP, diffuseur élastomère, ANAPA et Micrel PVC sont des dispositifs distincts.
+      <strong>Note d’usage :</strong> ne pas extrapoler une stabilité d’un contenant à un autre. Poche standard, seringue PP, diffuseur élastomère, ANAPA et Micrel PVC sont des dispositifs distincts. Breaking Stab est un outil de compilation non officiel rattaché au projet <a href="https://dorianprotzenko.github.io/decarboner-pharmacie/" target="_blank" rel="noopener">Décarbonons la pharmacie</a>.
     </section>
   </main>
 
