@@ -161,6 +161,199 @@
 
     .result-card { overflow: hidden; background: #fff; }
 
+    /* --- Extensions v3 : confiance, HAD, thermique, Y-site --- */
+    .filters.advanced {
+      grid-template-columns: repeat(5, minmax(0, 1fr));
+      margin-top: 12px;
+    }
+
+    .toggle-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin-top: 12px;
+    }
+
+    .toggle-chip {
+      display: inline-flex;
+      align-items: center;
+      gap: 7px;
+      padding: 8px 10px;
+      border-radius: 999px;
+      border: 1px solid var(--border);
+      background: #fff;
+      color: var(--ink);
+      font-size: 0.82rem;
+      font-weight: 750;
+      cursor: pointer;
+      user-select: none;
+    }
+
+    .toggle-chip input { width: auto; margin: 0; accent-color: var(--green); }
+
+    .meta-strip {
+      padding: 12px 20px;
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      align-items: center;
+      border-bottom: 1px solid var(--border);
+      background: #fbfaf7;
+    }
+
+    .badge.conf-a { background: #e7f5eb; color: #176234; border-color: #b9dfc5; }
+    .badge.conf-b { background: #eef2ff; color: #2845bd; border-color: #c7cff7; }
+    .badge.conf-c { background: #fff4e8; color: #8a5a14; border-color: #efd0a3; }
+    .badge.conf-d { background: #f4f1ec; color: #5f574b; border-color: #ded7ca; }
+    .badge.limit { background: #f6f1e8; color: #654a1d; border-color: #e4d5bb; }
+    .badge.photo { background: #fff8d9; color: #806000; border-color: #ead37a; }
+    .badge.summer { background: #fff0e6; color: #9a4a00; border-color: #efc2a0; }
+    .badge.y { background: #f1ecff; color: #5b3bb6; border-color: #d6c8ff; }
+
+    .decision-box {
+      padding: 14px 20px;
+      border-top: 1px solid var(--border);
+      background: #f8fbf8;
+      display: grid;
+      grid-template-columns: 180px 1fr;
+      gap: 12px;
+    }
+
+    .decision-box strong { color: var(--green); }
+    .decision-items { display: flex; flex-wrap: wrap; gap: 7px; }
+
+    .thermal-card {
+      margin-top: 8px;
+      padding: 9px 10px;
+      border-radius: 13px;
+      background: #fbfaf7;
+      border: 1px solid #e4ddd0;
+      display: grid;
+      gap: 7px;
+    }
+
+    .thermal-title {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 8px;
+      color: var(--muted);
+      font-size: 0.72rem;
+      font-weight: 850;
+      text-transform: uppercase;
+      letter-spacing: 0.045em;
+    }
+
+    .thermal-list {
+      display: grid;
+      gap: 5px;
+    }
+
+    .thermal-point {
+      display: grid;
+      grid-template-columns: 64px minmax(42px, 1fr) 42px;
+      gap: 6px;
+      align-items: center;
+      font-size: 0.70rem;
+      font-weight: 750;
+      color: #3d453f;
+      min-width: 0;
+      width: 100%;
+      max-width: 100%;
+    }
+
+    .thermal-temp,
+    .thermal-duration {
+      white-space: nowrap;
+      position: relative;
+      z-index: 1;
+      min-width: 0;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .thermal-duration {
+      text-align: right;
+      font-variant-numeric: tabular-nums;
+      justify-self: end;
+      max-width: 42px;
+    }
+
+    .thermal-track {
+      height: 8px;
+      border-radius: 999px;
+      background: #ebe5d9;
+      border: 1px solid #ded7ca;
+      overflow: hidden;
+      min-width: 0;
+      width: 100%;
+      max-width: 100%;
+      position: relative;
+      z-index: 0;
+    }
+
+    .thermal-fill {
+      height: 100%;
+      max-width: 100%;
+      border-radius: inherit;
+      display: block;
+    }
+
+    .thermal-fill.ok { background: #6ea77a; }
+    .thermal-fill.warn { background: #d6a64b; }
+    .thermal-fill.stop { background: #c85a4a; }
+
+    .thermal-interpretation {
+      padding-top: 2px;
+      color: var(--muted);
+      font-size: 0.74rem;
+      font-weight: 700;
+      line-height: 1.25;
+    }
+
+    .clinical-summary {
+      padding: 12px 20px;
+      border-top: 1px solid var(--border);
+      background: #fffefa;
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      align-items: center;
+    }
+
+    .clinical-summary strong {
+      color: var(--green);
+      margin-right: 3px;
+    }
+
+    .compare-table, .y-table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 10px;
+      font-size: 0.82rem;
+      overflow: hidden;
+      border-radius: 10px;
+    }
+
+    .compare-table th, .compare-table td, .y-table th, .y-table td {
+      border: 1px solid #e4ddd0;
+      padding: 7px 8px;
+      text-align: left;
+      vertical-align: top;
+    }
+
+    .compare-table th, .y-table th { background: #f6f1e8; color: var(--green); }
+    .y-ok { color: #1f6b3a; font-weight: 800; }
+    .y-cond { color: #8a5a14; font-weight: 800; }
+    .y-stop { color: #a12d2d; font-weight: 800; }
+    .y-unknown { color: #777; font-weight: 800; }
+
+    @media (max-width: 980px) {
+      .filters.advanced { grid-template-columns: 1fr 1fr; }
+      .decision-box { grid-template-columns: 1fr; }
+    }
+
+
     .result-head {
       padding: 18px 20px;
       display: flex;
@@ -184,21 +377,13 @@
       font-weight: 650;
     }
 
-    .mode-tag {
+    .header-tags {
       align-self: flex-start;
-      padding: 7px 11px;
-      border-radius: 999px;
-      background: var(--green-soft);
-      color: var(--green);
-      font-size: 0.82rem;
-      font-weight: 800;
-      white-space: nowrap;
-      max-width: 420px;
-      text-align: right;
       display: flex;
       flex-wrap: wrap;
       gap: 6px;
       justify-content: flex-end;
+      max-width: 430px;
     }
 
     .badge {
@@ -365,6 +550,66 @@
       display: none;
     }
 
+
+
+    .alert-danger {
+      display: flex;
+      align-items: flex-start;
+      gap: 8px;
+      padding: 9px 11px;
+      border-radius: 12px;
+      background: #fff1f1;
+      border: 1px solid #e7b3b3;
+      color: #8c2f2f;
+      font-size: 0.8rem;
+      font-weight: 800;
+      line-height: 1.25;
+    }
+
+    .alert-danger::before {
+      content: "⚠";
+      flex: 0 0 auto;
+      font-size: 0.92rem;
+      line-height: 1;
+      margin-top: 1px;
+    }
+
+    .info-line {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+      align-items: center;
+      color: var(--muted);
+      font-size: 0.8rem;
+      font-weight: 650;
+    }
+
+    .device-label {
+      background: #f6f1e8;
+      color: #5f4a2d;
+      border-color: #e3d4ba;
+    }
+
+    .example-list {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+      margin-top: 2px;
+    }
+
+    .example-pill {
+      display: inline-flex;
+      align-items: center;
+      padding: 4px 8px;
+      border-radius: 999px;
+      background: #fff7ea;
+      color: #8a5a14;
+      border: 1px solid #efd0a3;
+      font-size: 0.72rem;
+      font-weight: 800;
+      line-height: 1.1;
+    }
+
     .empty {
       color: #a09a90 !important;
       font-style: italic;
@@ -432,15 +677,26 @@
       .device { border-bottom: 1px solid var(--border); }
     }
 
+
+    @media (max-width: 520px) {
+      .thermal-point {
+        grid-template-columns: 58px minmax(38px, 1fr) 38px;
+        gap: 5px;
+        font-size: 0.68rem;
+      }
+      .thermal-duration { max-width: 38px; }
+    }
+
     @media (max-width: 760px) {
       .page { padding: 22px 14px 40px; }
       .hero { padding: 22px; }
       .filters { grid-template-columns: 1fr; }
+      .filters.advanced { grid-template-columns: 1fr; }
       .device-grid { grid-template-columns: 1fr; }
       .device { border-right: none; border-bottom: 1px solid var(--border); }
       .result-head { flex-direction: column; }
       .recommendation { grid-template-columns: 1fr; }
-      .mode-tag { text-align: left; max-width: none; }
+      .header-tags { justify-content: flex-start; max-width: none; }
     }
   </style>
 </head>
@@ -493,6 +749,36 @@
         <div class="button-wrap">
           <button id="reset">Réinitialiser</button>
         </div>
+      </div>
+      <div class="filters advanced">
+        <div>
+          <label for="useCase">Usage</label>
+          <select id="useCase">
+            <option value="">Tous</option>
+            <option value="had">Utilisable en ambulatoire / à domicile</option>
+            <option value="summer">Tolérance température élevée</option>
+          </select>
+        </div>
+        <div>
+          <label for="decisionDevice">Moteur de décision</label>
+          <select id="decisionDevice">
+            <option value="">Aucune contrainte</option>
+            <option value="continu24">Continu / 24 h</option>
+            <option value="elastomere24">Élastomère 24 h</option>
+            <option value="pse24">PSE 24 h</option>
+            <option value="avoidDanger">Sans alerte critique</option>
+          </select>
+        </div>
+        <div>
+          <label for="yDrug">Choisir une molécule</label>
+          <select id="yDrug">
+            <option value="">Choisir une molécule</option>
+          </select>
+        </div>
+      </div>
+      <div class="toggle-row">
+        <label class="toggle-chip"><input type="checkbox" id="showComparison" checked /> Comparaison sources</label>
+        <label class="toggle-chip"><input type="checkbox" id="showY" checked /> Compatibilités Y</label>
       </div>
       <div class="summary-line">
         <span class="pill" id="countPill">0 résultat</span>
@@ -1704,12 +1990,1386 @@
       }
     ];
 
+    const yCompat = {
+  "Aciclovir": {
+    "Amikacine": "C",
+    "Amphotéricine B": "C",
+    "Caspofungine": "I",
+    "Céfépime": "I",
+    "Ceftazidime": "C",
+    "Ceftriaxone": "C",
+    "Ciclosporine": "I",
+    "Cotrimoxazole IV": "C",
+    "Dexaméthasone": "C",
+    "Esoméprazole": "I",
+    "Fluconazole": "C",
+    "Foscarnet": "I",
+    "Gentamicine": "C/I",
+    "Imipénème/cilastatine": "C",
+    "Kétamine": "I",
+    "Labétalol": "I",
+    "Magnésium sulfate": "C",
+    "Méropénem": "I",
+    "Méthylprednisolone": "C",
+    "Métronidazole": "C",
+    "Morphine": "I",
+    "Naloxone": "I",
+    "Nicardipine": "I",
+    "Octréotide / somatostatine": "C",
+    "Ondansétron": "I",
+    "Paracétamol": "I",
+    "Phloroglucinol": "I",
+    "Pipéracilline/tazobactam": "I",
+    "Potassium chlorure": "C",
+    "Bicarbonate de sodium": "C",
+    "Tacrolimus": "I",
+    "Vancomycine": "C"
+  },
+  "Amikacine": {
+    "Aciclovir": "C",
+    "Amoxicilline": "I",
+    "Amoxicilline/acide clavulanique": "I",
+    "Amphotéricine B": "I",
+    "Calcium chlorure": "C",
+    "Calcium gluconate": "C/I",
+    "Céfépime": "C/I",
+    "Ceftazidime": "I",
+    "Ceftriaxone": "I",
+    "Ciclosporine": "C",
+    "Ciprofloxacine": "C/I",
+    "Cotrimoxazole IV": "I",
+    "Défibrotide": "I",
+    "Dexaméthasone": "C",
+    "Esoméprazole": "I",
+    "Fluconazole": "C",
+    "Furosémide": "C",
+    "Gentamicine": "C",
+    "Héparine sodique": "I",
+    "Imipénème/cilastatine": "I",
+    "Labétalol": "C",
+    "Magnésium sulfate": "C",
+    "Méropénem": "I",
+    "Méthylprednisolone": "C",
+    "Métronidazole": "C",
+    "Midazolam": "C",
+    "Morphine": "C",
+    "Nicardipine": "C",
+    "Octréotide / somatostatine": "C",
+    "Ondansétron": "C",
+    "Phénytoïne": "I",
+    "Pipéracilline/tazobactam": "I",
+    "Potassium chlorure": "C",
+    "Bicarbonate de sodium": "C",
+    "Tacrolimus": "C",
+    "Teicoplanine": "I",
+    "Vancomycine": "C",
+    "Adrénaline": "C",
+    "Nutrition parentérale": "C"
+  },
+  "Amoxicilline": {
+    "Amikacine": "I",
+    "Ciprofloxacine": "I",
+    "Gentamicine": "I",
+    "Imipénème/cilastatine": "I",
+    "Magnésium sulfate": "I",
+    "Midazolam": "I",
+    "Néfopam": "I",
+    "Bicarbonate de sodium": "I"
+  },
+  "Amoxicilline/acide clavulanique": {
+    "Amikacine": "I",
+    "Ciprofloxacine": "I",
+    "Clarithromycine": "C",
+    "Dexaméthasone": "I",
+    "Gentamicine": "I",
+    "Hydrocortisone": "I",
+    "Mannitol": "I",
+    "Méthylprednisolone": "I",
+    "Métronidazole": "I",
+    "Midazolam": "I",
+    "Phloroglucinol": "I",
+    "Bicarbonate de sodium": "I",
+    "Nutrition parentérale": "C"
+  },
+  "Amphotéricine B": {
+    "Aciclovir": "C",
+    "Amikacine": "I",
+    "Calcium chlorure": "I",
+    "Calcium gluconate": "I",
+    "Caspofungine": "I",
+    "Céfépime": "I",
+    "Ceftazidime": "I",
+    "Ceftriaxone": "I",
+    "Chlorpromazine": "I",
+    "Ciclosporine": "I",
+    "Ciprofloxacine": "I",
+    "Esoméprazole": "I",
+    "Fluconazole": "I",
+    "Foscarnet": "I",
+    "Magnésium sulfate": "I",
+    "Naloxone": "I",
+    "Ondansétron": "I",
+    "Pipéracilline/tazobactam": "I",
+    "Potassium chlorure": "I"
+  },
+  "Calcium chlorure": {
+    "Amikacine": "C",
+    "Amphotéricine B": "I",
+    "Calcium gluconate": "C",
+    "Ceftazidime": "I",
+    "Ceftriaxone": "I",
+    "Ciclosporine": "C",
+    "Dexaméthasone": "I",
+    "Fluconazole": "I",
+    "Foscarnet": "I",
+    "Furosémide": "C",
+    "Gentamicine": "C",
+    "Héparine sodique": "C",
+    "Imipénème/cilastatine": "I",
+    "Labétalol": "C",
+    "Magnésium sulfate": "I",
+    "Méthylprednisolone": "I",
+    "Métronidazole": "I",
+    "Midazolam": "C",
+    "Morphine": "C",
+    "Nicardipine": "C",
+    "Octréotide / somatostatine": "C",
+    "Ondansétron": "C",
+    "Pantoprazole": "I",
+    "Potassium chlorure": "C/I",
+    "Potassium phosphate": "I",
+    "Bicarbonate de sodium": "I",
+    "Tacrolimus": "C",
+    "Vancomycine": "C",
+    "Adrénaline": "C"
+  },
+  "Calcium gluconate": {
+    "Amikacine": "C/I",
+    "Amphotéricine B": "I",
+    "Calcium chlorure": "C",
+    "Céfépime": "C",
+    "Ceftazidime": "C",
+    "Ceftriaxone": "I",
+    "Ciclosporine": "C",
+    "Ciprofloxacine": "C",
+    "Clindamycine": "I",
+    "Dexaméthasone": "I",
+    "Fluconazole": "I",
+    "Foscarnet": "I",
+    "Furosémide": "C",
+    "Gentamicine": "C/I",
+    "Héparine sodique": "C",
+    "Imipénème/cilastatine": "I",
+    "Labétalol": "C",
+    "Magnésium sulfate": "C/I",
+    "Méropénem": "I",
+    "Méthylprednisolone": "I",
+    "Métronidazole": "C",
+    "Midazolam": "C",
+    "Morphine": "C/I",
+    "Nicardipine": "C",
+    "Octréotide / somatostatine": "C",
+    "Ondansétron": "C",
+    "Pipéracilline/tazobactam": "C",
+    "Potassium chlorure": "C",
+    "Potassium phosphate": "I",
+    "Bicarbonate de sodium": "I",
+    "Tacrolimus": "C",
+    "Vancomycine": "C",
+    "Adrénaline": "C"
+  },
+  "Caspofungine": {
+    "Aciclovir": "I",
+    "Amphotéricine B": "I",
+    "Céfépime": "I",
+    "Ceftriaxone": "I",
+    "Esoméprazole": "I",
+    "Pantoprazole": "I",
+    "Pipéracilline/tazobactam": "I",
+    "Potassium chlorure": "I"
+  },
+  "Céfépime": {
+    "Aciclovir": "I",
+    "Amikacine": "C/I",
+    "Amphotéricine B": "I",
+    "Calcium gluconate": "C",
+    "Caspofungine": "I",
+    "Ciprofloxacine": "I",
+    "Clarithromycine": "C",
+    "Cotrimoxazole IV": "C",
+    "Dexaméthasone": "C",
+    "Fluconazole": "C",
+    "Furosémide": "C",
+    "Gentamicine": "I",
+    "Imipénème/cilastatine": "C",
+    "Labétalol": "I",
+    "Magnésium sulfate": "I",
+    "Méthylprednisolone": "C",
+    "Métronidazole": "C/I",
+    "Midazolam": "I",
+    "Morphine": "I",
+    "Nicardipine": "I",
+    "Octréotide / somatostatine": "C",
+    "Ondansétron": "I",
+    "Phénytoïne": "I",
+    "Pipéracilline/tazobactam": "C",
+    "Potassium chlorure": "C",
+    "Bicarbonate de sodium": "C",
+    "Tacrolimus": "I",
+    "Vancomycine": "I"
+  },
+  "Ceftazidime": {
+    "Aciclovir": "C",
+    "Amikacine": "I",
+    "Amphotéricine B": "I",
+    "Calcium chlorure": "I",
+    "Calcium gluconate": "C",
+    "Ceftriaxone": "C",
+    "Ciclosporine": "C",
+    "Ciprofloxacine": "I",
+    "Clarithromycine": "I",
+    "Dexaméthasone": "C",
+    "Fluconazole": "I",
+    "Furosémide": "C",
+    "Gentamicine": "I",
+    "Héparine sodique": "C",
+    "Imipénème/cilastatine": "C",
+    "Labétalol": "C",
+    "Magnésium sulfate": "C",
+    "Méthylprednisolone": "C",
+    "Métronidazole": "C",
+    "Midazolam": "I",
+    "Morphine": "C",
+    "Nicardipine": "I",
+    "Octréotide / somatostatine": "C",
+    "Ondansétron": "C",
+    "Phénytoïne": "I",
+    "Potassium chlorure": "C",
+    "Bicarbonate de sodium": "I",
+    "Tacrolimus": "C",
+    "Vancomycine": "I",
+    "Adrénaline": "C"
+  },
+  "Ceftriaxone": {
+    "Aciclovir": "C",
+    "Amikacine": "I",
+    "Amphotéricine B": "I",
+    "Calcium chlorure": "I",
+    "Calcium gluconate": "I",
+    "Caspofungine": "I",
+    "Ceftazidime": "C",
+    "Ciclosporine": "C",
+    "Clindamycine": "I",
+    "Dexaméthasone": "C",
+    "Fluconazole": "I",
+    "Folinate de calcium": "I",
+    "Furosémide": "C",
+    "Gentamicine": "I",
+    "Héparine sodique": "C",
+    "Imipénème/cilastatine": "I",
+    "Labétalol": "I",
+    "Magnésium sulfate": "I",
+    "Méthylprednisolone": "C",
+    "Métronidazole": "I",
+    "Midazolam": "C",
+    "Morphine": "C",
+    "Nicardipine": "C",
+    "Octréotide / somatostatine": "C",
+    "Ondansétron": "C",
+    "Paracétamol": "C",
+    "Potassium chlorure": "C",
+    "Bicarbonate de sodium": "C",
+    "Tacrolimus": "C",
+    "Vancomycine": "I",
+    "Adrénaline": "C",
+    "Nutrition parentérale": "I"
+  },
+  "Chlorpromazine": {
+    "Amphotéricine B": "I",
+    "Furosémide": "I",
+    "Pantoprazole": "I",
+    "Pipéracilline/tazobactam": "I"
+  },
+  "Ciclosporine": {
+    "Aciclovir": "I",
+    "Amikacine": "C",
+    "Amphotéricine B": "I",
+    "Calcium chlorure": "C",
+    "Calcium gluconate": "C",
+    "Ceftazidime": "C",
+    "Ceftriaxone": "C",
+    "Ciprofloxacine": "C",
+    "Clindamycine": "C",
+    "Cotrimoxazole IV": "C",
+    "Dexaméthasone": "C",
+    "Fluconazole": "C",
+    "Furosémide": "C",
+    "Gentamicine": "C",
+    "Héparine sodique": "C",
+    "Imipénème/cilastatine": "C",
+    "Kétamine": "I",
+    "Labétalol": "C",
+    "Magnésium sulfate": "I",
+    "Méthylprednisolone": "C",
+    "Métronidazole": "C",
+    "Midazolam": "C",
+    "Morphine": "C",
+    "Mycophénolate mofétil": "I",
+    "Nicardipine": "C",
+    "Octréotide / somatostatine": "C",
+    "Ondansétron": "I",
+    "Pantoprazole": "I",
+    "Potassium chlorure": "C",
+    "Bicarbonate de sodium": "C",
+    "Tacrolimus": "C",
+    "Vancomycine": "C",
+    "Adrénaline": "C",
+    "Nutrition parentérale": "C"
+  },
+  "Ciprofloxacine": {
+    "Amikacine": "C/I",
+    "Amoxicilline": "I",
+    "Amoxicilline/acide clavulanique": "I",
+    "Amphotéricine B": "I",
+    "Calcium gluconate": "C",
+    "Céfépime": "I",
+    "Ceftazidime": "I",
+    "Ciclosporine": "C",
+    "Clarithromycine": "C",
+    "Clindamycine": "I",
+    "Dexaméthasone": "I",
+    "Esoméprazole": "I",
+    "Fluconazole": "C",
+    "Furosémide": "I",
+    "Gentamicine": "C",
+    "Héparine sodique": "I",
+    "Hydrocortisone": "I",
+    "Magnésium sulfate": "I",
+    "Méropénem": "I",
+    "Méthylprednisolone": "I",
+    "Métronidazole": "C",
+    "Midazolam": "C",
+    "Nicardipine": "C",
+    "Octréotide / somatostatine": "C",
+    "Pantoprazole": "I",
+    "Phénytoïne": "I",
+    "Pipéracilline/tazobactam": "I",
+    "Potassium chlorure": "C",
+    "Potassium phosphate": "I",
+    "Bicarbonate de sodium": "I",
+    "Tacrolimus": "C"
+  },
+  "Clarithromycine": {
+    "Amoxicilline/acide clavulanique": "C",
+    "Céfépime": "C",
+    "Ceftazidime": "I",
+    "Ciprofloxacine": "C",
+    "Furosémide": "I",
+    "Gentamicine": "C",
+    "Héparine sodique": "I",
+    "Métronidazole": "C",
+    "Phénytoïne": "I",
+    "Potassium chlorure": "C",
+    "Vancomycine": "C"
+  },
+  "Clindamycine": {
+    "Calcium gluconate": "I",
+    "Ceftriaxone": "I",
+    "Ciprofloxacine": "I",
+    "Esoméprazole": "I",
+    "Fluconazole": "I",
+    "Magnésium sulfate": "I",
+    "Pantoprazole": "I",
+    "Bicarbonate de sodium": "I",
+    "Ciclosporine": "C"
+  },
+  "Cotrimoxazole IV": {
+    "Aciclovir": "C",
+    "Amikacine": "I",
+    "Céfépime": "C",
+    "Ciclosporine": "C",
+    "Défibrotide": "I",
+    "Fluconazole": "I",
+    "Foscarnet": "I",
+    "Gentamicine": "I",
+    "Héparine sodique": "I",
+    "Labétalol": "I",
+    "Magnésium sulfate": "C",
+    "Midazolam": "I",
+    "Morphine": "C",
+    "Nicardipine": "I",
+    "Octréotide / somatostatine": "C",
+    "Pantoprazole": "I",
+    "Pipéracilline/tazobactam": "C",
+    "Potassium chlorure": "I",
+    "Bicarbonate de sodium": "I",
+    "Nutrition parentérale": "C"
+  },
+  "Défibrotide": {
+    "Amikacine": "I",
+    "Cotrimoxazole IV": "I",
+    "Furosémide": "I",
+    "Imipénème/cilastatine": "I",
+    "Méthylprednisolone": "I",
+    "Midazolam": "I",
+    "Nicardipine": "I"
+  },
+  "Dexaméthasone": {
+    "Aciclovir": "C",
+    "Amikacine": "C",
+    "Amoxicilline/acide clavulanique": "I",
+    "Calcium chlorure": "I",
+    "Calcium gluconate": "I",
+    "Céfépime": "C",
+    "Ceftazidime": "C",
+    "Ceftriaxone": "C",
+    "Ciclosporine": "C",
+    "Ciprofloxacine": "I",
+    "Fluconazole": "C",
+    "Furosémide": "C",
+    "Gentamicine": "I",
+    "Héparine sodique": "C",
+    "Imipénème/cilastatine": "C",
+    "Kétamine": "I",
+    "Labétalol": "I",
+    "Magnésium sulfate": "I",
+    "Méropénem": "C",
+    "Méthylprednisolone": "C",
+    "Métronidazole": "C",
+    "Midazolam": "I",
+    "Morphine": "C",
+    "Nicardipine": "I",
+    "Octréotide / somatostatine": "C",
+    "Ondansétron": "C",
+    "Pantoprazole": "I",
+    "Paracétamol": "C",
+    "Pipéracilline/tazobactam": "C",
+    "Potassium chlorure": "C",
+    "Bicarbonate de sodium": "C",
+    "Tacrolimus": "C",
+    "Vancomycine": "C/I",
+    "Adrénaline": "C"
+  },
+  "Esoméprazole": {
+    "Aciclovir": "I",
+    "Amikacine": "I",
+    "Amphotéricine B": "I",
+    "Caspofungine": "I",
+    "Ciprofloxacine": "I",
+    "Clindamycine": "I",
+    "Furosémide": "C",
+    "Labétalol": "I",
+    "Midazolam": "I",
+    "Morphine": "I",
+    "Néfopam": "I",
+    "Potassium chlorure": "C",
+    "Tacrolimus": "I",
+    "Nutrition parentérale": "I"
+  },
+  "Fluconazole": {
+    "Aciclovir": "C",
+    "Amikacine": "C",
+    "Amphotéricine B": "I",
+    "Calcium chlorure": "I",
+    "Calcium gluconate": "I",
+    "Céfépime": "C",
+    "Ceftazidime": "I",
+    "Ceftriaxone": "I",
+    "Ciclosporine": "C",
+    "Ciprofloxacine": "C",
+    "Clindamycine": "I",
+    "Cotrimoxazole IV": "I",
+    "Dexaméthasone": "C",
+    "Furosémide": "I",
+    "Gentamicine": "C/I",
+    "Héparine sodique": "C",
+    "Imipénème/cilastatine": "I",
+    "Labétalol": "C",
+    "Magnésium sulfate": "C",
+    "Méropénem": "C",
+    "Méthylprednisolone": "C",
+    "Métronidazole": "C",
+    "Midazolam": "C/I",
+    "Morphine": "C/I",
+    "Nicardipine": "C",
+    "Octréotide / somatostatine": "C",
+    "Ondansétron": "C",
+    "Pipéracilline/tazobactam": "C",
+    "Potassium chlorure": "C",
+    "Bicarbonate de sodium": "C",
+    "Tacrolimus": "C",
+    "Vancomycine": "C",
+    "Adrénaline": "C",
+    "Nutrition parentérale": "C"
+  },
+  "Folinate de calcium": {
+    "Ceftriaxone": "I",
+    "Magnésium sulfate": "I",
+    "Bicarbonate de sodium": "I"
+  },
+  "Foscarnet": {
+    "Aciclovir": "I",
+    "Amphotéricine B": "I",
+    "Calcium chlorure": "I",
+    "Calcium gluconate": "I",
+    "Cotrimoxazole IV": "I",
+    "Ganciclovir IV": "I",
+    "Midazolam": "I",
+    "Vancomycine": "I"
+  },
+  "Furosémide": {
+    "Amikacine": "C",
+    "Calcium chlorure": "C",
+    "Calcium gluconate": "C",
+    "Céfépime": "C",
+    "Ceftazidime": "C",
+    "Ceftriaxone": "C",
+    "Ciclosporine": "C",
+    "Ciprofloxacine": "I",
+    "Clarithromycine": "I",
+    "Défibrotide": "I",
+    "Dexaméthasone": "C",
+    "Esoméprazole": "C",
+    "Fluconazole": "I",
+    "Gentamicine": "I",
+    "Héparine sodique": "C",
+    "Imipénème/cilastatine": "C",
+    "Labétalol": "I",
+    "Magnésium sulfate": "C",
+    "Méropénem": "C",
+    "Méthylprednisolone": "C",
+    "Métronidazole": "C",
+    "Midazolam": "I",
+    "Morphine": "I",
+    "Nicardipine": "I",
+    "Octréotide / somatostatine": "C",
+    "Ondansétron": "I",
+    "Pantoprazole": "I",
+    "Pipéracilline/tazobactam": "C",
+    "Potassium chlorure": "C",
+    "Potassium phosphate": "I",
+    "Bicarbonate de sodium": "C",
+    "Vancomycine": "I",
+    "Adrénaline": "I",
+    "Chlorpromazine": "I",
+    "Nutrition parentérale": "C"
+  },
+  "Ganciclovir IV": {
+    "Foscarnet": "I",
+    "Pipéracilline/tazobactam": "I",
+    "Tacrolimus": "I"
+  },
+  "Gentamicine": {
+    "Aciclovir": "C/I",
+    "Amikacine": "C",
+    "Amoxicilline": "I",
+    "Amoxicilline/acide clavulanique": "I",
+    "Calcium chlorure": "C",
+    "Calcium gluconate": "C/I",
+    "Céfépime": "I",
+    "Ceftazidime": "I",
+    "Ceftriaxone": "I",
+    "Ciclosporine": "C",
+    "Ciprofloxacine": "C",
+    "Clarithromycine": "C",
+    "Cotrimoxazole IV": "I",
+    "Dexaméthasone": "I",
+    "Fluconazole": "C",
+    "Furosémide": "I",
+    "Héparine sodique": "I",
+    "Imipénème/cilastatine": "I",
+    "Labétalol": "C",
+    "Magnésium sulfate": "C",
+    "Méropénem": "C",
+    "Méthylprednisolone": "C",
+    "Métronidazole": "C",
+    "Midazolam": "C",
+    "Morphine": "C",
+    "Nicardipine": "C",
+    "Octréotide / somatostatine": "C",
+    "Ondansétron": "C",
+    "Phénytoïne": "I",
+    "Pipéracilline/tazobactam": "I",
+    "Potassium chlorure": "C",
+    "Bicarbonate de sodium": "I",
+    "Tacrolimus": "C",
+    "Teicoplanine": "I",
+    "Vancomycine": "C",
+    "Adrénaline": "C"
+  },
+  "Héparine sodique": {
+    "Amikacine": "I",
+    "Calcium chlorure": "C",
+    "Calcium gluconate": "C",
+    "Ceftazidime": "C",
+    "Ceftriaxone": "C",
+    "Ciclosporine": "C",
+    "Ciprofloxacine": "I",
+    "Clarithromycine": "I",
+    "Cotrimoxazole IV": "I",
+    "Dexaméthasone": "C",
+    "Fluconazole": "C",
+    "Furosémide": "C",
+    "Gentamicine": "I",
+    "Imipénème/cilastatine": "C",
+    "Labétalol": "I",
+    "Magnésium sulfate": "C",
+    "Méthylprednisolone": "C",
+    "Métronidazole": "C",
+    "Midazolam": "C",
+    "Morphine": "C",
+    "Nicardipine": "I",
+    "Ondansétron": "C",
+    "Phénytoïne": "I",
+    "Potassium chlorure": "C",
+    "Bicarbonate de sodium": "I",
+    "Vancomycine": "I",
+    "Adrénaline": "C",
+    "Nutrition parentérale": "C"
+  },
+  "Hydrocortisone": {
+    "Amoxicilline/acide clavulanique": "I",
+    "Ciprofloxacine": "I",
+    "Magnésium sulfate": "I",
+    "Midazolam": "I",
+    "Pantoprazole": "I",
+    "Vancomycine": "I"
+  },
+  "Imipénème/cilastatine": {
+    "Aciclovir": "C",
+    "Amikacine": "I",
+    "Amoxicilline": "I",
+    "Calcium chlorure": "I",
+    "Calcium gluconate": "I",
+    "Céfépime": "C",
+    "Ceftazidime": "C",
+    "Ceftriaxone": "I",
+    "Ciclosporine": "C",
+    "Défibrotide": "I",
+    "Dexaméthasone": "C",
+    "Fluconazole": "I",
+    "Furosémide": "C",
+    "Gentamicine": "I",
+    "Héparine sodique": "C",
+    "Labétalol": "C",
+    "Magnésium sulfate": "C",
+    "Méthylprednisolone": "C",
+    "Métronidazole": "C",
+    "Midazolam": "I",
+    "Morphine": "C",
+    "Nicardipine": "I",
+    "Octréotide / somatostatine": "C",
+    "Ondansétron": "C",
+    "Potassium chlorure": "C",
+    "Bicarbonate de sodium": "I",
+    "Tacrolimus": "C",
+    "Vancomycine": "C",
+    "Adrénaline": "C",
+    "Nutrition parentérale": "C"
+  },
+  "Kétamine": {
+    "Aciclovir": "I",
+    "Ciclosporine": "I",
+    "Dexaméthasone": "I"
+  },
+  "Labétalol": {
+    "Aciclovir": "I",
+    "Amikacine": "C",
+    "Calcium chlorure": "C",
+    "Calcium gluconate": "C",
+    "Céfépime": "I",
+    "Ceftazidime": "C",
+    "Ceftriaxone": "I",
+    "Ciclosporine": "C",
+    "Cotrimoxazole IV": "I",
+    "Dexaméthasone": "I",
+    "Esoméprazole": "I",
+    "Fluconazole": "C",
+    "Furosémide": "I",
+    "Gentamicine": "C",
+    "Héparine sodique": "I",
+    "Imipénème/cilastatine": "C",
+    "Magnésium sulfate": "C",
+    "Méthylprednisolone": "C",
+    "Métronidazole": "C",
+    "Midazolam": "C",
+    "Morphine": "C",
+    "Nicardipine": "C",
+    "Octréotide / somatostatine": "C",
+    "Ondansétron": "C",
+    "Phénytoïne": "I",
+    "Pipéracilline/tazobactam": "I",
+    "Potassium chlorure": "C",
+    "Potassium phosphate": "C",
+    "Bicarbonate de sodium": "C/I",
+    "Tacrolimus": "C",
+    "Vancomycine": "C",
+    "Adrénaline": "C",
+    "Nutrition parentérale": "I"
+  },
+  "Magnésium sulfate": {
+    "Aciclovir": "C",
+    "Amikacine": "C",
+    "Amoxicilline": "I",
+    "Amphotéricine B": "I",
+    "Calcium chlorure": "I",
+    "Calcium gluconate": "C/I",
+    "Céfépime": "I",
+    "Ceftazidime": "C",
+    "Ceftriaxone": "I",
+    "Ciclosporine": "I",
+    "Ciprofloxacine": "I",
+    "Clindamycine": "I",
+    "Cotrimoxazole IV": "C",
+    "Dexaméthasone": "I",
+    "Fluconazole": "C",
+    "Folinate de calcium": "I",
+    "Furosémide": "C",
+    "Gentamicine": "C",
+    "Héparine sodique": "C",
+    "Hydrocortisone": "I",
+    "Imipénème/cilastatine": "C",
+    "Labétalol": "C",
+    "Méropénem": "C",
+    "Méthylprednisolone": "I",
+    "Métronidazole": "C",
+    "Midazolam": "C",
+    "Morphine": "C",
+    "Nicardipine": "C",
+    "Octréotide / somatostatine": "C",
+    "Ondansétron": "C",
+    "Pipéracilline/tazobactam": "C",
+    "Potassium chlorure": "C",
+    "Bicarbonate de sodium": "I",
+    "Tacrolimus": "C",
+    "Vancomycine": "C",
+    "Nutrition parentérale": "C"
+  },
+  "Mannitol": {
+    "Amoxicilline/acide clavulanique": "I"
+  },
+  "Méropénem": {
+    "Aciclovir": "I",
+    "Amikacine": "I",
+    "Calcium gluconate": "I",
+    "Ciprofloxacine": "I",
+    "Dexaméthasone": "C",
+    "Fluconazole": "C",
+    "Furosémide": "C",
+    "Gentamicine": "C",
+    "Magnésium sulfate": "C",
+    "Métronidazole": "I",
+    "Morphine": "C",
+    "Nicardipine": "I",
+    "Octréotide / somatostatine": "C",
+    "Ondansétron": "I",
+    "Pantoprazole": "I",
+    "Potassium chlorure": "C",
+    "Tacrolimus": "C",
+    "Vancomycine": "C/I",
+    "Nutrition parentérale": "C"
+  },
+  "Méthylprednisolone": {
+    "Aciclovir": "C",
+    "Amikacine": "C",
+    "Amoxicilline/acide clavulanique": "I",
+    "Calcium chlorure": "I",
+    "Calcium gluconate": "I",
+    "Céfépime": "C",
+    "Ceftazidime": "C",
+    "Ceftriaxone": "C",
+    "Ciclosporine": "C",
+    "Ciprofloxacine": "I",
+    "Défibrotide": "I",
+    "Dexaméthasone": "C",
+    "Fluconazole": "C",
+    "Furosémide": "C",
+    "Gentamicine": "C",
+    "Héparine sodique": "C",
+    "Imipénème/cilastatine": "C",
+    "Labétalol": "C",
+    "Magnésium sulfate": "I",
+    "Métronidazole": "C",
+    "Midazolam": "C",
+    "Morphine": "C",
+    "Nicardipine": "I",
+    "Octréotide / somatostatine": "C",
+    "Ondansétron": "I",
+    "Paracétamol": "C",
+    "Pipéracilline/tazobactam": "C",
+    "Potassium chlorure": "I",
+    "Bicarbonate de sodium": "C",
+    "Tacrolimus": "C",
+    "Vancomycine": "I",
+    "Adrénaline": "C"
+  },
+  "Métronidazole": {
+    "Aciclovir": "C",
+    "Amikacine": "C",
+    "Amoxicilline/acide clavulanique": "I",
+    "Calcium chlorure": "I",
+    "Calcium gluconate": "C",
+    "Céfépime": "C/I",
+    "Ceftazidime": "C",
+    "Ceftriaxone": "I",
+    "Ciclosporine": "C",
+    "Ciprofloxacine": "C",
+    "Clarithromycine": "C",
+    "Dexaméthasone": "C",
+    "Fluconazole": "C",
+    "Furosémide": "C",
+    "Gentamicine": "C",
+    "Héparine sodique": "C",
+    "Imipénème/cilastatine": "C",
+    "Labétalol": "C",
+    "Magnésium sulfate": "C",
+    "Méropénem": "I",
+    "Méthylprednisolone": "C",
+    "Midazolam": "C",
+    "Morphine": "C",
+    "Nicardipine": "C",
+    "Octréotide / somatostatine": "C",
+    "Ondansétron": "I",
+    "Pantoprazole": "I",
+    "Pipéracilline/tazobactam": "C",
+    "Potassium chlorure": "C",
+    "Bicarbonate de sodium": "C",
+    "Tacrolimus": "C",
+    "Vancomycine": "C",
+    "Adrénaline": "C",
+    "Nutrition parentérale": "C"
+  },
+  "Midazolam": {
+    "Amikacine": "C",
+    "Amoxicilline": "I",
+    "Amoxicilline/acide clavulanique": "I",
+    "Calcium chlorure": "C",
+    "Calcium gluconate": "C",
+    "Céfépime": "I",
+    "Ceftazidime": "I",
+    "Ceftriaxone": "C",
+    "Ciclosporine": "C",
+    "Ciprofloxacine": "C",
+    "Cotrimoxazole IV": "I",
+    "Défibrotide": "I",
+    "Dexaméthasone": "I",
+    "Esoméprazole": "I",
+    "Fluconazole": "C",
+    "Foscarnet": "I",
+    "Furosémide": "I",
+    "Gentamicine": "C",
+    "Héparine sodique": "C",
+    "Hydrocortisone": "I",
+    "Imipénème/cilastatine": "I",
+    "Labétalol": "C",
+    "Magnésium sulfate": "C",
+    "Méthylprednisolone": "C",
+    "Métronidazole": "C",
+    "Morphine": "C",
+    "Nicardipine": "C",
+    "Octréotide / somatostatine": "C",
+    "Ondansétron": "C",
+    "Pantoprazole": "I",
+    "Paracétamol": "C",
+    "Potassium chlorure": "C",
+    "Bicarbonate de sodium": "I",
+    "Tacrolimus": "C",
+    "Tramadol": "I",
+    "Vancomycine": "C",
+    "Adrénaline": "C",
+    "Nutrition parentérale": "C"
+  },
+  "Morphine": {
+    "Aciclovir": "I",
+    "Amikacine": "C",
+    "Calcium chlorure": "C",
+    "Calcium gluconate": "C/I",
+    "Céfépime": "I",
+    "Ceftazidime": "C",
+    "Ceftriaxone": "C",
+    "Ciclosporine": "C",
+    "Cotrimoxazole IV": "C",
+    "Dexaméthasone": "C",
+    "Esoméprazole": "I",
+    "Fluconazole": "C",
+    "Furosémide": "I",
+    "Gentamicine": "C",
+    "Héparine sodique": "C",
+    "Imipénème/cilastatine": "C",
+    "Labétalol": "C",
+    "Magnésium sulfate": "C",
+    "Méropénem": "C",
+    "Méthylprednisolone": "C",
+    "Métronidazole": "C",
+    "Midazolam": "C",
+    "Nicardipine": "C",
+    "Octréotide / somatostatine": "C",
+    "Ondansétron": "C",
+    "Paracétamol": "C",
+    "Phénytoïne": "I",
+    "Pipéracilline/tazobactam": "C",
+    "Potassium chlorure": "C",
+    "Potassium phosphate": "C",
+    "Bicarbonate de sodium": "C",
+    "Tacrolimus": "C",
+    "Vancomycine": "C",
+    "Adrénaline": "C",
+    "Nutrition parentérale": "C"
+  },
+  "Mycophénolate mofétil": {
+    "Ciclosporine": "I"
+  },
+  "Nalbuphine": {
+    "Bicarbonate de sodium": "I"
+  },
+  "Naloxone": {
+    "Aciclovir": "I",
+    "Amphotéricine B": "I"
+  },
+  "Néfopam": {
+    "Amoxicilline": "I",
+    "Esoméprazole": "I"
+  },
+  "Nicardipine": {
+    "Aciclovir": "I",
+    "Amikacine": "C",
+    "Calcium chlorure": "C",
+    "Calcium gluconate": "C",
+    "Céfépime": "I",
+    "Ceftazidime": "I",
+    "Ceftriaxone": "C",
+    "Ciclosporine": "C",
+    "Ciprofloxacine": "C",
+    "Cotrimoxazole IV": "I",
+    "Défibrotide": "I",
+    "Dexaméthasone": "I",
+    "Fluconazole": "C",
+    "Furosémide": "I",
+    "Gentamicine": "C",
+    "Héparine sodique": "I",
+    "Imipénème/cilastatine": "I",
+    "Labétalol": "C",
+    "Magnésium sulfate": "C",
+    "Méropénem": "I",
+    "Méthylprednisolone": "I",
+    "Métronidazole": "C",
+    "Midazolam": "C",
+    "Morphine": "C",
+    "Octréotide / somatostatine": "C",
+    "Ondansétron": "C",
+    "Phénytoïne": "I",
+    "Pipéracilline/tazobactam": "I",
+    "Potassium chlorure": "C",
+    "Potassium phosphate": "I",
+    "Bicarbonate de sodium": "I",
+    "Tacrolimus": "C",
+    "Vancomycine": "C",
+    "Adrénaline": "C"
+  },
+  "Octréotide / somatostatine": {
+    "Aciclovir": "C",
+    "Amikacine": "C",
+    "Calcium chlorure": "C",
+    "Calcium gluconate": "C",
+    "Céfépime": "C",
+    "Ceftazidime": "C",
+    "Ceftriaxone": "C",
+    "Ciclosporine": "C",
+    "Ciprofloxacine": "C",
+    "Cotrimoxazole IV": "C",
+    "Dexaméthasone": "C",
+    "Fluconazole": "C",
+    "Furosémide": "C",
+    "Gentamicine": "C",
+    "Imipénème/cilastatine": "C",
+    "Labétalol": "C",
+    "Magnésium sulfate": "C",
+    "Méropénem": "C",
+    "Méthylprednisolone": "C",
+    "Métronidazole": "C",
+    "Midazolam": "C",
+    "Morphine": "C",
+    "Nicardipine": "C",
+    "Ondansétron": "C",
+    "Phénytoïne": "I",
+    "Pipéracilline/tazobactam": "C",
+    "Potassium chlorure": "C",
+    "Potassium phosphate": "C",
+    "Bicarbonate de sodium": "C",
+    "Tacrolimus": "C",
+    "Vancomycine": "C",
+    "Adrénaline": "C",
+    "Nutrition parentérale": "C"
+  },
+  "Ondansétron": {
+    "Aciclovir": "I",
+    "Amikacine": "C",
+    "Amphotéricine B": "I",
+    "Calcium chlorure": "C",
+    "Calcium gluconate": "C",
+    "Céfépime": "I",
+    "Ceftazidime": "C",
+    "Ceftriaxone": "C",
+    "Ciclosporine": "I",
+    "Dexaméthasone": "C",
+    "Fluconazole": "C",
+    "Furosémide": "I",
+    "Gentamicine": "C",
+    "Héparine sodique": "C",
+    "Imipénème/cilastatine": "C",
+    "Labétalol": "C",
+    "Magnésium sulfate": "C",
+    "Méropénem": "I",
+    "Méthylprednisolone": "I",
+    "Métronidazole": "I",
+    "Midazolam": "C",
+    "Morphine": "C",
+    "Nicardipine": "C",
+    "Octréotide / somatostatine": "C",
+    "Paracétamol": "C",
+    "Phénytoïne": "I",
+    "Pipéracilline/tazobactam": "C",
+    "Potassium chlorure": "C",
+    "Bicarbonate de sodium": "I",
+    "Tacrolimus": "C",
+    "Vancomycine": "C",
+    "Adrénaline": "C",
+    "Nutrition parentérale": "C"
+  },
+  "Pantoprazole": {
+    "Calcium chlorure": "I",
+    "Caspofungine": "I",
+    "Chlorpromazine": "I",
+    "Ciclosporine": "I",
+    "Ciprofloxacine": "I",
+    "Clindamycine": "I",
+    "Cotrimoxazole IV": "I",
+    "Dexaméthasone": "I",
+    "Furosémide": "I",
+    "Hydrocortisone": "I",
+    "Méropénem": "I",
+    "Métronidazole": "I",
+    "Midazolam": "I",
+    "Pipéracilline/tazobactam": "I",
+    "Bicarbonate de sodium": "I",
+    "Vancomycine": "I"
+  },
+  "Paracétamol": {
+    "Aciclovir": "I",
+    "Ceftriaxone": "C",
+    "Dexaméthasone": "C",
+    "Méthylprednisolone": "C",
+    "Midazolam": "C",
+    "Morphine": "C",
+    "Ondansétron": "C",
+    "Pipéracilline/tazobactam": "C",
+    "Potassium chlorure": "C",
+    "Bicarbonate de sodium": "I",
+    "Vancomycine": "C",
+    "Nutrition parentérale": "C"
+  },
+  "Phénytoïne": {
+    "Amikacine": "I",
+    "Céfépime": "I",
+    "Ceftazidime": "I",
+    "Ciprofloxacine": "I",
+    "Clarithromycine": "I",
+    "Gentamicine": "I",
+    "Héparine sodique": "I",
+    "Labétalol": "I",
+    "Morphine": "I",
+    "Nicardipine": "I",
+    "Octréotide / somatostatine": "I",
+    "Ondansétron": "I",
+    "Potassium chlorure": "I",
+    "Potassium phosphate": "I",
+    "Bicarbonate de sodium": "I",
+    "Tacrolimus": "I",
+    "Vancomycine": "I",
+    "Nutrition parentérale": "I"
+  },
+  "Phloroglucinol": {
+    "Aciclovir": "I",
+    "Amoxicilline/acide clavulanique": "I"
+  },
+  "Pipéracilline/tazobactam": {
+    "Aciclovir": "I",
+    "Amikacine": "I",
+    "Amphotéricine B": "I",
+    "Calcium gluconate": "C",
+    "Caspofungine": "I",
+    "Céfépime": "C",
+    "Ciprofloxacine": "I",
+    "Cotrimoxazole IV": "C",
+    "Dexaméthasone": "C",
+    "Fluconazole": "C",
+    "Furosémide": "C",
+    "Ganciclovir IV": "I",
+    "Gentamicine": "I",
+    "Labétalol": "I",
+    "Magnésium sulfate": "C",
+    "Méthylprednisolone": "C",
+    "Métronidazole": "C",
+    "Morphine": "C",
+    "Nicardipine": "I",
+    "Octréotide / somatostatine": "C",
+    "Ondansétron": "C",
+    "Pantoprazole": "I",
+    "Paracétamol": "C",
+    "Potassium chlorure": "C",
+    "Bicarbonate de sodium": "C/I",
+    "Tacrolimus": "C",
+    "Vancomycine": "I",
+    "Chlorpromazine": "I",
+    "Nutrition parentérale": "C"
+  },
+  "Potassium chlorure": {
+    "Aciclovir": "C",
+    "Amikacine": "C",
+    "Amphotéricine B": "I",
+    "Calcium chlorure": "C",
+    "Calcium gluconate": "C",
+    "Caspofungine": "I",
+    "Céfépime": "C",
+    "Ceftazidime": "C",
+    "Ceftriaxone": "C",
+    "Ciclosporine": "C",
+    "Ciprofloxacine": "C",
+    "Clarithromycine": "C",
+    "Cotrimoxazole IV": "I",
+    "Dexaméthasone": "C",
+    "Esoméprazole": "C",
+    "Fluconazole": "C",
+    "Furosémide": "C",
+    "Gentamicine": "C",
+    "Héparine sodique": "C",
+    "Imipénème/cilastatine": "C",
+    "Labétalol": "C",
+    "Magnésium sulfate": "C",
+    "Méropénem": "C",
+    "Méthylprednisolone": "I",
+    "Métronidazole": "C",
+    "Midazolam": "C",
+    "Morphine": "C",
+    "Nicardipine": "C",
+    "Octréotide / somatostatine": "C",
+    "Ondansétron": "C",
+    "Paracétamol": "C",
+    "Phénytoïne": "I",
+    "Pipéracilline/tazobactam": "C",
+    "Potassium phosphate": "C",
+    "Bicarbonate de sodium": "C",
+    "Tacrolimus": "C",
+    "Vancomycine": "C",
+    "Adrénaline": "C",
+    "Nutrition parentérale": "C"
+  },
+  "Potassium phosphate": {
+    "Calcium chlorure": "I",
+    "Calcium gluconate": "I",
+    "Ciprofloxacine": "I",
+    "Furosémide": "I",
+    "Labétalol": "C",
+    "Morphine": "C",
+    "Nicardipine": "I",
+    "Octréotide / somatostatine": "C",
+    "Phénytoïne": "I",
+    "Potassium chlorure": "C",
+    "Tacrolimus": "C",
+    "Nutrition parentérale": "C"
+  },
+  "Bicarbonate de sodium": {
+    "Aciclovir": "C",
+    "Amikacine": "C",
+    "Amoxicilline": "I",
+    "Amoxicilline/acide clavulanique": "I",
+    "Calcium chlorure": "I",
+    "Calcium gluconate": "I",
+    "Céfépime": "C",
+    "Ceftazidime": "I",
+    "Ceftriaxone": "C",
+    "Ciclosporine": "C",
+    "Ciprofloxacine": "I",
+    "Clindamycine": "I",
+    "Cotrimoxazole IV": "I",
+    "Dexaméthasone": "C",
+    "Fluconazole": "C",
+    "Folinate de calcium": "I",
+    "Furosémide": "C",
+    "Gentamicine": "I",
+    "Héparine sodique": "I",
+    "Imipénème/cilastatine": "I",
+    "Labétalol": "C/I",
+    "Magnésium sulfate": "I",
+    "Méthylprednisolone": "C",
+    "Métronidazole": "C",
+    "Midazolam": "I",
+    "Morphine": "C",
+    "Nalbuphine": "I",
+    "Nicardipine": "I",
+    "Octréotide / somatostatine": "C",
+    "Ondansétron": "I",
+    "Pantoprazole": "I",
+    "Paracétamol": "I",
+    "Phénytoïne": "I",
+    "Pipéracilline/tazobactam": "C/I",
+    "Potassium chlorure": "C",
+    "Tacrolimus": "C/I",
+    "Vancomycine": "I",
+    "Voriconazole IV": "I",
+    "Adrénaline": "I",
+    "Nutrition parentérale": "I"
+  },
+  "Tacrolimus": {
+    "Aciclovir": "I",
+    "Amikacine": "C",
+    "Calcium chlorure": "C",
+    "Calcium gluconate": "C",
+    "Céfépime": "I",
+    "Ceftazidime": "C",
+    "Ceftriaxone": "C",
+    "Ciclosporine": "C",
+    "Ciprofloxacine": "C",
+    "Dexaméthasone": "C",
+    "Esoméprazole": "I",
+    "Fluconazole": "C",
+    "Ganciclovir IV": "I",
+    "Gentamicine": "C",
+    "Imipénème/cilastatine": "C",
+    "Labétalol": "C",
+    "Magnésium sulfate": "C",
+    "Méropénem": "C",
+    "Méthylprednisolone": "C",
+    "Métronidazole": "C",
+    "Midazolam": "C",
+    "Morphine": "C",
+    "Nicardipine": "C",
+    "Octréotide / somatostatine": "C",
+    "Ondansétron": "C",
+    "Phénytoïne": "I",
+    "Pipéracilline/tazobactam": "C",
+    "Potassium chlorure": "C",
+    "Potassium phosphate": "C",
+    "Bicarbonate de sodium": "C/I",
+    "Vancomycine": "C",
+    "Adrénaline": "C",
+    "Nutrition parentérale": "C"
+  },
+  "Teicoplanine": {
+    "Amikacine": "I",
+    "Gentamicine": "I"
+  },
+  "Tramadol": {
+    "Midazolam": "I"
+  },
+  "Vancomycine": {
+    "Aciclovir": "C",
+    "Amikacine": "C",
+    "Calcium chlorure": "C",
+    "Calcium gluconate": "C",
+    "Céfépime": "I",
+    "Ceftazidime": "I",
+    "Ceftriaxone": "I",
+    "Ciclosporine": "C",
+    "Clarithromycine": "C",
+    "Dexaméthasone": "C/I",
+    "Fluconazole": "C",
+    "Foscarnet": "I",
+    "Furosémide": "I",
+    "Gentamicine": "C",
+    "Héparine sodique": "I",
+    "Hydrocortisone": "I",
+    "Imipénème/cilastatine": "C",
+    "Labétalol": "C",
+    "Magnésium sulfate": "C",
+    "Méropénem": "C/I",
+    "Méthylprednisolone": "I",
+    "Métronidazole": "C",
+    "Midazolam": "C",
+    "Morphine": "C",
+    "Nicardipine": "C",
+    "Octréotide / somatostatine": "C",
+    "Ondansétron": "C",
+    "Pantoprazole": "I",
+    "Paracétamol": "C",
+    "Phénytoïne": "I",
+    "Pipéracilline/tazobactam": "I",
+    "Potassium chlorure": "C",
+    "Bicarbonate de sodium": "I",
+    "Tacrolimus": "C",
+    "Adrénaline": "C",
+    "Nutrition parentérale": "C"
+  },
+  "Voriconazole IV": {
+    "Bicarbonate de sodium": "I"
+  },
+  "Nutrition parentérale": {
+    "Amikacine": "C",
+    "Amoxicilline/acide clavulanique": "C",
+    "Ceftriaxone": "I",
+    "Ciclosporine": "C",
+    "Cotrimoxazole IV": "C",
+    "Esoméprazole": "I",
+    "Fluconazole": "C",
+    "Furosémide": "C",
+    "Héparine sodique": "C",
+    "Imipénème/cilastatine": "C",
+    "Labétalol": "I",
+    "Magnésium sulfate": "C",
+    "Méropénem": "C",
+    "Métronidazole": "C",
+    "Midazolam": "C",
+    "Morphine": "C",
+    "Octréotide / somatostatine": "C",
+    "Ondansétron": "C",
+    "Paracétamol": "C",
+    "Phénytoïne": "I",
+    "Pipéracilline/tazobactam": "C",
+    "Potassium chlorure": "C",
+    "Potassium phosphate": "C",
+    "Bicarbonate de sodium": "I",
+    "Tacrolimus": "C",
+    "Vancomycine": "C"
+  },
+  "Adrénaline": {
+    "Amikacine": "C",
+    "Calcium chlorure": "C",
+    "Calcium gluconate": "C",
+    "Ceftazidime": "C",
+    "Ceftriaxone": "C",
+    "Ciclosporine": "C",
+    "Dexaméthasone": "C",
+    "Fluconazole": "C",
+    "Furosémide": "I",
+    "Gentamicine": "C",
+    "Héparine sodique": "C",
+    "Imipénème/cilastatine": "C",
+    "Labétalol": "C",
+    "Méthylprednisolone": "C",
+    "Métronidazole": "C",
+    "Midazolam": "C",
+    "Morphine": "C",
+    "Nicardipine": "C",
+    "Octréotide / somatostatine": "C",
+    "Ondansétron": "C",
+    "Potassium chlorure": "C",
+    "Bicarbonate de sodium": "I",
+    "Tacrolimus": "C",
+    "Vancomycine": "C"
+  }
+};
+
     const resultsEl = document.getElementById("results");
     const searchEl = document.getElementById("search");
     const deviceEl = document.getElementById("device");
     const sourceEl = document.getElementById("sourceFilter");
     const resetEl = document.getElementById("reset");
     const countPill = document.getElementById("countPill");
+    const useCaseEl = document.getElementById("useCase");
+    const decisionEl = document.getElementById("decisionDevice");
+    const yDrugEl = document.getElementById("yDrug");
+    const showComparisonEl = document.getElementById("showComparison");
+    const showYEl = document.getElementById("showY");
 
     function normalize(text) {
       return (text || "")
@@ -1719,22 +3379,129 @@
         .replace(/[\u0300-\u036f]/g, "");
     }
 
+    function yKey(text) {
+      return normalize(text).replace(/[^a-z0-9]/g, "");
+    }
+
+    function findYName(name) {
+      const key = yKey(name);
+      return Object.keys(yCompat).find(n => yKey(n) === key) || "";
+    }
+
+    function yPairStatus(a, b) {
+      const left = findYName(a);
+      const right = findYName(b);
+      if (!left || !right) return "";
+      return (yCompat[left] && yCompat[left][right]) || (yCompat[right] && yCompat[right][left]) || "";
+    }
+
+    function isYCompatibleStatus(status) {
+      return status === "C" || status === "C/I";
+    }
+
     function hasDeviceData(item, device) {
       if (!device) return true;
       return item[device] && item[device] !== "--";
+    }
+
+
+
+    const confidenceRank = { A: 4, B: 3, C: 2, D: 1 };
+
+    function rowText(item) {
+      return `${item.molecule} ${item.source} ${item.mode} ${item.poche} ${item.pse} ${item.elastomere} ${item.anapa} ${item.micrel} ${item.reco} ${item.note}`;
+    }
+
+    function confidenceLevel(item) {
+      const src = normalize(item.source);
+      if (src.includes("spilf") || src.includes("sfpc")) return { level: "A", label: "Niveau de preuve : A" };
+      if (src.includes("pubmed")) return { level: "B", label: "Niveau de preuve : B" };
+      if (src.includes("neopump") || src.includes("micrel") || src.includes("anapa")) return { level: "C", label: "Niveau de preuve : C" };
+      return { level: "D", label: "Niveau de preuve : D" };
+    }
+
+    function sourceConfidence(sources) {
+      return sources.map(confidenceLevel).sort((a,b) => confidenceRank[b.level] - confidenceRank[a.level])[0] || { level: "D", label: "Niveau de preuve : D" };
+    }
+
+    function detectLimits(text) {
+      const low = normalize(text);
+      const out = [];
+      if (low.includes("temperature") || low.includes(">25") || low.includes("32°") || low.includes("37°") || low.includes("therm")) out.push("Température-dépendant");
+      if (low.includes("concentration") || low.includes("conc") || low.includes("mg/ml")) out.push("Concentration-dépendant");
+      if (low.includes("nacl") || low.includes("g5") || low.includes("solvant") || low.includes("exclusivement")) out.push("Solvant-dépendant");
+      if (low.includes("abri lumiere") || low.includes("lumiere") || low.includes("photoprotection")) out.push("Photoprotection");
+      if (low.includes("non transposable") || low.includes("ne pas extrapoler") || low.includes("pas extrapoler")) out.push("Non extrapolable");
+      if (low.includes("degradation") || low.includes("neurotox") || low.includes("pyridine")) out.push("Risque dégradation");
+      return [...new Set(out)];
+    }
+
+    function allLimits(sources) {
+      return [...new Set(sources.flatMap(s => detectLimits(rowText(s))))];
+    }
+
+    function isHomeCompatible(item) {
+      const low = normalize(rowText(item));
+      return low.includes("had") || low.includes("domicile") || low.includes("opat") || low.includes("elastomere") || low.includes("anapa") || low.includes("micrel") || low.includes("ambulatoire");
+    }
+
+    function isSummerCompatible(item) {
+      const low = normalize(rowText(item));
+      return low.includes("32°c") && (low.includes("24 h") || low.includes("24h")) && !low.includes("pas de donnee 25/32");
+    }
+
+    function hasPhotoNeed(item) { return normalize(rowText(item)).includes("abri lumiere") || normalize(rowText(item)).includes("lumiere"); }
+
+    function hasCriticalText(text) {
+      const low = normalize(text);
+      return ["incompatible", "contre-indique", "deconseille", "non transposable", "ne pas extrapoler", "attention", "vigilance", "limite", "pas de donnee", "non recommande"].some(k => low.includes(k));
+    }
+
+    function passesDecision(item, decision) {
+      const low = normalize(rowText(item));
+      if (!decision) return true;
+      if (decision === "continu24") return (low.includes("continu") || low.includes("prolonge")) && (low.includes("24 h") || low.includes("24h"));
+      if (decision === "elastomere24") return item.elastomere && item.elastomere !== "--" && (normalize(item.elastomere).includes("24 h") || normalize(item.elastomere).includes("24h"));
+      if (decision === "pse24") return item.pse && item.pse !== "--" && (normalize(item.pse).includes("24 h") || normalize(item.pse).includes("24h"));
+      if (decision === "avoidDanger") return !hasCriticalText(rowText(item));
+      return true;
+    }
+
+    function hasYDataFor(molecule) {
+      return Boolean(findYName(molecule));
+    }
+
+    function yStatusClass(status) {
+      if (status === "I") return "y-stop";
+      if (status === "C/I") return "y-cond";
+      if (status === "C") return "y-ok";
+      return "y-unknown";
+    }
+
+    function yStatusLabel(status) {
+      return { C: "Compatible", "C/I": "Compatible sous conditions", I: "Incompatible", "?": "Doute / pas de référence" }[status] || status;
     }
 
     function filterData() {
       const q = normalize(searchEl.value);
       const device = deviceEl.value;
       const source = normalize(sourceEl.value);
+      const useCase = useCaseEl.value;
+      const decision = decisionEl.value;
+      const selectedY = yDrugEl.value;
 
       const rows = data.filter(item => {
-        const haystack = normalize(`${item.molecule} ${item.source} ${item.mode} ${item.poche} ${item.pse} ${item.elastomere} ${item.anapa} ${item.micrel} ${item.reco} ${item.note}`);
+        const text = rowText(item);
+        const haystack = normalize(text);
         const matchQuery = !q || haystack.includes(q);
         const matchDevice = hasDeviceData(item, device);
         const matchSource = !source || normalize(item.source).includes(source);
-        return matchQuery && matchDevice && matchSource;
+        const matchUse = !useCase
+          || (useCase === "had" && isHomeCompatible(item))
+          || (useCase === "summer" && isSummerCompatible(item));
+        const matchDecision = passesDecision(item, decision);
+        const matchY = !selectedY || isYCompatibleStatus(yPairStatus(item.molecule, selectedY));
+        return matchQuery && matchDevice && matchSource && matchUse && matchDecision && matchY;
       });
 
       const grouped = new Map();
@@ -1749,39 +3516,64 @@
       if (typeof value !== "string") return value || "--";
       if (!value || value === "--") return "--";
 
+      function escapeHTML(text) {
+        return (text || "").toString()
+          .replace(/&/g, "&amp;")
+          .replace(/</g, "&lt;")
+          .replace(/>/g, "&gt;")
+          .replace(/"/g, "&quot;")
+          .replace(/'/g, "&#039;");
+      }
+
       function addUnique(list, item) {
-        if (item && !list.includes(item)) list.push(item);
+        const clean = (item || "").trim();
+        if (clean && !list.includes(clean)) list.push(clean);
       }
 
       function normalizeLocal(text) {
-        return (text || "").toString().toLowerCase();
+        return (text || "").toString().toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "");
+      }
+
+      function isCritical(text) {
+        const low = normalizeLocal(text);
+        return [
+          "incompatible", "contre-indique", "deconseille", "non transposable",
+          "ne pas extrapoler", "pas extrapoler", "attention", "vigilance",
+          "limite", "limitee", ">25", "pas de donnee", "non recommande",
+          "pas adapte", "stabilite tres courte", "g5 contre", "nacl incompatible"
+        ].some(k => low.includes(k));
+      }
+
+      function isDeviceInfo(text) {
+        const low = normalizeLocal(text);
+        return low.includes("seringue pp") || low.includes("diffuseur elastomere") || low.includes("poche") || low.includes("pse") || low.includes("pompe") || low.includes("rythmic") || low.includes("micrel") || low.includes("anapa");
       }
 
       function isSolventOnly(text) {
         const low = normalizeLocal(text);
         const hasConc = low.includes("mg/ml") || low.includes("mui/ml");
         const hasStab = low.includes("stab") || low.includes(" h") || low.includes(" j") || low.includes("min") || low.includes("rt") || low.includes("°c");
-        const hasSolvent = low.includes("nacl") || low.includes("g5") || low.includes("eppi") || low.includes("eau ppi") || low.includes("soluté non précisé") || low.includes("solvant fourni") || low.includes("prêt") || low.includes("pret") || low.includes("extraneal") || low.includes("dianéal") || low.includes("dianeal");
+        const hasSolvent = low.includes("nacl") || low.includes("g5") || low.includes("eppi") || low.includes("eau ppi") || low.includes("solute non precise") || low.includes("solvant fourni") || low.includes("pret") || low.includes("extraneal") || low.includes("dianeal");
         return hasSolvent && !hasConc && !hasStab;
       }
 
       function getSolvent(text) {
         const low = normalizeLocal(text);
-        if (low.includes("nacl") && low.includes("g5")) return "NaCl/G5";
+        if (low.includes("nacl") && low.includes("g5")) return "NaCl 0,9 % ou G5";
         if (low.includes("nacl")) return low.includes("exclusivement") ? "NaCl 0,9 % exclusivement" : "NaCl 0,9 %";
         if (low.includes("g5")) return low.includes("exclusivement") ? "G5 exclusivement" : "G5";
         if (low.includes("eppi") || low.includes("eau ppi")) return "EPPI";
-        if (low.includes("soluté non précisé")) return "Soluté non précisé";
-        if (low.includes("prêt") || low.includes("pret")) return "Prêt à l’emploi";
+        if (low.includes("solute non precise")) return "Soluté non précisé";
+        if (low.includes("pret")) return "Prêt à l’emploi";
         if (low.includes("extraneal")) return "Extraneal®";
-        if (low.includes("dianéal") || low.includes("dianeal")) return "Dianéal®";
+        if (low.includes("dianeal")) return "Dianéal®";
         if (low.includes("solvant fourni")) return "Solvant fourni";
         return "Soluté non précisé";
       }
 
       function hasConcentration(text) {
         const low = normalizeLocal(text);
-        return low.includes("mg/ml") || low.includes("mui/ml") || low.includes("conc") || low.includes("dilution") || low.includes("restriction hydrique");
+        return low.includes("mg/ml") || low.includes("mui/ml") || low.includes("conc") || low.includes("dilution") || low.includes("restriction hydrique") || /\d+\s*(mg|g|mui)\s*\/\s*\d+\s*ml/i.test(text);
       }
 
       function hasStability(text) {
@@ -1794,8 +3586,8 @@
         const colonIndex = out.indexOf(":");
         if (colonIndex >= 0) out = out.slice(0, colonIndex);
         const parIndex = out.indexOf("(");
-        if (parIndex >= 0) out = out.slice(0, parIndex);
-        ["conc max", "Conc max", "conc", "Conc", "concentration", "Concentration", ":"].forEach(function(token) {
+        if (parIndex >= 0 && !/\d+\s*(g|mg)\s*\//i.test(out)) out = out.slice(0, parIndex);
+        ["conc max", "Conc max", "conc finale", "conc commerciale", "conc pipéracilline", "conc ticarcilline", "conc", "Conc", "concentration", "Concentration", ":"].forEach(function(token) {
           out = out.split(token).join("");
         });
         out = out.trim();
@@ -1811,19 +3603,23 @@
         ["stabilité", "Stabilité", "stab", "Stab", ":"].forEach(function(token) {
           out = out.split(token).join("");
         });
-        out = out.trim();
-        return out || "Stab non précisée";
+        return out.trim() || "Stab non précisée";
       }
 
       function classifyStability(text) {
         const low = normalizeLocal(text);
-        if (low.includes("1 h") || low.includes("2 h") || low.includes("4 h") || low.includes("6 h") || low.includes("60 min")) return "time-stop";
-        if (low.includes("8 h") || low.includes("9 h") || low.includes("12 h") || low.includes("32°")) return "time-warn";
+        if (low.includes("1 h") || low.includes("2 h") || low.includes("4 h") || low.includes("6 h") || low.includes("60 min") || low.includes("<12 h")) return "time-stop";
+        if (low.includes("8 h") || low.includes("9 h") || low.includes("12 h") || low.includes("32°") || low.includes("depend")) return "time-warn";
         return "time-ok";
       }
 
+      function splitExamples(text) {
+        const cleaned = text.replace(/^ex\s*/i, "").trim();
+        return cleaned.split(/\s+ou\s+|\s*\/\s*(?=\s*ex\s)/i).map(x => x.trim()).filter(Boolean);
+      }
+
       function newBlock(solvent) {
-        return { solvent: solvent || "Soluté non précisé", conc: "", stabs: [], extras: [] };
+        return { solvent: solvent || "Soluté non précisé", conc: "", stabs: [], devices: [], examples: [], warnings: [], extras: [] };
       }
 
       const blocks = [];
@@ -1836,12 +3632,21 @@
           const piece = pieceRaw.trim();
           if (!piece) return;
           const low = normalizeLocal(piece);
+          const warningOnly = isCritical(piece);
 
-          const warningOnly = (low.includes("g5") || low.includes("nacl")) && (low.includes("déconseillé") || low.includes("deconseille") || low.includes("incompatible") || low.includes("contre-indiqué") || low.includes("contre indique"));
+          if (/^ex\s+/i.test(piece)) {
+            splitExamples(piece).forEach(ex => addUnique(current.examples, ex));
+            return;
+          }
+
+          if (isDeviceInfo(piece) && !hasConcentration(piece) && !hasStability(piece)) {
+            addUnique(current.devices, piece);
+            return;
+          }
 
           if (isSolventOnly(piece) && !warningOnly) {
             activeSolvent = getSolvent(piece);
-            if (current.conc || current.stabs.length || current.extras.length) {
+            if (current.conc || current.stabs.length || current.extras.length || current.warnings.length || current.examples.length || current.devices.length) {
               blocks.push(current);
               current = newBlock(activeSolvent);
             } else {
@@ -1851,7 +3656,7 @@
           }
 
           if (hasConcentration(piece)) {
-            if (current.conc || current.stabs.length || current.extras.length) {
+            if (current.conc || current.stabs.length || current.extras.length || current.warnings.length || current.examples.length) {
               blocks.push(current);
               current = newBlock(activeSolvent);
             }
@@ -1861,9 +3666,8 @@
               activeSolvent = solventFromPiece;
             }
             current.conc = cleanConcentration(piece);
-            if (piece.indexOf(":") >= 0 && hasStability(piece)) {
-              addUnique(current.stabs, cleanStability(piece));
-            }
+            if (piece.indexOf(":") >= 0 && hasStability(piece)) addUnique(current.stabs, cleanStability(piece));
+            if (isCritical(piece)) addUnique(current.warnings, piece);
             return;
           }
 
@@ -1872,37 +3676,160 @@
               blocks.push(current);
               const clone = newBlock(current.solvent);
               clone.conc = current.conc || "C° non précisée";
-              clone.extras = current.extras.slice();
+              clone.devices = current.devices.slice();
               current = clone;
             }
             addUnique(current.stabs, cleanStability(piece));
+            if (isCritical(piece)) addUnique(current.warnings, piece);
             return;
           }
 
-          if (warningOnly || (!low.includes("g/") && !low.includes("amp +") && !low.includes("diffuseur élastomère") && !low.includes("poche") && !low.includes("pse"))) {
-            addUnique(current.extras, piece);
-          }
+          if (warningOnly) addUnique(current.warnings, piece);
+          else addUnique(current.extras, piece);
         });
 
-        if (current.conc || current.stabs.length || current.extras.length) blocks.push(current);
+        if (current.conc || current.stabs.length || current.extras.length || current.warnings.length || current.examples.length || current.devices.length) blocks.push(current);
       });
+
+      if (!blocks.length) return '<div class="info-line">' + escapeHTML(value) + '</div>';
+
+      function durationToHours(raw) {
+        const txt = normalizeLocal(raw).replace(/,/g, ".");
+        const day = txt.match(/(\d+(?:\.\d+)?)\s*j/);
+        if (day) return parseFloat(day[1]) * 24;
+        const hour = txt.match(/(\d+(?:\.\d+)?)\s*h/);
+        if (hour) return parseFloat(hour[1]);
+        const min = txt.match(/(\d+(?:\.\d+)?)\s*min/);
+        if (min) return parseFloat(min[1]) / 60;
+        return null;
+      }
+
+      function thermalScore(hours) {
+        if (hours == null) return 0;
+        if (hours >= 168) return 5;
+        if (hours >= 48) return 4;
+        if (hours >= 24) return 3;
+        if (hours >= 12) return 2;
+        if (hours >= 6) return 1;
+        return 0;
+      }
+
+      function thermalClass(score) {
+        if (score >= 3) return "ok";
+        if (score >= 1) return "warn";
+        return "stop";
+      }
+
+      function parseThermalProfile(text) {
+        const src = text || "";
+        const points = [];
+
+        function add(temp, label, durationText) {
+          const cleanDuration = (durationText || "").trim();
+          if (!cleanDuration) return;
+          const h = durationToHours(cleanDuration);
+          const score = thermalScore(h);
+          const existing = points.find(p => p.temp === temp && p.duration === cleanDuration);
+          if (!existing) {
+            points.push({ temp, label, duration: cleanDuration, score, cls: thermalClass(score), width: Math.max(8, score * 20) });
+          }
+        }
+
+        function tempsFromSegment(segment) {
+          const fl = normalizeLocal(segment);
+          const temps = [];
+          function push(temp, label) {
+            if (!temps.some(t => t.temp === temp)) temps.push({ temp, label });
+          }
+          if (/(?:2\s*[–\-aà]\s*8|(?<!\d)(?:4|5|8))\s*°?\s*c/i.test(segment) || fl.includes("frigo") || fl.includes("refriger")) push(4, "Frigo");
+          if (/25\s*°?\s*c/i.test(segment) || fl.includes("rt") || fl.includes("ambiante") || fl.includes("ambient")) push(25, "Ambiant");
+          if (/30\s*°?\s*c/i.test(segment)) push(30, "30°C");
+          if (/32\s*°?\s*c/i.test(segment)) push(32, "32°C");
+          if (/37\s*°?\s*c/i.test(segment)) push(37, "37°C");
+          return temps;
+        }
+
+        // Découpe par vrais séparateurs de conditions. La virgule est conservée si elle sert de décimale.
+        const segments = src
+          .split(/\s*;\s*|\s+\/\s+|,(?=\s*(?:[<>]?\s*\d|RT|rt|ambiante|frigo|[234578]\s*°))/)
+          .map(x => x.trim())
+          .filter(Boolean);
+
+        segments.forEach(segment => {
+          // Une même condition peut être écrite : "24 h à 25°C et 32°C".
+          const durationMatches = Array.from(segment.matchAll(/(?:>|<|≥|≤)?\s*\d+(?:[,.]\d+)?\s*(?:j|jours?|h|heures?|min)\b/ig));
+          if (!durationMatches.length) return;
+
+          durationMatches.forEach((match, idx) => {
+            const duration = match[0].trim();
+            const nextIndex = idx + 1 < durationMatches.length ? durationMatches[idx + 1].index : segment.length;
+            const localContext = segment.slice(match.index, nextIndex);
+            const beforeContext = segment.slice(Math.max(0, match.index - 24), match.index);
+            if (/run[- ]?out|rinçage|perfusion résiduelle/i.test(localContext) || /run[- ]?out\s*$/i.test(beforeContext)) return;
+            let temps = tempsFromSegment(localContext);
+
+            // Si la température est placée avant la durée ou sur le segment entier.
+            if (!temps.length) temps = tempsFromSegment(segment);
+
+            // Par défaut, lorsqu'une stabilité est donnée sans température explicite,
+            // on considère qu'elle correspond à la température ambiante.
+            if (!temps.length) temps = [{ temp: 25, label: "Ambiant" }];
+
+            temps.forEach(t => add(t.temp, t.label, duration));
+          });
+        });
+
+        return points.sort((a,b) => a.temp - b.temp);
+      }
+
+      function thermalInterpretation(points) {
+        if (!points.length) return "";
+        const hot = points.filter(p => p.temp >= 32).sort((a,b) => b.score - a.score)[0];
+        const room = points.filter(p => p.temp === 25).sort((a,b) => b.score - a.score)[0];
+        const coldOnly = points.every(p => p.temp <= 8);
+        if (hot && hot.score >= 3) return "Compatible été extérieur : stabilité ≥24 h documentée à température élevée, à confirmer selon concentration et dispositif.";
+        if (hot && hot.score < 3) return "Thermosensible : éviter le port/diffuseur prolongé >30°C sans maîtrise thermique.";
+        if (room && room.score >= 3) return "Stable à température ambiante : pas d’extrapolation automatique au port extérieur chaud.";
+        if (room && room.score >= 1) return "Usage ambiant possible mais fractionnement/changement fréquent à discuter.";
+        if (coldOnly) return "Donnée surtout réfrigérée : stabilité terrain non démontrée.";
+        return "Lecture thermique à interpréter selon concentration, solvant et contenant.";
+      }
+
+      function renderThermalProfile(text) {
+        const points = parseThermalProfile(text);
+        if (!points.length) return "";
+        const rows = points.map(p => '<div class="thermal-point"><span class="thermal-temp">' + escapeHTML(p.label) + '</span><div class="thermal-track" aria-hidden="true"><div class="thermal-fill ' + p.cls + '" style="width:' + Math.min(100, Math.max(8, p.width)) + '%"></div></div><span class="thermal-duration">' + escapeHTML(p.duration) + '</span></div>').join('');
+        return '<div class="thermal-card"><div class="thermal-title"><span>Lecture thermique</span></div><div class="thermal-list">' + rows + '</div><div class="thermal-interpretation">' + escapeHTML(thermalInterpretation(points)) + '</div></div>';
+      }
 
       const finalBlocks = blocks.map(function(block) {
         return {
           solvent: block.solvent || "Soluté non précisé",
           conc: block.conc || "C° non précisée",
           stab: block.stabs[0] || "Stab non précisée",
+          devices: block.devices || [],
+          examples: block.examples || [],
+          warnings: block.warnings || [],
           extras: block.extras || []
         };
       });
 
       return '<div class="stab-block">' + finalBlocks.map(function(block) {
+        const deviceHtml = block.devices.map(d => '<span class="chip device-label">' + escapeHTML(d) + '</span>').join('');
+        const exampleHtml = block.examples.length ? '<div class="example-list">' + block.examples.map(ex => '<span class="example-pill">' + escapeHTML(ex) + '</span>').join('') + '</div>' : '';
+        const warningHtml = block.warnings.length ? block.warnings.map(w => '<div class="alert-danger">' + escapeHTML(w) + '</div>').join('') : '';
+        const extraHtml = block.extras.length ? '<div class="info-line">' + block.extras.map(escapeHTML).join(' · ') + '</div>' : '';
+        const thermalHtml = renderThermalProfile(block.stab + ' ' + block.warnings.join(' ') + ' ' + block.extras.join(' '));
         return '<div class="stab-row"><div class="stab-meta">'
-          + '<span class="chip solvent">' + block.solvent + '</span>'
-          + '<span class="chip conc">' + block.conc + '</span>'
-          + '<span class="chip ' + classifyStability(block.stab) + '">' + block.stab + '</span>'
+          + '<span class="chip solvent">' + escapeHTML(block.solvent) + '</span>'
+          + '<span class="chip conc">' + escapeHTML(block.conc) + '</span>'
+          + '<span class="chip ' + classifyStability(block.stab) + '">' + escapeHTML(block.stab) + '</span>'
+          + deviceHtml
           + '</div>'
-          + (block.extras.length ? '<div class="stab-free">' + block.extras.join(' · ') + '</div>' : '')
+          + exampleHtml
+          + warningHtml
+          + extraHtml
+          + thermalHtml
           + '</div>';
       }).join('') + '</div>';
     }
@@ -1912,7 +3839,7 @@
       return `
         <div class="device ${discordant ? "discordant" : ""}">
           <h4>${title}</h4>
-          <div class="${empty ? "empty" : ""}">${empty ? "--" : formatStabilityValue(value)}</div>
+          <div class="${empty ? "empty" : ""}">${empty ? "--" : value}</div>
         </div>
       `;
     }
@@ -1922,7 +3849,7 @@
       if (!values.length) return { text: "--", discordant: false };
       const unique = [...new Set(values)];
       return {
-        text: unique.map(v => `<span class="${unique.length > 1 ? "diff" : ""}">${v}</span>`).join("<br><br>"),
+        text: unique.map(v => `<div class="${unique.length > 1 ? "diff" : ""}">${formatStabilityValue(v)}</div>`).join(""),
         discordant: unique.length > 1
       };
     }
@@ -1945,12 +3872,103 @@
       `).join("");
     }
 
+
+
+    function metaBadges(group) {
+      const confidence = sourceConfidence(group.sources);
+      const limits = allLimits(group.sources).filter(l => !["Concentration-dépendant", "Solvant-dépendant"].includes(l));
+      const badges = [`<span class="badge conf-${confidence.level.toLowerCase()}">${confidence.label}</span>`];
+      limits.slice(0, 4).forEach(l => {
+        const cls = l === "Photoprotection" ? "photo" : l === "Non extrapolable" || l === "Risque dégradation" ? "stop" : "limit";
+        badges.push(`<span class="badge ${cls}">${l}</span>`);
+      });
+      if (group.sources.some(isSummerCompatible)) badges.push('<span class="badge summer">Compatible été extérieur</span>');
+      if (hasYDataFor(group.molecule)) badges.push('<span class="badge y">Y-site</span>');
+      return `<div class="meta-strip">${badges.join("")}</div>`;
+    }
+
+    function primaryRecommendation(group) {
+      const text = normalize(group.sources.map(s => `${s.reco} ${s.mode} ${s.note}`).join(" "));
+      const out = [];
+      if (text.includes("discontinue") || text.includes("non recommande")) out.push('<span class="badge stop">Discontinue / continu non recommandé</span>');
+      else if (text.includes("fraction")) out.push('<span class="badge warn">Fractionnement nécessaire</span>');
+      else if (text.includes("continu") || text.includes("prolonge")) out.push('<span class="badge ok">Continu/prolongé possible</span>');
+      else out.push('<span class="badge warn">Modalité à vérifier</span>');
+
+      if (group.sources.some(s => s.elastomere && s.elastomere !== "--")) out.push('<span class="badge ok">Élastomère documenté</span>');
+      if (group.sources.some(s => s.pse && s.pse !== "--")) out.push('<span class="badge lab">PSE documenté</span>');
+      if (group.sources.some(s => hasCriticalText(rowText(s)))) out.push('<span class="badge stop">Restriction/alerte</span>');
+      return `<div class="clinical-summary"><strong>Synthèse</strong>${out.join("")}</div>`;
+    }
+
+    function comparisonTable(sources) {
+      if (!showComparisonEl.checked || sources.length < 2) return "";
+      return `<details class="source-details" open>
+        <summary>Comparaison rapide des sources</summary>
+        <div class="source-content">
+          <table class="compare-table">
+            <thead><tr><th>Source</th><th>Niveau de preuve</th><th>Reco</th><th>Poche</th><th>PSE</th><th>Élastomère</th><th>ANAPA</th><th>Micrel</th></tr></thead>
+            <tbody>${sources.map(s => {
+              const c = confidenceLevel(s);
+              const hasData = value => value && value !== "--";
+              return `<tr><td>${s.source}</td><td>${c.label}</td><td>${s.reco || "--"}</td><td>${hasData(s.poche) ? "oui" : "--"}</td><td>${hasData(s.pse) ? "oui" : "--"}</td><td>${hasData(s.elastomere) ? "oui" : "--"}</td><td>${hasData(s.anapa) ? "oui" : "--"}</td><td>${hasData(s.micrel) ? "oui" : "--"}</td></tr>`;
+            }).join("")}</tbody>
+          </table>
+        </div>
+      </details>`;
+    }
+
+    const frequentSupportYDrugs = [
+      "Paracétamol", "Ondansétron", "Dexaméthasone", "Méthylprednisolone",
+      "Morphine", "Midazolam", "Kétamine", "Furosémide", "Héparine sodique",
+      "Potassium chlorure", "Magnésium sulfate", "Calcium gluconate",
+      "Calcium chlorure", "Bicarbonate de sodium", "Nutrition parentérale",
+      "Nicardipine", "Labétalol", "Naloxone", "Octréotide / somatostatine"
+    ];
+
+    const antiInfectiveYNames = new Set(data.map(d => yKey(d.molecule)));
+
+    function yCompatibilityPanel(molecule) {
+      if (!showYEl.checked) return "";
+      const sourceName = findYName(molecule);
+      if (!sourceName) return "";
+      const selected = yDrugEl.value;
+      const selectedName = selected ? findYName(selected) : "";
+      let entries = Object.entries(yCompat[sourceName] || {});
+
+      if (selectedName) {
+        entries = entries.filter(([name]) => yKey(name) === yKey(selectedName));
+      } else {
+        const preferred = new Set(frequentSupportYDrugs.map(yKey));
+        entries = entries
+          .filter(([name]) => preferred.has(yKey(name)) && !antiInfectiveYNames.has(yKey(name)))
+          .sort((a, b) => frequentSupportYDrugs.map(yKey).indexOf(yKey(a[0])) - frequentSupportYDrugs.map(yKey).indexOf(yKey(b[0])));
+      }
+
+      if (!entries.length) return "";
+      const priority = { I: 0, "C/I": 1, "?": 2, C: 3 };
+      const shown = selectedName
+        ? entries.sort((a,b) => (priority[a[1]] ?? 9) - (priority[b[1]] ?? 9)).slice(0, 50)
+        : entries.slice(0, 10);
+
+      return `<details class="source-details">
+        <summary>Compatibilités en Y — molécules fréquemment associées</summary>
+        <div class="source-content">
+          <table class="y-table">
+            <thead><tr><th>Avec</th><th>Statut</th></tr></thead>
+            <tbody>${shown.map(([name, status]) => `<tr><td>${name}</td><td class="${yStatusClass(status)}">${yStatusLabel(status)}</td></tr>`).join("")}</tbody>
+          </table>
+          ${selected ? "" : '<p class="info-line">Affichage centré sur les molécules support fréquemment coadministrées avec les anti-infectieux, hors associations ATB/ATB.</p>'}
+        </div>
+      </details>`;
+    }
+
     function render() {
       const grouped = filterData();
       countPill.textContent = `${grouped.length} molécule${grouped.length > 1 ? "s" : ""}`;
 
       if (!grouped.length) {
-        resultsEl.innerHTML = `<div class="no-result">Aucune donnée retrouvée pour ces critères.</div>`;
+        resultsEl.innerHTML = `<div class="no-result">Aucune molécule de la base stabilité ne répond à ces critères ou n’est compatible en Y avec la molécule sélectionnée.</div>`;
         return;
       }
 
@@ -1960,19 +3978,7 @@
         const elastomere = summarizeDevice(group.sources, "elastomere");
         const anapa = summarizeDevice(group.sources, "anapa");
         const micrel = summarizeDevice(group.sources, "micrel");
-        const recoValues = [...new Set(group.sources.map(s => s.reco).filter(Boolean))];
-
-        function recoBadge(text) {
-          const lower = text.toLowerCase();
-          let cls = "ok";
-          if (lower.includes("discontinue") || lower.includes("non recommandé")) cls = "stop";
-          else if (lower.includes("fraction") || lower.includes("12 h") || lower.includes("temp") || lower.includes("vigilance")) cls = "warn";
-          else if (lower.includes("physicochimique")) cls = "lab";
-          return `<span class="badge ${cls}">${text}</span>`;
-        }
-
-        const recos = recoValues.map(recoBadge).join("");
-        const modes = [...new Set(group.sources.map(s => s.mode).filter(Boolean))].join("<br>");
+        const confidence = sourceConfidence(group.sources);
         const hasDiscordance = [poche, pse, elastomere, anapa, micrel].some(x => x.discordant);
 
         return `
@@ -1982,12 +3988,10 @@
                 <h3>${group.molecule}</h3>
                 <div class="source">${group.sources.length} source${group.sources.length > 1 ? "s" : ""} intégrée${group.sources.length > 1 ? "s" : ""}${hasDiscordance ? " · discordance détectée" : ""}</div>
               </div>
-              <div class="mode-tag">${recos || '<span class="badge warn">Pas de recommandation synthétique</span>'}</div>
+              <div class="header-tags"><span class="badge conf-${confidence.level.toLowerCase()}">${confidence.label}</span>${hasDiscordance ? '<span class="badge stop">Discordance</span>' : ''}</div>
             </div>
-            <div class="recommendation">
-              <strong>Recommandations / modalités</strong>
-              <div>${modes || "--"}</div>
-            </div>
+            ${metaBadges(group)}
+            ${primaryRecommendation(group)}
             <div class="device-grid">
               ${deviceBlock("Poche soluté", poche.text, poche.discordant)}
               ${deviceBlock("PSE seringue PP", pse.text, pse.discordant)}
@@ -1997,6 +4001,8 @@
             </div>
             <div class="notes">
               <strong>Détail des sources :</strong>
+              ${comparisonTable(group.sources)}
+              ${yCompatibilityPanel(group.molecule)}
               ${sourceDetails(group.sources)}
             </div>
           </article>
@@ -2004,14 +4010,27 @@
       }).join("");
     }
 
-    [searchEl, deviceEl, sourceEl].forEach(el => el.addEventListener("input", render));
+    function populateYDrugFilter() {
+      const names = [...new Set(Object.keys(yCompat).flatMap(n => [n, ...Object.keys(yCompat[n] || {})]))]
+        .sort((a,b) => a.localeCompare(b, "fr"));
+      yDrugEl.innerHTML = '<option value="">Choisir une molécule</option>' + names.map(n => `<option value="${n}">${n}</option>`).join("");
+    }
+
+    [searchEl, deviceEl, sourceEl, useCaseEl, decisionEl, yDrugEl, showComparisonEl, showYEl].forEach(el => el.addEventListener("input", render));
     resetEl.addEventListener("click", () => {
       searchEl.value = "";
       deviceEl.value = "";
       sourceEl.value = "";
-      render();
+      useCaseEl.value = "";
+      decisionEl.value = "";
+      yDrugEl.value = "";
+      showComparisonEl.checked = true;
+      showYEl.checked = true;
+      populateYDrugFilter();
+    render();
     });
 
+    populateYDrugFilter();
     render();
   </script>
 </body>
