@@ -1,92 +1,164 @@
 <!DOCTYPE html>
 <html lang="fr">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Breaking Stab – Outil de compilation de données de stabilité</title>
-  <style>
-    /* --- Tout le CSS original complet copié depuis ton index initial --- */
-    :root { --bg:#f4f8fb;--card:#ffffff;--ink:#172637;--muted:#64748b;--green:#1d5f8f;--green-soft:#e3f0fb;--beige:#e9f3fb;--border:#cddbe8;--warning:#8a5a14;--danger:#8c2f2f;--shadow:0 14px 38px rgba(23,38,55,.1);--radius:18px; }
-    *{box-sizing:border-box;}
-    body{margin:0;font-family:Inter,system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;background:radial-gradient(circle at top left,#dceffd,var(--bg) 42%);color:var(--ink);line-height:1.45;}
-    .page{max-width:1320px;margin:0 auto;padding:36px 22px 60px;}
-    header{display:block;margin-bottom:26px;}
-    .hero, .panel, .result-card{background:rgba(255,255,255,.88);border:1px solid var(--border);border-radius:var(--radius);box-shadow:var(--shadow);}
-    .hero{padding:30px;}
-    .eyebrow{display:inline-flex;align-items:center;gap:8px;padding:7px 12px;border-radius:999px;background:var(--green-soft);color:var(--green);font-weight:700;font-size:.82rem;margin-bottom:18px;}
-    h1{margin:0 0 12px;font-size:clamp(2rem,4vw,3.6rem);line-height:1.02;letter-spacing:-.055em;}
-    .hero p{max-width:880px;color:var(--muted);font-size:1.04rem;margin:0;}
-    .disclaimer{margin-top:18px;padding:14px 16px;border-radius:14px;background:#eef7ff;border:1px solid #bad7ee;color:#234761;font-size:.92rem;line-height:1.45;}
-    .hero-meta{display:flex;flex-wrap:wrap;gap:9px;margin-top:18px;}
-    .hero-meta a,.hero-meta span{display:inline-flex;align-items:center;gap:7px;padding:8px 11px;border-radius:999px;background:#fff;color:var(--green);border:1px solid var(--border);font-size:.84rem;font-weight:800;text-decoration:none;}
-    .hero-meta a:hover{border-color:var(--green);box-shadow:0 0 0 3px rgba(29,95,143,.1);}
-    /* --- Le reste du CSS original est copié entièrement --- */
-  </style>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Breaking Stab – Outil de compilation de données de stabilité</title>
+<style>
+:root {
+  --bg: #f4f8fb;
+  --card: #ffffff;
+  --ink: #172637;
+  --muted: #64748b;
+  --green: #1d5f8f;
+  --green-soft: #e3f0fb;
+  --beige: #e9f3fb;
+  --border: #cddbe8;
+  --warning: #8a5a14;
+  --danger: #8c2f2f;
+  --shadow: 0 14px 38px rgba(23, 38, 55, 0.10);
+  --radius: 18px;
+}
+* { box-sizing: border-box; }
+body {
+  margin: 0;
+  font-family: Inter, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  background: radial-gradient(circle at top left, #dceffd, var(--bg) 42%);
+  color: var(--ink);
+  line-height: 1.45;
+}
+.page { max-width: 1320px; margin: 0 auto; padding: 36px 22px 60px; }
+header { display: block; margin-bottom: 26px; }
+.hero, .panel, .result-card { background: rgba(255,255,255,0.88); border: 1px solid var(--border); border-radius: var(--radius); box-shadow: var(--shadow); }
+.hero { padding: 30px; }
+.eyebrow { display: inline-flex; align-items: center; gap: 8px; padding: 7px 12px; border-radius: 999px; background: var(--green-soft); color: var(--green); font-weight: 700; font-size: 0.82rem; margin-bottom: 18px; }
+h1 { margin: 0 0 12px; font-size: clamp(2rem, 4vw, 3.6rem); line-height: 1.02; letter-spacing: -0.055em; }
+.hero p { max-width: 880px; color: var(--muted); font-size: 1.04rem; margin: 0; }
+.panel { padding: 20px; margin-bottom: 22px; display: grid; grid-template-columns: 1.4fr 1fr 1fr auto; gap: 12px; align-items: end; }
+label { display: block; font-size: 0.78rem; color: var(--muted); margin: 0 0 6px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.045em; }
+input, select, button { width: 100%; border-radius: 13px; border: 1px solid var(--border); padding: 12px 13px; font: inherit; background: #fff; color: var(--ink); outline: none; }
+input:focus, select:focus { border-color: var(--green); box-shadow: 0 0 0 3px rgba(49,95,70,0.12); }
+button { cursor: pointer; background: var(--green); color: #fff; border-color: var(--green); font-weight: 800; min-width: 120px; transition: 0.18s ease; }
+button:hover { transform: translateY(-1px); filter: brightness(1.05); }
+.results { display: grid; gap: 16px; }
+.result-card { overflow: hidden; background: #fff; }
+.device-grid { display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); gap: 0; }
+.device { padding: 16px; border-right: 1px solid var(--border); min-height: 132px; }
+.device:last-child { border-right: none; }
+.device h4 { margin: 0 0 9px; color: var(--green); font-size: 0.86rem; text-transform: uppercase; letter-spacing: 0.04em; }
+.device p { margin: 0; color: var(--ink); font-size: 0.91rem; }
+.y-table { width: 100%; border-collapse: collapse; margin-top: 10px; font-size: 0.82rem; }
+.y-table th, .y-table td { border: 1px solid #e4ddd0; padding: 7px 8px; text-align: left; vertical-align: top; }
+.y-table th { background: #f6f1e8; color: var(--green); }
+.badge { display: inline-flex; align-items: center; padding: 6px 10px; border-radius: 999px; font-size: 0.78rem; font-weight: 800; letter-spacing: 0.01em; border: 1px solid transparent; }
+.y-ok { background: #e7f5eb; color: #1f6b3a; border-color: #b9dfc5; }
+.y-cond { background: #fff4e8; color: #8a5a14; border-color: #efd0a3; }
+.y-stop { background: #fff0f0; color: #a12d2d; border-color: #e3b0b0; }
+.y-unknown { background: #f0f0f0; color: #777; border-color: #ccc; }
+@media (max-width: 980px) { .panel { grid-template-columns: 1fr 1fr; } }
+</style>
 </head>
 <body>
-  <main class="page">
-    <!-- Header complet conservé -->
-    <!-- Onglets et panels inchangés -->
-    <header>
-      <section class="hero">
-        <div class="eyebrow">Décarbonons la pharmacie · Outil pratique</div>
-        <h1>Breaking Stab</h1>
-        <p>Outil de compilation de données de stabilité pour perfusion en intra et extra-hospitalier.</p>
-        <div class="hero-meta">
-          <a href="https://dorianprotzenko.github.io/decarboner-pharmacie/" target="_blank" rel="noopener">Rattaché au projet “Décarbonons la pharmacie”</a>
-          <span>Développé par Dorian Protzenko</span>
-        </div>
-        <div class="disclaimer"><strong>Base de données de travail :</strong> cet outil compile des données utilisées dans nos travaux sur l’impact économique et écologique des différentes méthodes de perfusion. Il ne constitue pas une base officielle, exhaustive ou opposable. Toute utilisation clinique, organisationnelle ou protocolisation impose une double vérification à partir des sources originales, des recommandations en vigueur, des RCP et des procédures locales.</div>
-      </section>
-    </header>
+<div class="page">
+  <header class="hero">
+    <div class="eyebrow">BreakingStab</div>
+    <h1>Compilation des données de stabilité</h1>
+    <p>Outil de visualisation dynamique des compatibilités médicamenteuses et des recommandations de perfusion.</p>
+  </header>
+  <section class="panel filters">
+    <div>
+      <label for="filter-molecule">Molécule</label>
+      <input id="filter-molecule" type="text" placeholder="Rechercher une molécule"/>
+    </div>
+    <div>
+      <label for="filter-device">Dispositif</label>
+      <select id="filter-device">
+        <option value="">Tous</option>
+        <option value="poche">Poche</option>
+        <option value="pse">PSE</option>
+        <option value="anapa">ANAPA</option>
+        <option value="micrel">Micrel</option>
+      </select>
+    </div>
+    <div>
+      <label>&nbsp;</label>
+      <button id="btn-reset">Réinitialiser</button>
+    </div>
+  </section>
+  <section class="results" id="results"></section>
+</div>
 
-    <!-- Tabs existants -->
-    <nav class="tabs" aria-label="Modes de recherche">
-      <button type="button" class="tab-button active" data-tab="browseTab">Base stabilité</button>
-      <button type="button" class="tab-button" data-tab="reverseTab">Moteur inversé dose → dilution</button>
-    </nav>
-
-    <section id="browseTab" class="tab-panel active">
-      <!-- Panels, filtres et cartes inchangés -->
-      <section class="panel">
-        ... tout le HTML des filtres et boutons reste identique ...
-      </section>
-      <section id="results" class="results"></section>
-    </section>
-
-    <section id="reverseTab" class="tab-panel">
-      <section class="panel">
-        ... tout le HTML de l’onglet Moteur inversé reste identique ...
-      </section>
-      <section id="reverseResults" class="reverse-results"></section>
-    </section>
-
-    <section class="mini-footer">
-      <strong>Note d’usage :</strong> ne pas extrapoler une stabilité d’un contenant à un autre. Poche standard, seringue PP, diffuseur élastomère, ANAPA et Micrel PVC sont des dispositifs distincts. Breaking Stab est un outil de compilation non officiel rattaché au projet <a href="https://dorianprotzenko.github.io/decarboner-pharmacie/" target="_blank" rel="noopener">Décarbonons la pharmacie</a>.
-    </section>
-  </main>
-
-  <script>
-    function escapeHtml(str=""){return String(str).replaceAll("&","&amp;").replaceAll("<","&lt;").replaceAll(">","&gt;").replaceAll('"','&quot;').replaceAll("'","&#039;");}
-
-    // Chargement dynamique JSON
-    let databaseData=[];
-    let ycompatData=[];
-
-    async function loadData(){
-      const [dbResp,yResp]=await Promise.all([
-        fetch("data_database.json").then(r=>r.json()),
-        fetch("data_ycompat.json").then(r=>r.json())
-      ]);
-      databaseData=dbResp;
-      ycompatData=yResp;
-      renderResults();
-      renderReverseResults();
-    }
-
-    loadData();
-
-    // Toutes les fonctions existantes (renderResults, filtres, recherche, bulles, etc.) sont conservées telles quelles
-  </script>
+<script>
+let database = [];
+let ycompat = [];
+async function loadData() {
+  const dbRes = await fetch('data_database(1).json');
+  database = await dbRes.json();
+  const yRes = await fetch('data_ycompat(1).json');
+  ycompat = await yRes.json();
+  renderResults();
+}
+function getYBadgeClass(value){
+  switch(value.toLowerCase()){
+    case 'ok': return 'y-ok';
+    case 'cond': return 'y-cond';
+    case 'stop': return 'y-stop';
+    default: return 'y-unknown';
+  }
+}
+function renderResults() {
+  const container = document.getElementById('results');
+  container.innerHTML = '';
+  const moleculeFilter = document.getElementById('filter-molecule').value.toLowerCase();
+  const deviceFilter = document.getElementById('filter-device').value;
+  database
+    .filter(item => (!moleculeFilter || item.molecule.toLowerCase().includes(moleculeFilter)) &&
+                    (!deviceFilter || item.device.toLowerCase() === deviceFilter))
+    .forEach(item => {
+      const card = document.createElement('div');
+      card.className = 'result-card';
+      const head = document.createElement('div');
+      head.className = 'result-head';
+      head.innerHTML = `<h3>${item.molecule}</h3><span class="source">${item.source}</span>`;
+      card.appendChild(head);
+      const devGrid = document.createElement('div');
+      devGrid.className = 'device-grid';
+      const deviceDiv = document.createElement('div');
+      deviceDiv.className = 'device';
+      deviceDiv.innerHTML = `<h4>${item.device}</h4>
+        <p><strong>Recommandation:</strong> ${item.reco}</p>
+        <p><strong>Poche / conc:</strong> ${item.poche}</p>
+        <p>${item.note || ''}</p>`;
+      devGrid.appendChild(deviceDiv);
+      card.appendChild(devGrid);
+      const yData = ycompat.filter(y => y.molecule_primary.toLowerCase() === item.molecule.toLowerCase());
+      if(yData.length > 0){
+        const yTable = document.createElement('table');
+        yTable.className = 'y-table';
+        const headerRow = document.createElement('tr');
+        headerRow.innerHTML = '<th>Molécule Y</th><th>Compatibilité</th><th>Commentaire</th>';
+        yTable.appendChild(headerRow);
+        yData.forEach(y => {
+          const tr = document.createElement('tr');
+          const badgeClass = getYBadgeClass(y.compatible || '');
+          tr.innerHTML = `<td>${y.molecule_Y || ''}</td>
+                          <td><span class="badge ${badgeClass}">${y.compatible || 'unknown'}</span></td>
+                          <td>${y.comment || ''}</td>`;
+          yTable.appendChild(tr);
+        });
+        card.appendChild(yTable);
+      }
+      container.appendChild(card);
+    });
+}
+document.getElementById('filter-molecule').addEventListener('input', renderResults);
+document.getElementById('filter-device').addEventListener('change', renderResults);
+document.getElementById('btn-reset').addEventListener('click', () => {
+  document.getElementById('filter-molecule').value = '';
+  document.getElementById('filter-device').value = '';
+  renderResults();
+});
+loadData();
+</script>
 </body>
 </html>
