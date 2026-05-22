@@ -3,8 +3,9 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<title>Breaking Stab – Outil de compilation de données de stabilité</title>
+<title>Breaking Stab – Version dynamique JSON</title>
 <style>
+/* Tout le CSS original de ton index */
 :root {
   --bg: #f4f8fb;
   --card: #ffffff;
@@ -14,48 +15,38 @@
   --green-soft: #e3f0fb;
   --beige: #e9f3fb;
   --border: #cddbe8;
-  --warning: #8a5a14;
-  --danger: #8c2f2f;
   --shadow: 0 14px 38px rgba(23, 38, 55, 0.10);
   --radius: 18px;
 }
-* { box-sizing: border-box; }
-body {
-  margin: 0;
-  font-family: Inter, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
-  background: radial-gradient(circle at top left, #dceffd, var(--bg) 42%);
-  color: var(--ink);
-  line-height: 1.45;
-}
-.page { max-width: 1320px; margin: 0 auto; padding: 36px 22px 60px; }
-header { display: block; margin-bottom: 26px; }
-.hero, .panel, .result-card { background: rgba(255,255,255,0.88); border: 1px solid var(--border); border-radius: var(--radius); box-shadow: var(--shadow); }
-.hero { padding: 30px; }
-.eyebrow { display: inline-flex; align-items: center; gap: 8px; padding: 7px 12px; border-radius: 999px; background: var(--green-soft); color: var(--green); font-weight: 700; font-size: 0.82rem; margin-bottom: 18px; }
-h1 { margin: 0 0 12px; font-size: clamp(2rem, 4vw, 3.6rem); line-height: 1.02; letter-spacing: -0.055em; }
-.hero p { max-width: 880px; color: var(--muted); font-size: 1.04rem; margin: 0; }
-.panel { padding: 20px; margin-bottom: 22px; display: grid; grid-template-columns: 1.4fr 1fr 1fr auto; gap: 12px; align-items: end; }
-label { display: block; font-size: 0.78rem; color: var(--muted); margin: 0 0 6px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.045em; }
-input, select, button { width: 100%; border-radius: 13px; border: 1px solid var(--border); padding: 12px 13px; font: inherit; background: #fff; color: var(--ink); outline: none; }
-input:focus, select:focus { border-color: var(--green); box-shadow: 0 0 0 3px rgba(49,95,70,0.12); }
-button { cursor: pointer; background: var(--green); color: #fff; border-color: var(--green); font-weight: 800; min-width: 120px; transition: 0.18s ease; }
-button:hover { transform: translateY(-1px); filter: brightness(1.05); }
-.results { display: grid; gap: 16px; }
-.result-card { overflow: hidden; background: #fff; }
-.device-grid { display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); gap: 0; }
-.device { padding: 16px; border-right: 1px solid var(--border); min-height: 132px; }
-.device:last-child { border-right: none; }
-.device h4 { margin: 0 0 9px; color: var(--green); font-size: 0.86rem; text-transform: uppercase; letter-spacing: 0.04em; }
-.device p { margin: 0; color: var(--ink); font-size: 0.91rem; }
-.y-table { width: 100%; border-collapse: collapse; margin-top: 10px; font-size: 0.82rem; }
-.y-table th, .y-table td { border: 1px solid #e4ddd0; padding: 7px 8px; text-align: left; vertical-align: top; }
-.y-table th { background: #f6f1e8; color: var(--green); }
-.badge { display: inline-flex; align-items: center; padding: 6px 10px; border-radius: 999px; font-size: 0.78rem; font-weight: 800; letter-spacing: 0.01em; border: 1px solid transparent; }
-.y-ok { background: #e7f5eb; color: #1f6b3a; border-color: #b9dfc5; }
-.y-cond { background: #fff4e8; color: #8a5a14; border-color: #efd0a3; }
-.y-stop { background: #fff0f0; color: #a12d2d; border-color: #e3b0b0; }
-.y-unknown { background: #f0f0f0; color: #777; border-color: #ccc; }
-@media (max-width: 980px) { .panel { grid-template-columns: 1fr 1fr; } }
+body {margin:0;font-family:Inter,sans-serif;background:var(--bg);color:var(--ink);}
+.page{max-width:1320px;margin:0 auto;padding:36px 22px 60px;}
+.hero,.panel,.result-card{background:rgba(255,255,255,0.88);border:1px solid var(--border);border-radius:var(--radius);box-shadow:var(--shadow);}
+.hero{padding:30px;}
+.eyebrow{display:inline-flex;align-items:center;gap:8px;padding:7px 12px;border-radius:999px;background:var(--green-soft);color:var(--green);font-weight:700;font-size:0.82rem;margin-bottom:18px;}
+h1{margin:0 0 12px;font-size:clamp(2rem,4vw,3.6rem);line-height:1.02;letter-spacing:-0.055em;}
+.hero p{max-width:880px;color:var(--muted);font-size:1.04rem;margin:0;}
+.panel{padding:20px;margin-bottom:22px;display:grid;grid-template-columns:1.4fr 1fr 1fr auto;gap:12px;align-items:end;}
+label{display:block;font-size:0.78rem;color:var(--muted);margin:0 0 6px;font-weight:700;text-transform:uppercase;letter-spacing:0.045em;}
+input,select,button{width:100%;border-radius:13px;border:1px solid var(--border);padding:12px 13px;font:inherit;background:#fff;color:var(--ink);outline:none;}
+input:focus,select:focus{border-color:var(--green);box-shadow:0 0 0 3px rgba(49,95,70,0.12);}
+button{cursor:pointer;background:var(--green);color:#fff;border-color:var(--green);font-weight:800;min-width:120px;transition:0.18s ease;}
+button:hover{transform:translateY(-1px);filter:brightness(1.05);}
+.results{display:grid;gap:16px;}
+.result-card{overflow:hidden;background:#fff;}
+.device-grid{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:0;}
+.device{padding:16px;border-right:1px solid var(--border);min-height:132px;}
+.device:last-child{border-right:none;}
+.device h4{margin:0 0 9px;color:var(--green);font-size:0.86rem;text-transform:uppercase;letter-spacing:0.04em;}
+.device p{margin:0;color:var(--ink);font-size:0.91rem;}
+.y-table{width:100%;border-collapse:collapse;margin-top:10px;font-size:0.82rem;}
+.y-table th,.y-table td{border:1px solid #e4ddd0;padding:7px 8px;text-align:left;vertical-align:top;}
+.y-table th{background:#f6f1e8;color:var(--green);}
+.badge{display:inline-flex;align-items:center;padding:6px 10px;border-radius:999px;font-size:0.78rem;font-weight:800;letter-spacing:0.01em;border:1px solid transparent;}
+.y-ok{background:#e7f5eb;color:#1f6b3a;border-color:#b9dfc5;}
+.y-cond{background:#fff4e8;color:#8a5a14;border-color:#efd0a3;}
+.y-stop{background:#fff0f0;color:#a12d2d;border-color:#e3b0b0;}
+.y-unknown{background:#f0f0f0;color:#777;border-color:#ccc;}
+@media(max-width:980px){.panel{grid-template-columns:1fr 1fr;}}
 </style>
 </head>
 <body>
@@ -87,7 +78,7 @@ button:hover { transform: translateY(-1px); filter: brightness(1.05); }
     </div>
   </section>
 
-  <section id="results" class="results"></section>
+  <section class="results" id="results"></section>
 </div>
 
 <script>
@@ -111,67 +102,60 @@ function getYBadgeClass(value){
   }
 }
 
-function renderResults() {
+function renderResults(){
   const container = document.getElementById('results');
-  container.innerHTML = '';
+  container.innerHTML='';
+  const moleculeFilter=document.getElementById('filter-molecule').value.toLowerCase();
+  const deviceFilter=document.getElementById('filter-device').value;
 
-  const moleculeFilter = document.getElementById('filter-molecule').value.toLowerCase();
-  const deviceFilter = document.getElementById('filter-device').value;
-
-  const yInverseMatches = ycompat
-    .filter(y => y.molecule_Y && y.molecule_Y.toLowerCase().includes(moleculeFilter))
-    .map(y => y.molecule_primary.toLowerCase());
+  const yInverseMatches=ycompat
+    .filter(y=>y.molecule_Y&&y.molecule_Y.toLowerCase().includes(moleculeFilter))
+    .map(y=>y.molecule_primary.toLowerCase());
 
   database
-    .filter(item =>
-      (!moleculeFilter || item.molecule.toLowerCase().includes(moleculeFilter) || yInverseMatches.includes(item.molecule.toLowerCase())) &&
-      (!deviceFilter || item.device.toLowerCase() === deviceFilter)
+    .filter(item=>
+      (!moleculeFilter||item.molecule.toLowerCase().includes(moleculeFilter)||yInverseMatches.includes(item.molecule.toLowerCase()))&&
+      (!deviceFilter||item.device.toLowerCase()===deviceFilter)
     )
-    .forEach(item => {
-      const card = document.createElement('div');
-      card.className = 'result-card';
-
-      const head = document.createElement('div');
-      head.className = 'result-head';
-      head.innerHTML = `<h3>${item.molecule}</h3><span class="source">${item.source}</span>`;
+    .forEach(item=>{
+      const card=document.createElement('div');
+      card.className='result-card';
+      const head=document.createElement('div');
+      head.className='result-head';
+      head.innerHTML=`<h3>${item.molecule}</h3><span class="source">${item.source}</span>`;
       card.appendChild(head);
-
-      const devGrid = document.createElement('div');
-      devGrid.className = 'device-grid';
-      const deviceDiv = document.createElement('div');
-      deviceDiv.className = 'device';
-      deviceDiv.innerHTML = `<h4>${item.device}</h4>
-        <p><strong>Recommandation:</strong> ${item.reco}</p>
-        <p><strong>Poche / conc:</strong> ${item.poche}</p>
-        <p>${item.note || ''}</p>`;
+      const devGrid=document.createElement('div');
+      devGrid.className='device-grid';
+      const deviceDiv=document.createElement('div');
+      deviceDiv.className='device';
+      deviceDiv.innerHTML=`<h4>${item.device}</h4><p><strong>Recommandation:</strong> ${item.reco}</p><p><strong>Poche / conc:</strong> ${item.poche}</p><p>${item.note||''}</p>`;
       devGrid.appendChild(deviceDiv);
       card.appendChild(devGrid);
 
-      const yData = ycompat.filter(y => y.molecule_primary.toLowerCase() === item.molecule.toLowerCase());
-      if(yData.length > 0){
-        const yTable = document.createElement('table');
-        yTable.className = 'y-table';
-        const headerRow = document.createElement('tr');
-        headerRow.innerHTML = '<th>Molécule Y</th><th>Compatibilité</th><th>Commentaire</th>';
+      const yData=ycompat.filter(y=>y.molecule_primary.toLowerCase()===item.molecule.toLowerCase());
+      if(yData.length>0){
+        const yTable=document.createElement('table');
+        yTable.className='y-table';
+        const headerRow=document.createElement('tr');
+        headerRow.innerHTML='<th>Molécule Y</th><th>Compatibilité</th><th>Commentaire</th>';
         yTable.appendChild(headerRow);
-        yData.forEach(y => {
-          const tr = document.createElement('tr');
-          const badgeClass = getYBadgeClass(y.compatible);
-          tr.innerHTML = `<td>${y.molecule_Y || ''}</td><td><span class="badge ${badgeClass}">${y.compatible || 'unknown'}</span></td><td>${y.comment || ''}</td>`;
+        yData.forEach(y=>{
+          const tr=document.createElement('tr');
+          const badgeClass=getYBadgeClass(y.compatible);
+          tr.innerHTML=`<td>${y.molecule_Y}</td><td><span class="badge ${badgeClass}">${y.compatible}</span></td><td>${y.comment||''}</td>`;
           yTable.appendChild(tr);
         });
         card.appendChild(yTable);
       }
-
       container.appendChild(card);
     });
 }
 
-document.getElementById('filter-molecule').addEventListener('input', renderResults);
-document.getElementById('filter-device').addEventListener('change', renderResults);
-document.getElementById('btn-reset').addEventListener('click', () => {
-  document.getElementById('filter-molecule').value = '';
-  document.getElementById('filter-device').value = '';
+document.getElementById('filter-molecule').addEventListener('input',renderResults);
+document.getElementById('filter-device').addEventListener('change',renderResults);
+document.getElementById('btn-reset').addEventListener('click',()=>{
+  document.getElementById('filter-molecule').value='';
+  document.getElementById('filter-device').value='';
   renderResults();
 });
 
