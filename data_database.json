@@ -1,0 +1,1222 @@
+[
+  {
+    "molecule":"Aciclovir",
+    "source":"Centre Léon Bérard – HAD + doc interne récent",
+    "mode":"Discontinue recommandée ; perfusion ≥60 min ; continu non standard",
+    "poche":"NaCl\/G5 ; conc max 5 mg\/mL ; stab 12 h RT",
+    "device":"poche",
+    "reco":"Discontinue",
+    "note":"Perfusion lente recommandée ; vigilance rénale et extravasation.",
+    "pubmed":null
+  },
+  {
+    "molecule":"Aciclovir",
+    "source":"ANAPA – données internes du laboratoire",
+    "mode":"Administration ambulatoire testée sur diffuseur non élastomère ANAPA",
+    "poche":"Soluté non précisé ; conc 10 mg\/mL ; stab 3 j à 5°C ou 30°C + run-out 20 h ; 7 j RT + run-out",
+    "device":"anapa",
+    "reco":"ANAPA possible selon conditions testées",
+    "note":"ANAPA est séparé des diffuseurs élastomères.",
+    "pubmed":null
+  },
+  {
+    "molecule":"Amikacine",
+    "source":"CH de Tourcoing 2017 + doc interne récent",
+    "mode":"Discontinue recommandée ; perfusion 30 min ; continu non recommandé",
+    "poche":"NaCl\/G5 ; conc max 20 mg\/mL ; stab 24 h RT",
+    "device":"poche",
+    "reco":"Discontinue",
+    "note":"Aminoside : administration discontinue avec suivi pharmacologique.",
+    "pubmed":null
+  },
+  {
+    "molecule":"Amikacine",
+    "source":"CH de Tourcoing 2017 + doc interne récent",
+    "mode":"Discontinue recommandée ; perfusion 30 min ; continu non recommandé",
+    "poche":"Pas de PSE continu ; IVSE intermittent uniquement",
+    "device":"pse",
+    "reco":"Discontinue",
+    "note":"Aminoside : administration discontinue avec suivi pharmacologique.",
+    "pubmed":null
+  },
+  {
+    "molecule":"Amikacine",
+    "source":"ANAPA – données internes du laboratoire",
+    "mode":"Administration ambulatoire testée sur diffuseur non élastomère ANAPA",
+    "poche":"Soluté non précisé ; conc 5 mg\/mL ; stab 72 h à 30°C + run-out 20 h ; 72 h à 5°C + run-out ; 7 j RT + run-out",
+    "device":"anapa",
+    "reco":"ANAPA possible selon conditions testées",
+    "note":"Stabilité physicochimique ≠ recommandation clinique de continu.",
+    "pubmed":null
+  },
+  {
+    "molecule":"Amikacine",
+    "source":"Micrel – données internes du laboratoire",
+    "mode":"Pompe Rythmic PVC",
+    "poche":"NaCl 0,9 % ; conc 0,25–20 mg\/mL ; stab FT 28 j ; RT 48 h",
+    "device":"micrel",
+    "reco":"Donnée contenant Micrel uniquement",
+    "note":"Ne pas extrapoler hors consommables Rythmic compatibles.",
+    "pubmed":null
+  },
+  {
+    "molecule":"Amoxicilline",
+    "source":"SPILF\/SFPC 2025",
+    "mode":"Continu possible mais fractionné",
+    "poche":"NaCl 0,9 % ; conc 5 mg\/mL ; stab 24 h \/ NaCl 0,9 % ; conc 20 mg\/mL ; stab 12 h \/ G5 ; conc 10 mg\/mL ; stab 2 h \/ G5 ; conc 50 mg\/mL ; stab 1 h ; G5 déconseillé en prolongé",
+    "device":"poche",
+    "reco":"Continu fractionné",
+    "note":"Forte dépendance à la concentration et au solvant.",
+    "pubmed":null
+  },
+  {
+    "molecule":"Amoxicilline",
+    "source":"SPILF\/SFPC 2025",
+    "mode":"Continu possible mais fractionné",
+    "poche":"NaCl 0,9 % ; conc max 20 mg\/mL ; PSE 24 h non retenu ; préférer pompe\/fractionnement 12 h",
+    "device":"pse",
+    "reco":"Continu fractionné",
+    "note":"Forte dépendance à la concentration et au solvant.",
+    "pubmed":null
+  },
+  {
+    "molecule":"Amoxicilline",
+    "source":"ANAPA – données internes du laboratoire",
+    "mode":"Administration ambulatoire testée sur diffuseur non élastomère ANAPA",
+    "poche":"NaCl 0,9 % ; conc 25 mg\/mL ; stab 12 h",
+    "device":"anapa",
+    "reco":"ANAPA possible selon protocole",
+    "note":"Donnée issue des études de stabilité ANAPA.",
+    "pubmed":null
+  },
+  {
+    "molecule":"Amoxicilline",
+    "source":"Micrel – données internes du laboratoire",
+    "mode":"Pompe Rythmic PVC ; donnée spécifique solutés de dialyse péritonéale",
+    "poche":"Extraneal®\/Dianéal® ; conc 0,125 mg\/mL ; stab 48 h à 25°C, 24 h à 37°C, 14 j à 4°C selon soluté ; non directement transposable à l’IV standard",
+    "device":"micrel",
+    "reco":"Donnée Micrel non transposable IV standard",
+    "note":"À ne pas assimiler aux données d’amoxicilline IV en NaCl 0,9 % pour perfusion continue.",
+    "pubmed":null
+  },
+  {
+    "molecule":"Amoxicilline\/acide clavulanique",
+    "source":"SPILF\/SFPC 2025 + CH de Tourcoing 2017 + Centre Léon Bérard – HAD",
+    "mode":"Continu non recommandé ; discontinue 30–60 min",
+    "poche":"NaCl 0,9 % exclusivement ; conc max 20 mg\/mL ; stab max 60 min après reconstitution\/fin administration ; G5 contre-indiqué\/incompatible",
+    "device":"poche",
+    "reco":"Discontinue uniquement",
+    "note":"À exclure des stratégies continues prolongées.",
+    "pubmed":null
+  },
+  {
+    "molecule":"Amoxicilline\/acide clavulanique",
+    "source":"SPILF\/SFPC 2025 + CH de Tourcoing 2017 + Centre Léon Bérard – HAD",
+    "mode":"Continu non recommandé ; discontinue 30–60 min",
+    "poche":"PSE continu non recommandé",
+    "device":"pse",
+    "reco":"Discontinue uniquement",
+    "note":"À exclure des stratégies continues prolongées.",
+    "pubmed":null
+  },
+  {
+    "molecule":"Aztréonam",
+    "source":"SPILF\/SFPC 2025",
+    "mode":"Continu possible ; prolongée possible",
+    "poche":"NaCl 0,9 % ou G5 ; conc 10–125 mg\/mL ; stab >24 h",
+    "device":"poche",
+    "reco":"Continu\/prolongé possible",
+    "note":"Bon candidat à l’administration prolongée.",
+    "pubmed":null
+  },
+  {
+    "molecule":"Aztréonam",
+    "source":"SPILF\/SFPC 2025",
+    "mode":"Continu possible ; prolongée possible",
+    "poche":"NaCl 0,9 % ; conc max 125 mg\/mL ; stab compatible pour prolongée ; ex 2 g\/48 mL sur 3–4 h",
+    "device":"pse",
+    "reco":"Continu\/prolongé possible",
+    "note":"Bon candidat à l’administration prolongée.",
+    "pubmed":null
+  },
+  {
+    "molecule":"Aztréonam",
+    "source":"Micrel – données internes du laboratoire",
+    "mode":"Pompe Rythmic PVC",
+    "poche":"NaCl 0,9 % ; conc 5–60 mg\/mL ; stab FT 28 j ; RT 24 h",
+    "device":"micrel",
+    "reco":"Micrel possible",
+    "note":"Donnée spécifique contenant.",
+    "pubmed":null
+  },
+  {
+    "molecule":"Ceftazidime",
+    "source":"SPILF\/SFPC 2025",
+    "mode":"Continu possible",
+    "poche":"NaCl 0,9 % ; conc 20–125 mg\/mL ; stab 24 h \/ G5 ; conc 125 mg\/mL ; stab 8 h",
+    "device":"poche",
+    "reco":"Continu possible avec vigilance",
+    "note":"Vigilance température et concentration.",
+    "pubmed":null
+  },
+  {
+    "molecule":"Ceftazidime",
+    "source":"SPILF\/SFPC 2025",
+    "mode":"Continu possible",
+    "poche":"NaCl 0,9 % ; conc max 125 mg\/mL ; stab 12–24 h selon schéma",
+    "device":"pse",
+    "reco":"Continu possible avec vigilance",
+    "note":"Vigilance température et concentration.",
+    "pubmed":null
+  },
+  {
+    "molecule":"Ceftazidime",
+    "source":"CH de Tourcoing 2017",
+    "mode":"Continu fractionné recommandé",
+    "poche":"NaCl 0,9 % ou G5 ; conc max 80 mg\/mL ; stab 8 h RT",
+    "device":"poche",
+    "reco":"Fractionnement 6–8 h",
+    "note":"Source plus restrictive que SPILF.",
+    "pubmed":null
+  },
+  {
+    "molecule":"Ceftazidime",
+    "source":"CH de Tourcoing 2017",
+    "mode":"Continu fractionné recommandé",
+    "poche":"NaCl 0,9 % ou G5 ; conc max 80 mg\/mL ; stab 6–8 h",
+    "device":"pse",
+    "reco":"Fractionnement 6–8 h",
+    "note":"Source plus restrictive que SPILF.",
+    "pubmed":null
+  },
+  {
+    "molecule":"Ceftazidime",
+    "source":"ANAPA – données internes du laboratoire",
+    "mode":"Administration ambulatoire testée sur diffuseur non élastomère ANAPA",
+    "poche":"NaCl 0,9 % ; conc 20 mg\/mL ; stab 24 h RT + run-out 20 h",
+    "device":"anapa",
+    "reco":"ANAPA possible selon conditions testées",
+    "note":"Attention >25°C et produits de dégradation.",
+    "pubmed":null
+  },
+  {
+    "molecule":"Ceftazidime",
+    "source":"Micrel – données internes du laboratoire",
+    "mode":"Pompe Rythmic PVC",
+    "poche":"NaCl 0,9 % ; conc 5–40 mg\/mL ; stab FT 10 j ; RT 24 h ; Fortum 4 mg\/mL 25°C lumière 24 h ; 40 mg\/mL 4°C abri lumière 7 j",
+    "device":"micrel",
+    "reco":"Micrel possible selon conditions",
+    "note":"Donnée spécifique consommables Micrel.",
+    "pubmed":null
+  },
+  {
+    "molecule":"Ceftazidime",
+    "source":"PubMed – littérature sélectionnée",
+    "mode":"Perfusion continue ambulatoire ; diffuseur élastomère",
+    "poche":"Seringue PP ; données compatibles 12–24 h selon concentration\/température",
+    "device":"pse",
+    "reco":"Perfusion continue possible avec vigilance thermique",
+    "note":"Ne pas extrapoler les données élastomère aux poches classiques ni à ANAPA.",
+    "pubmed":"https:\/\/pubmed.ncbi.nlm.nih.gov\/22478981\/"
+  },
+  {
+    "molecule":"Ceftazidime",
+    "source":"PubMed – littérature sélectionnée",
+    "mode":"Perfusion continue ambulatoire ; diffuseur élastomère",
+    "poche":"NaCl 0,9 % ; diffuseur élastomère ; conc 25–120 mg\/mL ; stabilité très dépendante température ; plusieurs études limitent le 24 h >25°C",
+    "device":"elastomere",
+    "reco":"Perfusion continue possible avec vigilance thermique",
+    "note":"Ne pas extrapoler les données élastomère aux poches classiques ni à ANAPA.",
+    "pubmed":"https:\/\/pubmed.ncbi.nlm.nih.gov\/22478981\/"
+  },
+  {
+    "molecule":"Céfépime",
+    "source":"SPILF\/SFPC 2025",
+    "mode":"Continu possible ; prolongée possible",
+    "poche":"NaCl 0,9 % ou G5 ; conc 2,5–125 mg\/mL ; stab 24 h",
+    "device":"poche",
+    "reco":"Continu\/prolongé possible",
+    "note":"Comparer avec protocoles locaux si fractionnement plus court.",
+    "pubmed":null
+  },
+  {
+    "molecule":"Céfépime",
+    "source":"SPILF\/SFPC 2025",
+    "mode":"Continu possible ; prolongée possible",
+    "poche":"NaCl 0,9 % ; conc max 125 mg\/mL ; stab 24 h possible ; ex 4–6 g\/48 mL\/24 h",
+    "device":"pse",
+    "reco":"Continu\/prolongé possible",
+    "note":"Comparer avec protocoles locaux si fractionnement plus court.",
+    "pubmed":null
+  },
+  {
+    "molecule":"Céfépime",
+    "source":"Micrel – données internes du laboratoire",
+    "mode":"Pompe Rythmic PVC",
+    "poche":"NaCl 0,9 % ; conc 5–60 mg\/mL ; stab FT 7 j ; RT 24 h",
+    "device":"micrel",
+    "reco":"Micrel possible",
+    "note":"Donnée spécifique contenant.",
+    "pubmed":null
+  },
+  {
+    "molecule":"Céfazoline",
+    "source":"SPILF\/SFPC 2025",
+    "mode":"Continu possible",
+    "poche":"NaCl 0,9 % ; conc max 125 mg\/mL ; stab >24 h \/ G5 ; conc 125 mg\/mL ; stab 24 h",
+    "device":"poche",
+    "reco":"Continu possible",
+    "note":"Molécule favorable aux stratégies prolongées\/continues.",
+    "pubmed":null
+  },
+  {
+    "molecule":"Céfazoline",
+    "source":"SPILF\/SFPC 2025",
+    "mode":"Continu possible",
+    "poche":"NaCl 0,9 % ; conc max 125 mg\/mL ; stab 24 h possible ; ex 6 g\/48 mL\/24 h ou 4 g\/48 mL\/12 h x2",
+    "device":"pse",
+    "reco":"Continu possible",
+    "note":"Molécule favorable aux stratégies prolongées\/continues.",
+    "pubmed":null
+  },
+  {
+    "molecule":"Céfotaxime",
+    "source":"SPILF\/SFPC 2025",
+    "mode":"Continu possible ; stabilité concentration-dépendante",
+    "poche":"NaCl 0,9 % ; conc 10–50 mg\/mL ; stab 24 h \/ G5 ; conc 10–20 mg\/mL ; stab 24 h \/ NaCl 0,9 % ou G5 ; conc 83,3–125 mg\/mL ; stab 6 h",
+    "device":"poche",
+    "reco":"Continu possible si concentration adaptée",
+    "note":"Éviter extrapolation aux fortes concentrations.",
+    "pubmed":null
+  },
+  {
+    "molecule":"Céfotaxime",
+    "source":"SPILF\/SFPC 2025",
+    "mode":"Continu possible ; stabilité concentration-dépendante",
+    "poche":"NaCl 0,9 % ; conc max pratique 50 mg\/mL ; PSE fractionné",
+    "device":"pse",
+    "reco":"Continu possible si concentration adaptée",
+    "note":"Éviter extrapolation aux fortes concentrations.",
+    "pubmed":null
+  },
+  {
+    "molecule":"Ceftriaxone",
+    "source":"SPILF\/SFPC 2025",
+    "mode":"Continu possible mais intermittent fréquent",
+    "poche":"NaCl 0,9 % ou G5 ; conc 20–40 mg\/mL ; stab 24 h",
+    "device":"poche",
+    "reco":"Intermittent souvent suffisant",
+    "note":"Attention incompatibilité calcium.",
+    "pubmed":null
+  },
+  {
+    "molecule":"Ceftriaxone",
+    "source":"SPILF\/SFPC 2025",
+    "mode":"Continu possible mais intermittent fréquent",
+    "poche":"NaCl 0,9 % ou G5 ; conc max 40 mg\/mL ; PSE possible",
+    "device":"pse",
+    "reco":"Intermittent souvent suffisant",
+    "note":"Attention incompatibilité calcium.",
+    "pubmed":null
+  },
+  {
+    "molecule":"Ceftriaxone",
+    "source":"Micrel – données internes du laboratoire",
+    "mode":"Pompe Rythmic PVC",
+    "poche":"NaCl 0,9 % ; conc 40 mg\/mL ; stab 3 j à 23°C, 30 j à 4°C abri lumière \/ G5 ; conc 40 mg\/mL ; stab 1 j à 23°C, 14 j à 4°C \/ G5 ; conc 2 mg\/mL ; stab 14 j",
+    "device":"micrel",
+    "reco":"Micrel possible selon conditions",
+    "note":"Soluté et concentration modifient fortement la stabilité.",
+    "pubmed":null
+  },
+  {
+    "molecule":"Clindamycine",
+    "source":"CH de Tourcoing 2017 + doc interne récent",
+    "mode":"Continu 24 h possible",
+    "poche":"NaCl 0,9 % ± G5 selon source ; conc max 75 mg\/mL ; stab 24 h RT",
+    "device":"poche",
+    "reco":"Continu possible",
+    "note":"Données favorables au PSE\/pompe 24 h.",
+    "pubmed":null
+  },
+  {
+    "molecule":"Clindamycine",
+    "source":"CH de Tourcoing 2017 + doc interne récent",
+    "mode":"Continu 24 h possible",
+    "poche":"NaCl 0,9 % ; conc max 75 mg\/mL ; stab 24 h ; 600 mg à 3,6 g\/48 mL",
+    "device":"pse",
+    "reco":"Continu possible",
+    "note":"Données favorables au PSE\/pompe 24 h.",
+    "pubmed":null
+  },
+  {
+    "molecule":"Daptomycine",
+    "source":"CH de Tourcoing 2017 + doc interne récent",
+    "mode":"Discontinue recommandée ; perfusion 30–60 min ; IVD possible selon source",
+    "poche":"NaCl 0,9 % exclusivement ; conc max 50 mg\/mL ; stab 12 h RT ; G5 incompatible",
+    "device":"poche",
+    "reco":"Discontinue",
+    "note":"NaCl exclusivement.",
+    "pubmed":null
+  },
+  {
+    "molecule":"Ertapénem",
+    "source":"CH de Tourcoing 2017 + doc interne récent",
+    "mode":"Discontinue recommandée ; perfusion 30 min ; prolongée non standard",
+    "poche":"NaCl 0,9 % exclusivement ; conc max 20 mg\/mL ; stab 6 h RT ; G5 incompatible",
+    "device":"poche",
+    "reco":"Discontinue",
+    "note":"Molécule pratique en OPAT intermittent.",
+    "pubmed":null
+  },
+  {
+    "molecule":"Méropénem",
+    "source":"CH de Tourcoing 2017 + doc interne récent",
+    "mode":"Fractionnement 6–8 h recommandé",
+    "poche":"NaCl 0,9 %\/G5 selon source ; conc max 40 mg\/mL ; stab 6–8 h RT",
+    "device":"poche",
+    "reco":"Fractionnement court",
+    "note":"Stabilité courte à température ambiante.",
+    "pubmed":null
+  },
+  {
+    "molecule":"Méropénem",
+    "source":"CH de Tourcoing 2017 + doc interne récent",
+    "mode":"Fractionnement 6–8 h recommandé",
+    "poche":"NaCl 0,9 % ; conc max 40 mg\/mL ; stab 6–8 h ; IVSE 8 h x3\/j",
+    "device":"pse",
+    "reco":"Fractionnement court",
+    "note":"Stabilité courte à température ambiante.",
+    "pubmed":null
+  },
+  {
+    "molecule":"Méropénem",
+    "source":"Micrel – données internes du laboratoire",
+    "mode":"Pompe Rythmic PVC",
+    "poche":"NaCl 0,9 % ; conc 5–40 mg\/mL ; stab FT 18 h ; RT 6 h",
+    "device":"micrel",
+    "reco":"Changement fréquent",
+    "note":"Pas de 24 h à RT.",
+    "pubmed":null
+  },
+  {
+    "molecule":"Méropénem",
+    "source":"PubMed – littérature sélectionnée",
+    "mode":"Perfusion continue\/prolongée ; OPAT ; diffuseur élastomère",
+    "poche":"Seringue PP ; fractionnement 6–8 h fréquemment recommandé",
+    "device":"pse",
+    "reco":"Éviter extrapolation 24 h sans contrôle thermique",
+    "note":"Ne pas extrapoler élastomère vers poche, ANAPA ou Micrel.",
+    "pubmed":"https:\/\/pubmed.ncbi.nlm.nih.gov\/31447546\/"
+  },
+  {
+    "molecule":"Méropénem",
+    "source":"PubMed – littérature sélectionnée",
+    "mode":"Perfusion continue\/prolongée ; OPAT ; diffuseur élastomère",
+    "poche":"NaCl 0,9 % ; diffuseur élastomère ; conc 6,25–25 mg\/mL ; stabilité souvent <12 h à température ambiante",
+    "device":"elastomere",
+    "reco":"Éviter extrapolation 24 h sans contrôle thermique",
+    "note":"Ne pas extrapoler élastomère vers poche, ANAPA ou Micrel.",
+    "pubmed":"https:\/\/pubmed.ncbi.nlm.nih.gov\/31447546\/"
+  },
+  {
+    "molecule":"Pipéracilline\/tazobactam",
+    "source":"SPILF\/SFPC 2025 + doc interne récent",
+    "mode":"Continu 24 h possible ; prolongée possible",
+    "poche":"NaCl 0,9 %\/G5 ; conc max 80–200 mg\/mL exprimé pipéracilline selon source ; stab 24 h RT",
+    "device":"poche",
+    "reco":"Continu\/prolongé possible",
+    "note":"Données favorables selon concentration.",
+    "pubmed":null
+  },
+  {
+    "molecule":"Pipéracilline\/tazobactam",
+    "source":"SPILF\/SFPC 2025 + doc interne récent",
+    "mode":"Continu 24 h possible ; prolongée possible",
+    "poche":"NaCl 0,9 %\/G5 ; conc max 80–200 mg\/mL ; stab 12–24 h selon schéma",
+    "device":"pse",
+    "reco":"Continu\/prolongé possible",
+    "note":"Données favorables selon concentration.",
+    "pubmed":null
+  },
+  {
+    "molecule":"Pipéracilline\/tazobactam",
+    "source":"Micrel – données internes du laboratoire",
+    "mode":"Pompe Rythmic PVC",
+    "poche":"NaCl 0,9 % ; conc pipéracilline 10–80 mg\/mL + tazobactam 1,25–10 mg\/mL ; stab FT 7 j ; RT 24 h",
+    "device":"micrel",
+    "reco":"Micrel possible selon conditions",
+    "note":"Donnée spécifique contenant.",
+    "pubmed":null
+  },
+  {
+    "molecule":"Pipéracilline\/tazobactam",
+    "source":"PubMed – littérature sélectionnée",
+    "mode":"Perfusion continue ambulatoire ; diffuseur élastomère",
+    "poche":"Seringue PP ; données compatibles 24 h selon concentration",
+    "device":"pse",
+    "reco":"Bon candidat perfusion continue",
+    "note":"Donnée élastomère séparée d’ANAPA et des poches classiques.",
+    "pubmed":"https:\/\/ejhp.bmj.com\/content\/29\/4\/212"
+  },
+  {
+    "molecule":"Pipéracilline\/tazobactam",
+    "source":"PubMed – littérature sélectionnée",
+    "mode":"Perfusion continue ambulatoire ; diffuseur élastomère",
+    "poche":"NaCl 0,9 % ; diffuseur élastomère ; nombreuses études compatibles 24 h selon concentration\/température",
+    "device":"elastomere",
+    "reco":"Bon candidat perfusion continue",
+    "note":"Donnée élastomère séparée d’ANAPA et des poches classiques.",
+    "pubmed":"https:\/\/ejhp.bmj.com\/content\/29\/4\/212"
+  },
+  {
+    "molecule":"Vancomycine",
+    "source":"SPILF\/SFPC 2025 + doc interne récent",
+    "mode":"Continu 24 h possible",
+    "poche":"NaCl 0,9 % ou G5 ; conc 25–37,5 mg\/mL SPILF ; stab 24 h \/ doc interne : NaCl 0,9 % ; conc 80 mg\/mL VVC ou 5 mg\/mL VVP ; stab 24 h",
+    "device":"poche",
+    "reco":"Continu possible",
+    "note":"Adapter concentration à la voie veineuse.",
+    "pubmed":null
+  },
+  {
+    "molecule":"Vancomycine",
+    "source":"SPILF\/SFPC 2025 + doc interne récent",
+    "mode":"Continu 24 h possible",
+    "poche":"NaCl 0,9 % ; conc max 80 mg\/mL VVC ou 5 mg\/mL VVP ; stab 24 h selon doc interne",
+    "device":"pse",
+    "reco":"Continu possible",
+    "note":"Adapter concentration à la voie veineuse.",
+    "pubmed":null
+  },
+  {
+    "molecule":"Vancomycine",
+    "source":"PubMed – littérature sélectionnée",
+    "mode":"Perfusion continue ; diffuseur élastomère et seringue PP",
+    "poche":"Seringue PP ; stabilité 24 h rapportée dans plusieurs études",
+    "device":"pse",
+    "reco":"Très bon candidat à la perfusion continue",
+    "note":"Élastomère séparé d’ANAPA.",
+    "pubmed":"https:\/\/pmc.ncbi.nlm.nih.gov\/articles\/PMC2901781\/"
+  },
+  {
+    "molecule":"Vancomycine",
+    "source":"PubMed – littérature sélectionnée",
+    "mode":"Perfusion continue ; diffuseur élastomère et seringue PP",
+    "poche":"NaCl 0,9 % ou G5 ; diffuseur élastomère ; données compatibles 24 h selon concentration",
+    "device":"elastomere",
+    "reco":"Très bon candidat à la perfusion continue",
+    "note":"Élastomère séparé d’ANAPA.",
+    "pubmed":"https:\/\/pmc.ncbi.nlm.nih.gov\/articles\/PMC2901781\/"
+  },
+  {
+    "molecule":"Linezolide",
+    "source":"CH de Tourcoing 2017 + doc interne récent + Centre Léon Bérard – HAD",
+    "mode":"Discontinue recommandée ; prêt à l’emploi ; perfusion 30–120 min",
+    "poche":"Poche prête à l’emploi ; soluté de présentation ; conc commerciale 2 mg\/mL ; stab 21 j RT ; NaCl\/G5 compatibles selon source",
+    "device":"poche",
+    "reco":"Discontinue",
+    "note":"Donnée à vérifier selon présentation locale.",
+    "pubmed":null
+  },
+  {
+    "molecule":"Cotrimoxazole IV \/ Bactrim®",
+    "source":"Protocole Pharmacie Interjurassienne + doc interne récent",
+    "mode":"Discontinue recommandée ; perfusion 60 min ; durée max 90 min ; pas d’administration pure",
+    "poche":"NaCl 0,9 % ou G5 ; dilution standard : 1 amp + 125 mL, 2 amp + 250 mL, 3 amp + 500 mL ; stab solution diluée 6 h RT à l’abri lumière ; sol. mère 1 h RT \/ restriction hydrique : 1 amp + 75 mL, 2 amp + 150 mL, 3 amp + 250 mL ; stab 2 h RT à l’abri lumière",
+    "device":"poche",
+    "reco":"Discontinue ; attention restriction hydrique",
+    "note":"voie centrale préférable si disponible car très phlébogène ; jeter si trouble\/cristaux.",
+    "pubmed":null
+  },
+  {
+    "molecule":"Gentamicine",
+    "source":"Doc interne récent",
+    "mode":"Discontinue recommandée ; aminoside ; IVSE sur 30 min",
+    "poche":"NaCl 0,9 % ou G5 ; conc max 10 mg\/mL ; stab 24 h RT",
+    "device":"poche",
+    "reco":"Discontinue",
+    "note":"Suivi pic\/résiduel selon protocole aminosides.",
+    "pubmed":null
+  },
+  {
+    "molecule":"Gentamicine",
+    "source":"Doc interne récent",
+    "mode":"Discontinue recommandée ; aminoside ; IVSE sur 30 min",
+    "poche":"NaCl 0,9 % ou G5 ; conc max 10 mg\/mL ; stab 24 h RT ; IVSE intermittent 30 min",
+    "device":"pse",
+    "reco":"Discontinue",
+    "note":"Suivi pic\/résiduel selon protocole aminosides.",
+    "pubmed":null
+  },
+  {
+    "molecule":"Levofloxacine",
+    "source":"CH de Tourcoing 2017 + doc interne récent",
+    "mode":"Discontinue recommandée ; prêt à l’emploi ; perfusion 60 min",
+    "poche":"Prêt à l’emploi ; soluté de présentation ; conc commerciale ; stab non détaillée dans source récente \/ Tourcoing : prêt à l’emploi",
+    "device":"poche",
+    "reco":"Discontinue",
+    "note":"Donnée de stabilité détaillée limitée dans les sources intégrées.",
+    "pubmed":null
+  },
+  {
+    "molecule":"Métronidazole",
+    "source":"CH de Tourcoing 2017 + doc interne récent",
+    "mode":"Discontinue recommandée ; prêt à l’emploi ; perfusion 30–60 min",
+    "poche":"Prêt à l’emploi ; 500 mg\/100 mL ; soluté de présentation ; stab non détaillée dans source récente \/ Tourcoing : prêt à l’emploi",
+    "device":"poche",
+    "reco":"Discontinue",
+    "note":"Ne pas inventer de stabilité si la source indique seulement prêt à l’emploi.",
+    "pubmed":null
+  },
+  {
+    "molecule":"Ofloxacine",
+    "source":"CH de Tourcoing 2017 + doc interne récent",
+    "mode":"Discontinue recommandée ; prêt à l’emploi ; perfusion 30 min",
+    "poche":"Prêt à l’emploi ; 200 mg\/40 mL ; soluté de présentation ; stab non détaillée",
+    "device":"poche",
+    "reco":"Discontinue",
+    "note":"Donnée limitée à la modalité d’administration dans les sources.",
+    "pubmed":null
+  },
+  {
+    "molecule":"Colistine",
+    "source":"Doc interne récent",
+    "mode":"Continu 24 h possible",
+    "poche":"NaCl 0,9 % ; conc max 0,02 MUI\/mL ; stab 24 h RT",
+    "device":"poche",
+    "reco":"Continu possible",
+    "note":"Préparation très diluée selon document interne.",
+    "pubmed":null
+  },
+  {
+    "molecule":"Colistine",
+    "source":"Doc interne récent",
+    "mode":"Continu 24 h possible",
+    "poche":"NaCl 0,9 % ; conc max 0,02 MUI\/mL ; stab 24 h RT",
+    "device":"pse",
+    "reco":"Continu possible",
+    "note":"Préparation très diluée selon document interne.",
+    "pubmed":null
+  },
+  {
+    "molecule":"Fosfomycine IV",
+    "source":"Doc interne récent",
+    "mode":"Continu 24 h possible ; IVSE ou pompe volumétrique",
+    "poche":"NaCl 0,9 % ; conc max 40 mg\/mL ; stab 24 h RT",
+    "device":"poche",
+    "reco":"Continu possible",
+    "note":"Exemples internes : 4 g\/100 mL, 16 g\/500 mL.",
+    "pubmed":null
+  },
+  {
+    "molecule":"Fosfomycine IV",
+    "source":"Doc interne récent",
+    "mode":"Continu 24 h possible ; IVSE ou pompe volumétrique",
+    "poche":"NaCl 0,9 % ; conc max 40 mg\/mL ; stab 24 h RT ; IVSE\/pompe possible",
+    "device":"pse",
+    "reco":"Continu possible",
+    "note":"Exemples internes : 4 g\/100 mL, 16 g\/500 mL.",
+    "pubmed":null
+  },
+  {
+    "molecule":"Témocilline",
+    "source":"Doc interne récent",
+    "mode":"Continu 24 h possible ; IVSE ou pompe volumétrique",
+    "poche":"NaCl 0,9 % ; conc max 80 mg\/mL ; stab 24 h RT",
+    "device":"poche",
+    "reco":"Continu possible",
+    "note":"Donnée exploitable pour stratégie continue.",
+    "pubmed":null
+  },
+  {
+    "molecule":"Témocilline",
+    "source":"Doc interne récent",
+    "mode":"Continu 24 h possible ; IVSE ou pompe volumétrique",
+    "poche":"NaCl 0,9 % ; conc max 80 mg\/mL ; stab 24 h RT ; ex 4–6 g\/48 mL\/24 h",
+    "device":"pse",
+    "reco":"Continu possible",
+    "note":"Donnée exploitable pour stratégie continue.",
+    "pubmed":null
+  },
+  {
+    "molecule":"Teicoplanine",
+    "source":"Doc interne récent",
+    "mode":"Discontinue recommandée ; perfusion 60 min",
+    "poche":"NaCl 0,9 % ; 100–200 mg\/50 mL ou 400 mg\/100 mL ; stab 24 h RT ; conc max non explicitée",
+    "device":"poche",
+    "reco":"Discontinue",
+    "note":"SPILF 2025 : pas de donnée de stabilité retenue pour perfusion prolongée\/continue.",
+    "pubmed":null
+  },
+  {
+    "molecule":"Spiramycine",
+    "source":"Doc interne récent",
+    "mode":"Discontinue recommandée ; perfusion 60 min",
+    "poche":"G5 ; conc non précisée ; stab 12 h RT",
+    "device":"poche",
+    "reco":"Discontinue",
+    "note":"NaCl non retenu dans l’extrait source.",
+    "pubmed":null
+  },
+  {
+    "molecule":"Rifampicine IV",
+    "source":"Doc interne récent",
+    "mode":"Discontinue recommandée ; perfusion 90 min",
+    "poche":"G5 ; 600 mg\/250 mL ; solvant fourni obligatoire ; NaCl incompatible ; stab non précisée",
+    "device":"poche",
+    "reco":"Discontinue",
+    "note":"Incompatibilité NaCl à afficher clairement.",
+    "pubmed":null
+  },
+  {
+    "molecule":"Voriconazole IV",
+    "source":"Doc interne récent + Centre Léon Bérard – HAD",
+    "mode":"Discontinue\/prolongée ; perfusion 1–3 h ; débit max 3 mg\/kg\/h ; pas IVD",
+    "poche":"NaCl 0,9 % ou G5 ; conc 0,5–5 mg\/mL ; stab 24 h entre 2–8°C",
+    "device":"poche",
+    "reco":"Discontinue\/prolongée",
+    "note":"Vitesse maximale à respecter.",
+    "pubmed":null
+  },
+  {
+    "molecule":"Caspofungine",
+    "source":"Doc interne récent + Centre Léon Bérard – HAD",
+    "mode":"Discontinue recommandée ; perfusion 60 min",
+    "poche":"NaCl 0,9 % exclusivement ; 50 mg\/100 mL ou 70 mg\/250 mL ; stab 24 h RT ; G5 incompatible",
+    "device":"poche",
+    "reco":"Discontinue",
+    "note":"NaCl exclusivement.",
+    "pubmed":null
+  },
+  {
+    "molecule":"Fluconazole",
+    "source":"Doc interne récent",
+    "mode":"Discontinue recommandée ; prêt à l’emploi ; perfusion 60 min",
+    "poche":"Prêt à l’emploi ; conc commerciale ; stabilité non précisée",
+    "device":"poche",
+    "reco":"Discontinue",
+    "note":"Donnée limitée à la présentation prête à l’emploi.",
+    "pubmed":null
+  },
+  {
+    "molecule":"Artesunate",
+    "source":"Doc interne récent + CH de Tourcoing 2017",
+    "mode":"Discontinue recommandée ; perfusion 30 min ou IV lente selon source",
+    "poche":"NaCl 0,9 % ; conc max 10 mg\/mL ; stab 6 h RT",
+    "device":"poche",
+    "reco":"Discontinue",
+    "note":"Solvant fourni \/ bicarbonate selon source.",
+    "pubmed":null
+  },
+  {
+    "molecule":"Pentamidine",
+    "source":"Doc interne récent + CH de Tourcoing 2017",
+    "mode":"Discontinue recommandée ; perfusion 60 min ; aérosol possible selon indication",
+    "poche":"G5 ; 300 mg\/100 mL selon doc interne ; NaCl incompatible ; stab non précisée",
+    "device":"poche",
+    "reco":"Discontinue",
+    "note":"NaCl incompatible.",
+    "pubmed":null
+  },
+  {
+    "molecule":"Aztréonam",
+    "source":"Centre Léon Bérard – HAD",
+    "mode":"Perfusion IV continue en diffuseur élastomère ; 24 h",
+    "poche":"NaCl 0,9 % ; diffuseur élastomère ; conc max 100 mg\/mL ; stab 24 h",
+    "device":"elastomere",
+    "reco":"Diffuseur élastomère 24 h possible",
+    "note":"Dans ce document, “diffuseur” = diffuseur élastomère ; à ne pas confondre avec ANAPA.",
+    "pubmed":null
+  },
+  {
+    "molecule":"Céfazoline",
+    "source":"Centre Léon Bérard – HAD",
+    "mode":"Perfusion IV continue en diffuseur élastomère ; 24 h ; abri lumière",
+    "poche":"NaCl 0,9 % ou G5 ; diffuseur élastomère ; conc max 40 mg\/mL ; stab 24 h ; abri lumière",
+    "device":"elastomere",
+    "reco":"Diffuseur élastomère 24 h possible",
+    "note":"Donnée Centre Léon Bérard – HAD.",
+    "pubmed":null
+  },
+  {
+    "molecule":"Céfépime",
+    "source":"Centre Léon Bérard – HAD",
+    "mode":"Perfusion IV continue en diffuseur élastomère ; changement toutes les 12 h ; abri lumière",
+    "poche":"NaCl 0,9 % ; diffuseur élastomère ; stabilité 12 h ; abri lumière ; conc max non précisée dans l’extrait",
+    "device":"elastomere",
+    "reco":"Diffuseur élastomère 12 h",
+    "note":"Plus restrictif que SPILF\/Micrel ; lié au dispositif et à la pratique HAD.",
+    "pubmed":null
+  },
+  {
+    "molecule":"Céfotaxime",
+    "source":"Centre Léon Bérard – HAD",
+    "mode":"Perfusion IV continue en diffuseur élastomère ; 24 h ; abri lumière",
+    "poche":"NaCl 0,9 % ; diffuseur élastomère ; conc max 40 mg\/mL ; stab 24 h ; abri lumière",
+    "device":"elastomere",
+    "reco":"Diffuseur élastomère 24 h possible",
+    "note":"Donnée Centre Léon Bérard – HAD.",
+    "pubmed":null
+  },
+  {
+    "molecule":"Céfoxitine",
+    "source":"Centre Léon Bérard – HAD",
+    "mode":"Perfusion IV continue en diffuseur élastomère ; 24 h ; abri lumière",
+    "poche":"NaCl 0,9 % ; diffuseur élastomère ; conc max 40 mg\/mL ; stab 24 h ; abri lumière",
+    "device":"elastomere",
+    "reco":"Diffuseur élastomère 24 h possible",
+    "note":"Donnée Centre Léon Bérard – HAD.",
+    "pubmed":null
+  },
+  {
+    "molecule":"Ceftazidime",
+    "source":"Centre Léon Bérard – HAD",
+    "mode":"Perfusion IV continue en diffuseur élastomère ; durée selon dose ; abri lumière",
+    "poche":"NaCl 0,9 % ; diffuseur élastomère ; conc max 40 mg\/mL ; si dose <6 g : stab 24 h ; si dose ≥6 g : changement q12 h ; abri lumière",
+    "device":"elastomere",
+    "reco":"Diffuseur élastomère 12–24 h selon dose",
+    "note":"Attention température >25°C et produits de dégradation.",
+    "pubmed":null
+  },
+  {
+    "molecule":"Aciclovir",
+    "source":"NEOPUMP – données internes fabricant élastomère",
+    "mode":"Diffuseur élastomère Easyflow\/NEOPUMP ; données internes fabricant ",
+    "poche":"NaCl 0,9 % ; conc 10 mg\/mL (1 g\/100 mL) ; stab 24 h à 25°C et 32°C",
+    "device":"elastomere",
+    "reco":"NEOPUMP élastomère 24 h",
+    "note":"Donnée spécifique diffuseur élastomère NEOPUMP\/Easyflow.",
+    "pubmed":null
+  },
+  {
+    "molecule":"Amikacine",
+    "source":"NEOPUMP – données internes fabricant élastomère",
+    "mode":"Diffuseur élastomère Easyflow\/NEOPUMP ; données internes fabricant ",
+    "poche":"NaCl 0,9 % ; conc 2 mg\/mL (0,5 g\/240 mL) et 5 mg\/mL (0,5 g\/100 mL) ; stab 24 h à 25°C et 32°C",
+    "device":"elastomere",
+    "reco":"NEOPUMP élastomère 24 h physicochimique",
+    "note":"Stabilité physicochimique ≠ recommandation clinique de perfusion continue pour aminoside.",
+    "pubmed":null
+  },
+  {
+    "molecule":"Amoxicilline",
+    "source":"NEOPUMP – données internes fabricant élastomère",
+    "mode":"Diffuseur élastomère Easyflow\/NEOPUMP ; données internes fabricant ",
+    "poche":"NaCl 0,9 % ; conc 10 mg\/mL (2,4 g\/240 mL) : stab 24 h à 25°C et 32°C ; conc 20 mg\/mL (4,9 g\/240 mL) : stab 6 h à 25°C et 32°C",
+    "device":"elastomere",
+    "reco":"NEOPUMP : 24 h si 10 mg\/mL ; 6 h si 20 mg\/mL",
+    "note":"Forte dépendance à la concentration.",
+    "pubmed":null
+  },
+  {
+    "molecule":"Amoxicilline\/acide clavulanique",
+    "source":"NEOPUMP – données internes fabricant élastomère",
+    "mode":"Diffuseur élastomère Easyflow\/NEOPUMP ; données internes fabricant ",
+    "poche":"NaCl 0,9 % exclusivement ; conc 10 mg\/mL : stab 24 h à 4°C, 12 h à 25°C ; conc 12 mg\/mL : stab 24 h à 4°C, 12 h à 25°C ; pas de donnée 32°C ; G5 contre-indiqué\/incompatible",
+    "device":"elastomere",
+    "reco":"NEOPUMP : 12 h à 25°C ; pas 24 h RT",
+    "note":"Discordant avec la recommandation pratique de ne pas utiliser en continu prolongé ; donnée fabricant à contextualiser.",
+    "pubmed":null
+  },
+  {
+    "molecule":"Ampicilline",
+    "source":"NEOPUMP – données internes fabricant élastomère",
+    "mode":"Diffuseur élastomère Easyflow\/NEOPUMP ; données internes fabricant ",
+    "poche":"NaCl 0,9 % ; conc 5 mg\/mL (0,5 g\/100 mL) et 20 mg\/mL (5 g\/240 mL) ; stab 24 h à 4°C, 25°C et 32°C",
+    "device":"elastomere",
+    "reco":"NEOPUMP élastomère 24 h",
+    "note":"Donnée spécifique diffuseur élastomère.",
+    "pubmed":null
+  },
+  {
+    "molecule":"Céfazoline",
+    "source":"NEOPUMP – données internes fabricant élastomère",
+    "mode":"Diffuseur élastomère Easyflow\/NEOPUMP ; données internes fabricant ",
+    "poche":"NaCl 0,9 % ; conc 1 mg\/mL, 2 mg\/mL et 25 mg\/mL (6 g\/240 mL) ; stab 24 h à 25°C et 32°C ; à 25 mg\/mL : 7 j à 4°C",
+    "device":"elastomere",
+    "reco":"NEOPUMP élastomère 24 h",
+    "note":"Donnée spécifique diffuseur élastomère.",
+    "pubmed":null
+  },
+  {
+    "molecule":"Céfépime",
+    "source":"NEOPUMP – données internes fabricant élastomère",
+    "mode":"Diffuseur élastomère Easyflow\/NEOPUMP ; données internes fabricant ",
+    "poche":"NaCl 0,9 % ; conc 20 mg\/mL (2 g\/100 mL) ; stab 7 j à 4°C ; 24 h à 25°C et 32°C",
+    "device":"elastomere",
+    "reco":"NEOPUMP élastomère 24 h",
+    "note":"Donnée spécifique diffuseur élastomère.",
+    "pubmed":null
+  },
+  {
+    "molecule":"Céfotaxime",
+    "source":"NEOPUMP – données internes fabricant élastomère",
+    "mode":"Diffuseur élastomère Easyflow\/NEOPUMP ; données internes fabricant ",
+    "poche":"NaCl 0,9 % ; conc 10, 20 et 25 mg\/mL ; stab 24 h à 25°C et 32°C ; 25 mg\/mL = 6 g\/240 mL",
+    "device":"elastomere",
+    "reco":"NEOPUMP élastomère 24 h",
+    "note":"Donnée spécifique diffuseur élastomère.",
+    "pubmed":null
+  },
+  {
+    "molecule":"Ceftazidime",
+    "source":"NEOPUMP – données internes fabricant élastomère",
+    "mode":"Diffuseur élastomère Easyflow\/NEOPUMP ; données internes fabricant ",
+    "poche":"NaCl 0,9 % ; conc 20 mg\/mL (2 g\/100 mL) et 25 mg\/mL (6 g\/240 mL) ; stab 7 j à 4°C et 25°C ; 24 h à 32°C",
+    "device":"elastomere",
+    "reco":"NEOPUMP élastomère 24 h à 32°C ; 7 j à 25°C selon fabricant",
+    "note":"À confronter à la vigilance clinique sur température et produits de dégradation.",
+    "pubmed":null
+  },
+  {
+    "molecule":"Ceftriaxone",
+    "source":"NEOPUMP – données internes fabricant élastomère",
+    "mode":"Diffuseur élastomère Easyflow\/NEOPUMP ; données internes fabricant ",
+    "poche":"NaCl 0,9 % ; conc 10 mg\/mL (1 g\/100 mL), 16 mg\/mL (4 g\/240 mL) et 20 mg\/mL ; stab 14 j à 4°C ; 24 h à 25°C et 32°C",
+    "device":"elastomere",
+    "reco":"NEOPUMP élastomère 24 h",
+    "note":"Donnée spécifique diffuseur élastomère.",
+    "pubmed":null
+  },
+  {
+    "molecule":"Cefuroxime",
+    "source":"NEOPUMP – données internes fabricant élastomère",
+    "mode":"Diffuseur élastomère Easyflow\/NEOPUMP ; données internes fabricant ",
+    "poche":"NaCl 0,9 % ; conc 15 mg\/mL ; stab 7 j à 4°C ; pas de donnée 25\/32°C dans le tableau",
+    "device":"elastomere",
+    "reco":"NEOPUMP : donnée réfrigérée uniquement",
+    "note":"Pas de stabilité ambiante exploitable dans le tableau.",
+    "pubmed":null
+  },
+  {
+    "molecule":"Ciprofloxacine",
+    "source":"CH de Tourcoing 2017 + doc interne récent",
+    "mode":"Discontinue recommandée ; prêt à l’emploi ; perfusion 60 min",
+    "poche":"Prêt à l’emploi ; NaCl 0,9 % ; conc commerciale 1–2 mg\/mL ; stab 24 h RT",
+    "device":"poche",
+    "reco":"Discontinue",
+    "note":"Présentation prête à l’emploi la plus utilisée en pratique.",
+    "pubmed":null
+  },
+  {
+    "molecule":"Ciprofloxacine",
+    "source":"PubMed – littérature sélectionnée",
+    "mode":"Perfusion prolongée \/ diffuseur élastomère",
+    "poche":"Seringue PP ; données limitées mais compatibles courte durée",
+    "device":"pse",
+    "reco":"Diffuseur élastomère possible",
+    "note":"Attention photoprotection selon spécialité.",
+    "pubmed":"https:\/\/pubmed.ncbi.nlm.nih.gov\/20458106\/"
+  },
+  {
+    "molecule":"Ciprofloxacine",
+    "source":"PubMed – littérature sélectionnée",
+    "mode":"Perfusion prolongée \/ diffuseur élastomère",
+    "poche":"Diffuseur élastomère ; conc 1–2 mg\/mL ; stabilité 24 h rapportée dans plusieurs études OPAT",
+    "device":"elastomere",
+    "reco":"Diffuseur élastomère possible",
+    "note":"Attention photoprotection selon spécialité.",
+    "pubmed":"https:\/\/pubmed.ncbi.nlm.nih.gov\/20458106\/"
+  },
+  {
+    "molecule":"Ciprofloxacine",
+    "source":"NEOPUMP – données internes fabricant élastomère",
+    "mode":"Diffuseur élastomère Easyflow\/NEOPUMP ; données internes fabricant ",
+    "poche":"NaCl 0,9 % ; conc 1 mg\/mL et 2 mg\/mL : stab 24 h à 25°C et 32°C ; 200 mg\/100 mL : stab 12 j à 4°C et 25°C",
+    "device":"elastomere",
+    "reco":"NEOPUMP élastomère 24 h",
+    "note":"Donnée spécifique diffuseur élastomère.",
+    "pubmed":null
+  },
+  {
+    "molecule":"Clindamycine",
+    "source":"NEOPUMP – données internes fabricant élastomère",
+    "mode":"Diffuseur élastomère Easyflow\/NEOPUMP ; données internes fabricant ",
+    "poche":"NaCl 0,9 % ; conc 10 mg\/mL ; stab 7 j à 4°C ; pas de donnée 25\/32°C dans le tableau",
+    "device":"elastomere",
+    "reco":"NEOPUMP : donnée réfrigérée uniquement",
+    "note":"Pas de stabilité ambiante exploitable dans le tableau.",
+    "pubmed":null
+  },
+  {
+    "molecule":"Colistine",
+    "source":"NEOPUMP – données internes fabricant élastomère",
+    "mode":"Diffuseur élastomère Easyflow\/NEOPUMP ; données internes fabricant ",
+    "poche":"NaCl 0,9 % ; colistiméthate sodique ; conc 0,015 MUI\/mL ; stab 7 j à 4°C ; pas de donnée 25\/32°C dans le tableau",
+    "device":"elastomere",
+    "reco":"NEOPUMP : donnée réfrigérée uniquement",
+    "note":"Pas de stabilité ambiante exploitable dans le tableau.",
+    "pubmed":null
+  },
+  {
+    "molecule":"Daptomycine",
+    "source":"NEOPUMP – données internes fabricant élastomère",
+    "mode":"Diffuseur élastomère Easyflow\/NEOPUMP ; données internes fabricant ",
+    "poche":"NaCl 0,9 % ; conc 9 mg\/mL ; stab 7 j à 4°C ; pas de donnée 25\/32°C dans le tableau",
+    "device":"elastomere",
+    "reco":"NEOPUMP : donnée réfrigérée uniquement",
+    "note":"Pas de stabilité ambiante exploitable dans le tableau.",
+    "pubmed":null
+  },
+  {
+    "molecule":"Ertapénem",
+    "source":"NEOPUMP – données internes fabricant élastomère",
+    "mode":"Diffuseur élastomère Easyflow\/NEOPUMP ; données internes fabricant ",
+    "poche":"NaCl 0,9 % ; conc 10 mg\/mL (1 g\/100 mL) : stab 7 j à 4°C, 12 h à 25°C et 32°C ; conc 20 mg\/mL (2 g\/100 mL) : stab 1 h à 25°C et 32°C",
+    "device":"elastomere",
+    "reco":"NEOPUMP : 12 h à 10 mg\/mL ; 1 h à 20 mg\/mL",
+    "note":"Forte dépendance à la concentration.",
+    "pubmed":null
+  },
+  {
+    "molecule":"Fluconazole",
+    "source":"NEOPUMP – données internes fabricant élastomère",
+    "mode":"Diffuseur élastomère Easyflow\/NEOPUMP ; données internes fabricant ",
+    "poche":"NaCl 0,9 % ; conc 1 mg\/mL et 2 mg\/mL ; stab 24 h à 25°C et 32°C",
+    "device":"elastomere",
+    "reco":"NEOPUMP élastomère 24 h",
+    "note":"Donnée spécifique diffuseur élastomère.",
+    "pubmed":null
+  },
+  {
+    "molecule":"Fosfomycine IV",
+    "source":"NEOPUMP – données internes fabricant élastomère",
+    "mode":"Diffuseur élastomère Easyflow\/NEOPUMP ; données internes fabricant ",
+    "poche":"NaCl 0,9 % ; conc 2 mg\/mL et 8 mg\/mL : stab 24 h à 25°C et 32°C ; conc 30 mg\/mL : stab 5 j à 25°C",
+    "device":"elastomere",
+    "reco":"NEOPUMP élastomère 24 h",
+    "note":"Donnée spécifique diffuseur élastomère.",
+    "pubmed":null
+  },
+  {
+    "molecule":"Gentamicine",
+    "source":"NEOPUMP – données internes fabricant élastomère",
+    "mode":"Diffuseur élastomère Easyflow\/NEOPUMP ; données internes fabricant ",
+    "poche":"NaCl 0,9 % ; conc 5 mg\/mL et 8 mg\/mL ; stab 24 h à 25°C et 32°C",
+    "device":"elastomere",
+    "reco":"NEOPUMP élastomère 24 h physicochimique",
+    "note":"Stabilité physicochimique ≠ recommandation clinique de perfusion continue pour aminoside.",
+    "pubmed":null
+  },
+  {
+    "molecule":"Imipénème\/cilastatine",
+    "source":"NEOPUMP – données internes fabricant élastomère",
+    "mode":"Diffuseur élastomère Easyflow\/NEOPUMP ; données internes fabricant ",
+    "poche":"NaCl 0,9 % ; conc 5+5 mg\/mL et 8+8 mg\/mL ; stab 1 h à 25°C et 32°C",
+    "device":"elastomere",
+    "reco":"NEOPUMP : stabilité très courte",
+    "note":"Pas adapté à une perfusion continue longue sans changement très fréquent.",
+    "pubmed":null
+  },
+  {
+    "molecule":"Méropénem",
+    "source":"NEOPUMP – données internes fabricant élastomère",
+    "mode":"Diffuseur élastomère Easyflow\/NEOPUMP ; données internes fabricant ",
+    "poche":"NaCl 0,9 % ; conc 20 mg\/mL : stab 7 j à 4°C, 12 h à 25°C, 1 h à 32°C ; conc 25 mg\/mL : stab 12 h à 25°C, 1 h à 32°C ; conc 10 mg\/mL : stab 4 j à 4°C, 24 h à 25°C et 32°C ; conc 4 mg\/mL : stab 7 j à 4°C",
+    "device":"elastomere",
+    "reco":"NEOPUMP : très concentration-dépendant",
+    "note":"La stabilité 24 h à 32°C n’est rapportée que pour 10 mg\/mL dans le tableau.",
+    "pubmed":null
+  },
+  {
+    "molecule":"Oxacilline",
+    "source":"NEOPUMP – données internes fabricant élastomère",
+    "mode":"Diffuseur élastomère Easyflow\/NEOPUMP ; données internes fabricant ",
+    "poche":"NaCl 0,9 % ; conc 5 mg\/mL : stab 24 h à 25°C et 32°C ; conc 8 mg\/mL : stab 12 h à 25°C et 32°C",
+    "device":"elastomere",
+    "reco":"NEOPUMP : 24 h à 5 mg\/mL ; 12 h à 8 mg\/mL",
+    "note":"Donnée spécifique diffuseur élastomère.",
+    "pubmed":null
+  },
+  {
+    "molecule":"Pipéracilline",
+    "source":"NEOPUMP – données internes fabricant élastomère",
+    "mode":"Diffuseur élastomère Easyflow\/NEOPUMP ; données internes fabricant ",
+    "poche":"NaCl 0,9 % ; conc 10 mg\/mL et 33 mg\/mL ; stab 24 h à 25°C et 32°C",
+    "device":"elastomere",
+    "reco":"NEOPUMP élastomère 24 h",
+    "note":"Donnée spécifique diffuseur élastomère.",
+    "pubmed":null
+  },
+  {
+    "molecule":"Pipéracilline\/tazobactam",
+    "source":"NEOPUMP – données internes fabricant élastomère",
+    "mode":"Diffuseur élastomère Easyflow\/NEOPUMP ; données internes fabricant ",
+    "poche":"NaCl 0,9 % ; conc 45 mg\/mL (4 g+0,5 g\/100 mL) et 80 mg\/mL (16 g+2 g\/240 mL) : stab 24 h à 25°C et 32°C ; conc 40+5 mg\/mL : stab 7 j à 4°C et 25°C",
+    "device":"elastomere",
+    "reco":"NEOPUMP élastomère 24 h",
+    "note":"Donnée spécifique diffuseur élastomère.",
+    "pubmed":null
+  },
+  {
+    "molecule":"Rifampicine IV",
+    "source":"NEOPUMP – données internes fabricant élastomère",
+    "mode":"Diffuseur élastomère Easyflow\/NEOPUMP ; données internes fabricant ",
+    "poche":"NaCl 0,9 % ; conc 0,5 mg\/mL : stab 24 h à 25°C et 32°C ; conc 3 mg\/mL : stab 6 h à 25°C et 32°C",
+    "device":"elastomere",
+    "reco":"NEOPUMP : dépend concentration",
+    "note":"Attention : autres sources indiquent incompatibilité NaCl pour la préparation usuelle ; donnée NEOPUMP à vérifier avant transposition.",
+    "pubmed":null
+  },
+  {
+    "molecule":"Teicoplanine",
+    "source":"NEOPUMP – données internes fabricant élastomère",
+    "mode":"Diffuseur élastomère Easyflow\/NEOPUMP ; données internes fabricant ",
+    "poche":"NaCl 0,9 % ; conc 4 mg\/mL ; stab 24 h à 4°C ; pas de donnée 25\/32°C dans le tableau",
+    "device":"elastomere",
+    "reco":"NEOPUMP : donnée réfrigérée uniquement",
+    "note":"Pas de stabilité ambiante exploitable dans le tableau.",
+    "pubmed":null
+  },
+  {
+    "molecule":"Tobramycine",
+    "source":"NEOPUMP – données internes fabricant élastomère",
+    "mode":"Diffuseur élastomère Easyflow\/NEOPUMP ; données internes fabricant ",
+    "poche":"NaCl 0,9 % ; conc 1 mg\/mL et 7,5 mg\/mL : stab 24 h à 25°C et 32°C ; conc 4 mg\/mL : stab 10 j à 4°C",
+    "device":"elastomere",
+    "reco":"NEOPUMP élastomère 24 h physicochimique",
+    "note":"Stabilité physicochimique ≠ recommandation clinique de perfusion continue pour aminoside.",
+    "pubmed":null
+  },
+  {
+    "molecule":"Vancomycine",
+    "source":"NEOPUMP – données internes fabricant élastomère",
+    "mode":"Diffuseur élastomère Easyflow\/NEOPUMP ; données internes fabricant ",
+    "poche":"NaCl 0,9 % ; conc 5 mg\/mL et 8 mg\/mL : stab 24 h à 25°C et 32°C ; conc 4 mg\/mL : stab 14 j à 4°C et 25°C",
+    "device":"elastomere",
+    "reco":"NEOPUMP élastomère 24 h",
+    "note":"Donnée spécifique diffuseur élastomère.",
+    "pubmed":null
+  },
+  {
+    "molecule":"Ciprofloxacine",
+    "source":"Micrel – données internes du laboratoire",
+    "mode":"Pompe Rythmic PVC",
+    "poche":"NaCl 0,9 % ou G5 ; conc 1–2 mg\/mL ; stab 30 j à 2–8°C abri lumière et 30 j à 21–24°C lumière ; conc 1,5 mg\/mL : stab 48 h à 25°C",
+    "device":"micrel",
+    "reco":"Micrel possible selon conditions",
+    "note":"Donnée spécifique consommables Micrel\/Rythmic.",
+    "pubmed":null
+  },
+  {
+    "molecule":"Cefuroxime",
+    "source":"Micrel – données internes du laboratoire",
+    "mode":"Pompe Rythmic PVC",
+    "poche":"NaCl 0,9 % ou G5 ; conc 5–10 mg\/mL : stab 24 h à 25°C et 30 j à 5°C ; G5 conc 15 mg\/mL : stab 11–15 j à 4°C selon conditions",
+    "device":"micrel",
+    "reco":"Micrel possible selon conditions",
+    "note":"Donnée spécifique consommables Micrel\/Rythmic.",
+    "pubmed":null
+  },
+  {
+    "molecule":"Oxacilline",
+    "source":"Micrel – données internes du laboratoire",
+    "mode":"Pompe Rythmic PVC",
+    "poche":"NaCl 0,9 % ; conc 10–80 mg\/mL ; stab FT 10 j ; RT 24 h",
+    "device":"micrel",
+    "reco":"Micrel possible selon conditions",
+    "note":"Donnée spécifique consommables Micrel\/Rythmic.",
+    "pubmed":null
+  },
+  {
+    "molecule":"Pipéracilline",
+    "source":"Micrel – données internes du laboratoire",
+    "mode":"Pompe Rythmic PVC",
+    "poche":"NaCl 0,9 % ; conc 10–80 mg\/mL ; stab FT 14 j ; RT 24 h",
+    "device":"micrel",
+    "reco":"Micrel possible selon conditions",
+    "note":"Donnée spécifique consommables Micrel\/Rythmic.",
+    "pubmed":null
+  },
+  {
+    "molecule":"Imipénème\/cilastatine",
+    "source":"Micrel – données internes du laboratoire",
+    "mode":"Pompe Rythmic PVC",
+    "poche":"NaCl 0,9 % ; conc 5 + 5 mg\/mL ; stab FT 24 h ; RT 9 h",
+    "device":"micrel",
+    "reco":"Micrel : stabilité courte",
+    "note":"Donnée spécifique consommables Micrel\/Rythmic.",
+    "pubmed":null
+  },
+  {
+    "molecule":"Ticarcilline",
+    "source":"Micrel – données internes du laboratoire",
+    "mode":"Pompe Rythmic PVC",
+    "poche":"NaCl 0,9 % ; conc 5–50 mg\/mL ; stab FT 15 j ; RT 24 h",
+    "device":"micrel",
+    "reco":"Micrel possible selon conditions",
+    "note":"Donnée spécifique consommables Micrel\/Rythmic.",
+    "pubmed":null
+  },
+  {
+    "molecule":"Ticarcilline\/acide clavulanique",
+    "source":"Micrel – données internes du laboratoire",
+    "mode":"Pompe Rythmic PVC",
+    "poche":"NaCl 0,9 % ; conc ticarcilline 10 mg\/mL + clavulanate 150 mg\/mL selon tableau ; stab FT 10 j ; RT 20 h",
+    "device":"micrel",
+    "reco":"Micrel possible selon conditions",
+    "note":"Vérifier l’expression exacte des concentrations avant usage clinique.",
+    "pubmed":null
+  },
+  {
+    "molecule":"Tobramycine",
+    "source":"Micrel – données internes du laboratoire",
+    "mode":"Pompe Rythmic PVC",
+    "poche":"NaCl 0,9 % ; conc 0,5–5 mg\/mL ; stab FT 7 j ; RT 48 h",
+    "device":"micrel",
+    "reco":"Micrel 48 h physicochimique",
+    "note":"Stabilité physicochimique ≠ recommandation clinique de perfusion continue pour aminoside.",
+    "pubmed":null
+  },
+  {
+    "molecule":"Vancomycine",
+    "source":"Micrel – données internes du laboratoire",
+    "mode":"Pompe Rythmic PVC",
+    "poche":"NaCl 0,9 % ; conc 10–20 mg\/mL ; stab FT 10 j ; RT 24 h",
+    "device":"micrel",
+    "reco":"Micrel possible selon conditions",
+    "note":"Donnée spécifique consommables Micrel\/Rythmic.",
+    "pubmed":null
+  },
+  {
+    "molecule":"Dalbavancine",
+    "source":"CH de Tourcoing 2017",
+    "mode":"Discontinue recommandée ; perfusion lente ≥60 min",
+    "poche":"G5 exclusivement ; conc finale 1–5 mg\/mL ; stab reconstitué 24 h <25°C ; stab dilué 12 h <25°C ; NaCl incompatible",
+    "device":"poche",
+    "reco":"Discontinue",
+    "note":"Risque de précipitation avec NaCl.",
+    "pubmed":null
+  },
+  {
+    "molecule":"Tedizolide",
+    "source":"CH de Tourcoing 2017",
+    "mode":"Discontinue recommandée ; perfusion IV",
+    "poche":"NaCl 0,9 % ; dilution 250 mL ; stab 4 h RT ; 24 h entre 2–8°C",
+    "device":"poche",
+    "reco":"Discontinue",
+    "note":"Utilisation immédiate préférable selon source.",
+    "pubmed":null
+  },
+  {
+    "molecule":"Isavuconazole",
+    "source":"CH de Tourcoing 2017",
+    "mode":"Discontinue recommandée ; perfusion ≥60 min ; filtre en ligne 0,2–1,2 µm",
+    "poche":"NaCl 0,9 % ou G5 ; conc 0,8 mg\/mL ; stab 6 h RT ; 24 h entre 2–8°C",
+    "device":"poche",
+    "reco":"Discontinue",
+    "note":"Ne pas agiter ; filtre sur ligne de perfusion.",
+    "pubmed":null
+  },
+  {
+    "molecule":"Micafungine",
+    "source":"CH de Tourcoing 2017",
+    "mode":"Discontinue recommandée ; perfusion 60 min ; abri lumière",
+    "poche":"NaCl 0,9 % ou G5 ; poche 100 mL ; stab 24 h à 25°C à l’abri lumière selon source",
+    "device":"poche",
+    "reco":"Discontinue",
+    "note":"Ne pas agiter ; limiter la formation de mousse.",
+    "pubmed":null
+  }
+]
