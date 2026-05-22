@@ -3,7 +3,7 @@
 <html lang="fr">
 <head>
 <meta charset="UTF-8">
-<title>Breaking Stab — Excel Dynamique</title>
+<title>Breaking Stab — Version Pro</title>
 <style>
   body { font-family: Inter, sans-serif; margin:0; background:#f4f8fb; color:#172637; }
   header { padding:20px; background:#1d5f8f; color:white; text-align:center; }
@@ -29,7 +29,7 @@
 </head>
 <body>
 <header>
-<h1>Breaking Stab — Présentation Synthétique</h1>
+<h1>Breaking Stab — Version Professionnelle</h1>
 <p>Stabilité des perfusions et compatibilités en Y</p>
 </header>
 <div class="tabs">
@@ -87,6 +87,7 @@ tabs.forEach(t=>t.addEventListener('click',()=>{
 }));
 
 async function loadExcel(){
+  // Stabilité
   let resp = await fetch(stabExcel);
   let data = await resp.arrayBuffer();
   let wb = XLSX.read(data,{type:'array'});
@@ -94,6 +95,7 @@ async function loadExcel(){
   populateSourceFilter();
   renderStab(stabData);
 
+  // Compatibilité Y
   resp = await fetch(yExcel);
   data = await resp.arrayBuffer();
   wb = XLSX.read(data,{type:'array'});
@@ -122,6 +124,7 @@ function renderStab(data){
     container.appendChild(card);
   });
 }
+
 document.getElementById('sourceFilter').addEventListener('change',e=>{
   const val=e.target.value;
   renderStab(val? stabData.filter(d=>d.source_name===val): stabData);
