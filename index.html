@@ -65,6 +65,7 @@ button:hover { transform: translateY(-1px); filter: brightness(1.05); }
     <h1>Compilation des données de stabilité</h1>
     <p>Outil de visualisation dynamique des compatibilités médicamenteuses et des recommandations de perfusion.</p>
   </header>
+
   <section class="panel filters">
     <div>
       <label for="filter-molecule">Molécule</label>
@@ -85,12 +86,14 @@ button:hover { transform: translateY(-1px); filter: brightness(1.05); }
       <button id="btn-reset">Réinitialiser</button>
     </div>
   </section>
-  <section class="results" id="results"></section>
+
+  <section id="results" class="results"></section>
 </div>
 
 <script>
 let database = [];
 let ycompat = [];
+
 async function loadData() {
   const dbRes = await fetch('data_database.json');
   database = await dbRes.json();
@@ -98,29 +101,41 @@ async function loadData() {
   ycompat = await yRes.json();
   renderResults();
 }
+
 function getYBadgeClass(value){
-  switch(value.toLowerCase()){
+  switch(value?.toLowerCase()){
     case 'ok': return 'y-ok';
     case 'cond': return 'y-cond';
     case 'stop': return 'y-stop';
     default: return 'y-unknown';
   }
 }
+
 function renderResults() {
   const container = document.getElementById('results');
   container.innerHTML = '';
+
   const moleculeFilter = document.getElementById('filter-molecule').value.toLowerCase();
   const deviceFilter = document.getElementById('filter-device').value;
+
+  const yInverseMatches = ycompat
+    .filter(y => y.molecule_Y && y.molecule_Y.toLowerCase().includes(moleculeFilter))
+    .map(y => y.molecule_primary.toLowerCase());
+
   database
-    .filter(item => (!moleculeFilter || item.molecule.toLowerCase().includes(moleculeFilter)) &&
-                    (!deviceFilter || item.device.toLowerCase() === deviceFilter))
+    .filter(item =>
+      (!moleculeFilter || item.molecule.toLowerCase().includes(moleculeFilter) || yInverseMatches.includes(item.molecule.toLowerCase())) &&
+      (!deviceFilter || item.device.toLowerCase() === deviceFilter)
+    )
     .forEach(item => {
       const card = document.createElement('div');
       card.className = 'result-card';
+
       const head = document.createElement('div');
       head.className = 'result-head';
       head.innerHTML = `<h3>${item.molecule}</h3><span class="source">${item.source}</span>`;
       card.appendChild(head);
+
       const devGrid = document.createElement('div');
       devGrid.className = 'device-grid';
       const deviceDiv = document.createElement('div');
@@ -131,6 +146,7 @@ function renderResults() {
         <p>${item.note || ''}</p>`;
       devGrid.appendChild(deviceDiv);
       card.appendChild(devGrid);
+
       const yData = ycompat.filter(y => y.molecule_primary.toLowerCase() === item.molecule.toLowerCase());
       if(yData.length > 0){
         const yTable = document.createElement('table');
@@ -140,17 +156,17 @@ function renderResults() {
         yTable.appendChild(headerRow);
         yData.forEach(y => {
           const tr = document.createElement('tr');
-          const badgeClass = getYBadgeClass(y.compatible || '');
-          tr.innerHTML = `<td>${y.molecule_Y || ''}</td>
-                          <td><span class="badge ${badgeClass}">${y.compatible || 'unknown'}</span></td>
-                          <td>${y.comment || ''}</td>`;
+          const badgeClass = getYBadgeClass(y.compatible);
+          tr.innerHTML = `<td>${y.molecule_Y || ''}</td><td><span class="badge ${badgeClass}">${y.compatible || 'unknown'}</span></td><td>${y.comment || ''}</td>`;
           yTable.appendChild(tr);
         });
         card.appendChild(yTable);
       }
+
       container.appendChild(card);
     });
 }
+
 document.getElementById('filter-molecule').addEventListener('input', renderResults);
 document.getElementById('filter-device').addEventListener('change', renderResults);
 document.getElementById('btn-reset').addEventListener('click', () => {
@@ -158,6 +174,7 @@ document.getElementById('btn-reset').addEventListener('click', () => {
   document.getElementById('filter-device').value = '';
   renderResults();
 });
+
 loadData();
 </script>
 </body>
