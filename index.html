@@ -1,524 +1,176 @@
 <!DOCTYPE html>
+
 <html lang="fr">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Breaking Stab – Base de stabilité</title>
-  <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
-  <style>
-    :root {
-      --bg: #f4f8fb;
-      --card: #ffffff;
-      --ink: #172637;
-      --muted: #64748b;
-      --blue: #1d5f8f;
-      --blue-soft: #e3f0fb;
-      --border: #cddbe8;
-      --ok: #1f6b3a;
-      --warn: #8a5a14;
-      --stop: #a12d2d;
-      --shadow: 0 14px 38px rgba(23, 38, 55, 0.10);
-      --radius: 18px;
-    }
-    * { box-sizing: border-box; }
-    body {
-      margin: 0;
-      font-family: Inter, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
-      background: radial-gradient(circle at top left, #dceffd, var(--bg) 42%);
-      color: var(--ink);
-      line-height: 1.45;
-    }
-    a { color: var(--blue); }
-    .page { max-width: 1320px; margin: 0 auto; padding: 32px 20px 56px; }
-    .hero, .panel, .card, .notice {
-      background: rgba(255,255,255,0.90);
-      border: 1px solid var(--border);
-      border-radius: var(--radius);
-      box-shadow: var(--shadow);
-    }
-    .hero { padding: 28px; margin-bottom: 18px; }
-    .eyebrow {
-      display: inline-flex; align-items: center; gap: 8px;
-      padding: 7px 12px; border-radius: 999px;
-      background: var(--blue-soft); color: var(--blue);
-      font-weight: 800; font-size: 0.82rem; margin-bottom: 14px;
-    }
-    h1 { margin: 0 0 10px; font-size: clamp(2rem, 4vw, 3.5rem); line-height: 1.03; letter-spacing: -0.055em; }
-    .hero p { max-width: 900px; color: var(--muted); font-size: 1.03rem; margin: 0; }
-    .disclaimer {
-      margin-top: 16px; padding: 13px 15px; border-radius: 14px;
-      background: #eef7ff; border: 1px solid #bad7ee; color: #234761;
-      font-size: 0.92rem;
-    }
-    .panel { padding: 18px; margin-bottom: 18px; }
-    .grid { display: grid; grid-template-columns: 1.4fr repeat(5, minmax(0, 1fr)); gap: 12px; align-items: end; }
-    .grid.second { grid-template-columns: repeat(5, minmax(0, 1fr)); margin-top: 12px; }
-    label { display:block; font-size:0.76rem; color:var(--muted); margin:0 0 6px; font-weight:800; text-transform:uppercase; letter-spacing:0.045em; }
-    input, select, button {
-      width: 100%; border-radius: 13px; border: 1px solid var(--border);
-      padding: 11px 12px; font: inherit; background: #fff; color: var(--ink); outline: none;
-    }
-    input:focus, select:focus { border-color: var(--blue); box-shadow: 0 0 0 3px rgba(29,95,143,.12); }
-    button { cursor: pointer; background: var(--blue); color: #fff; border-color: var(--blue); font-weight: 850; }
-    button.secondary { background:#fff; color:var(--blue); }
-    .toggles { display:flex; flex-wrap:wrap; gap:8px; margin-top:12px; }
-    .toggle-chip { display:inline-flex; align-items:center; gap:7px; padding:8px 10px; border-radius:999px; border:1px solid var(--border); background:#fff; font-size:.82rem; font-weight:750; cursor:pointer; }
-    .toggle-chip input { width:auto; margin:0; accent-color:var(--blue); }
-    .summary { display:flex; flex-wrap:wrap; align-items:center; gap:9px; color:var(--muted); font-size:.92rem; margin-top:12px; }
-    .pill { display:inline-flex; align-items:center; gap:6px; padding:6px 10px; border-radius:999px; background:#e9f3fb; color:var(--ink); font-size:.82rem; font-weight:800; }
-    .pill.ok { background:#e7f5eb; color:var(--ok); }
-    .pill.warn { background:#fff4e8; color:var(--warn); }
-    .pill.stop { background:#fff0f0; color:var(--stop); }
-    .results { display:grid; gap:15px; }
-    .card { overflow:hidden; background:#fff; }
-    .card-head { padding:16px 18px; display:flex; justify-content:space-between; gap:16px; border-bottom:1px solid var(--border); background:linear-gradient(90deg,#fff,#f4f9fd); }
-    .card-head h3 { margin:0 0 3px; font-size:1.24rem; letter-spacing:-.02em; }
-    .source { color:var(--muted); font-size:.88rem; font-weight:650; }
-    .tags { display:flex; flex-wrap:wrap; justify-content:flex-end; gap:6px; max-width:500px; }
-    .badge { display:inline-flex; align-items:center; padding:5px 9px; border-radius:999px; font-size:.76rem; font-weight:850; border:1px solid transparent; }
-    .badge.ok { background:#e7f5eb; color:var(--ok); border-color:#b9dfc5; }
-    .badge.warn { background:#fff4e8; color:var(--warn); border-color:#efd0a3; }
-    .badge.stop { background:#fff0f0; color:var(--stop); border-color:#e3b0b0; }
-    .badge.info { background:#eef2ff; color:#2845bd; border-color:#c7cff7; }
-    .badge.neutral { background:#f4f1ec; color:#4c504d; border-color:#ded7ca; }
-    .details { padding:16px 18px; display:grid; grid-template-columns: repeat(4, minmax(0,1fr)); gap:10px; }
-    .field { border:1px solid #e4edf5; border-radius:13px; padding:10px 11px; background:#fbfdff; min-height:76px; }
-    .field .k { color:var(--muted); font-size:.72rem; text-transform:uppercase; letter-spacing:.045em; font-weight:850; margin-bottom:5px; }
-    .field .v { font-size:.91rem; font-weight:650; overflow-wrap:anywhere; }
-    .notes { padding:13px 18px; border-top:1px solid var(--border); background:#fbfaf7; color:var(--muted); font-size:.9rem; }
-    .empty { padding:28px; text-align:center; color:var(--muted); border:1px dashed var(--border); border-radius:var(--radius); background:rgba(255,255,255,.7); }
-    .notice { padding:14px 16px; margin-bottom:16px; color:#234761; background:#eef7ff; }
-    .hidden { display:none !important; }
-    .source-panel { display:grid; grid-template-columns: 1fr auto; gap:12px; align-items:center; }
-    .source-list { display:flex; flex-wrap:wrap; gap:7px; }
-    .source-toggle { display:inline-flex; gap:6px; align-items:center; padding:7px 9px; border-radius:999px; background:#fff; border:1px solid var(--border); font-size:.78rem; font-weight:750; }
-    .source-toggle input { width:auto; margin:0; }
-    .footer { margin-top:24px; padding:16px 18px; color:var(--muted); font-size:.9rem; background:rgba(255,255,255,.6); border:1px solid var(--border); border-radius:var(--radius); }
-    @media (max-width: 1060px) { .grid, .grid.second { grid-template-columns: 1fr 1fr; } .details { grid-template-columns: 1fr 1fr; } }
-    @media (max-width: 680px) { .page { padding:20px 13px 40px; } .hero { padding:20px; } .grid, .grid.second, .details { grid-template-columns: 1fr; } .card-head { flex-direction:column; } .tags { justify-content:flex-start; max-width:none; } .source-panel { grid-template-columns:1fr; } }
-  </style>
+<meta charset="UTF-8">
+<title>Breaking Stab — Excel Dynamique</title>
+<style>
+  body { font-family: Inter, sans-serif; margin:0; background:#f4f8fb; color:#172637; }
+  header { padding:20px; background:#1d5f8f; color:white; text-align:center; }
+  h1 { margin:0; font-size:2rem; }
+  .tabs { display:flex; gap:10px; margin:20px; }
+  .tab-button { padding:6px 12px; border-radius:8px; border:none; cursor:pointer; background:white; color:#1d5f8f; font-weight:bold; }
+  .tab-button.active { background:#1d5f8f; color:white; }
+  .panel { display:none; padding:10px 20px; }
+  .panel.active { display:block; }
+  .filters { display:flex; flex-wrap:wrap; gap:10px; margin-bottom:10px; }
+  select,input,button { padding:6px 10px; border-radius:8px; border:1px solid #cddbe8; }
+  .results { display:grid; gap:10px; margin-bottom:20px; }
+  .stab-card { background:white; padding:10px; border-radius:12px; border:1px solid #cddbe8; box-shadow:0 4px 12px rgba(23,38,55,0.1); }
+  .pill { display:inline-block; padding:4px 8px; border-radius:12px; margin:2px; font-size:0.82rem; font-weight:bold; }
+  .pill.device { background:#e3f0fb; color:#1d5f8f; }
+  .pill.solvent { background:#e6efe8; color:#315f46; }
+  .stab-bar { height:8px; border-radius:999px; background:#ebe5d9; margin-top:4px; overflow:hidden; position:relative; }
+  .stab-fill { height:100%; border-radius:inherit; display:block; }
+  .stab-fill.ok { background:#6ea77a; }
+  .stab-fill.warn { background:#d6a64b; }
+  .stab-fill.stop { background:#c85a4a; }
+</style>
 </head>
 <body>
-  <main class="page">
-    <section class="hero">
-      <div class="eyebrow">Décarbonons la pharmacie · Base Excel dynamique</div>
-      <h1>Breaking Stab</h1>
-      <p>Outil de compilation de données de stabilité pour perfusion intra et extra-hospitalière. Les données sont chargées depuis un fichier Excel versionné dans le dépôt GitHub.</p>
-      <div class="disclaimer"><strong>Base de travail non opposable :</strong> toute utilisation clinique, organisationnelle ou protocolisation impose une double vérification à partir des sources originales, RCP, recommandations et procédures locales.</div>
-    </section>
+<header>
+<h1>Breaking Stab — Présentation Synthétique</h1>
+<p>Stabilité des perfusions et compatibilités en Y</p>
+</header>
+<div class="tabs">
+<button class="tab-button active" data-tab="stabTab">Stabilité</button>
+<button class="tab-button" data-tab="compareTab">Comparaison sources</button>
+<button class="tab-button" data-tab="ycompatTab">Compatibilité Y</button>
+<button class="tab-button" data-tab="reverseTab">Moteur inversé</button>
+</div>
 
-    <section class="notice" id="loadNotice">Chargement de la base Excel…</section>
+<section id="stabTab" class="panel active">
+<div class="filters">
+<select id="sourceFilter"><option value="">Toutes les sources actives</option></select>
+<input id="searchMolecule" type="search" placeholder="Recherche molécule…" />
+<button id="refreshBtn">Recharger Excel</button>
+</div>
+<div class="results" id="stabResults"></div>
+</section>
 
-    <section class="panel">
-      <div class="grid">
-        <div>
-          <label for="search">Molécule</label>
-          <input id="search" type="search" placeholder="Ex. ceftazidime, vancomycine, méropénem…" />
-        </div>
-        <div>
-          <label for="device">Dispositif</label>
-          <select id="device"><option value="">Tous</option></select>
-        </div>
-        <div>
-          <label for="source">Source</label>
-          <select id="source"><option value="">Toutes actives</option></select>
-        </div>
-        <div>
-          <label for="solvent">Soluté</label>
-          <select id="solvent"><option value="">Tous</option></select>
-        </div>
-        <div>
-          <label for="mode">Mode</label>
-          <select id="mode">
-            <option value="">Tous</option>
-            <option value="continuous">Continu possible</option>
-            <option value="discontinuous">Discontinu possible</option>
-          </select>
-        </div>
-        <div>
-          <button id="reset" type="button">Réinitialiser</button>
-        </div>
-      </div>
-      <div class="grid second">
-        <div>
-          <label for="minDuration">Stabilité minimale</label>
-          <select id="minDuration">
-            <option value="">Indifférent</option>
-            <option value="6">≥ 6 h</option>
-            <option value="8">≥ 8 h</option>
-            <option value="12">≥ 12 h</option>
-            <option value="24">≥ 24 h</option>
-            <option value="48">≥ 48 h</option>
-          </select>
-        </div>
-        <div>
-          <label for="minTemp">Température minimale</label>
-          <select id="minTemp">
-            <option value="">Indifférent</option>
-            <option value="25">Compatible ≥25°C</option>
-            <option value="30">Compatible ≥30°C</option>
-            <option value="32">Compatible ≥32°C</option>
-            <option value="37">Compatible ≥37°C</option>
-          </select>
-        </div>
-        <div>
-          <label for="hydric">Restriction hydrique</label>
-          <select id="hydric">
-            <option value="">Indifférent</option>
-            <option value="true">Compatible</option>
-            <option value="false">Non / non documenté</option>
-          </select>
-        </div>
-        <div>
-          <label for="validation">Validation</label>
-          <select id="validation">
-            <option value="">Toutes</option>
-            <option value="validé">Validé</option>
-            <option value="à vérifier">À vérifier</option>
-            <option value="refusé">Refusé</option>
-            <option value="obsolète">Obsolète</option>
-          </select>
-        </div>
-        <div>
-          <label for="scope">Périmètre</label>
-          <select id="scope">
-            <option value="internal">Interne hôpital</option>
-            <option value="public">Public</option>
-            <option value="all">Tout voir</option>
-          </select>
-        </div>
-      </div>
-      <div class="toggles">
-        <label class="toggle-chip"><input id="onlyEnabled" type="checkbox" checked /> Sources activées seulement</label>
-        <label class="toggle-chip"><input id="hideRejected" type="checkbox" checked /> Masquer refusé / obsolète</label>
-        <label class="toggle-chip"><input id="compact" type="checkbox" /> Vue compacte</label>
-      </div>
-      <div class="summary">
-        <span class="pill" id="countPill">0 résultat</span>
-        <span class="pill ok" id="sourcePill">0 source active</span>
-        <span>Les filtres s’appliquent aux lignes de stabilité issues de l’Excel.</span>
-      </div>
-    </section>
+<section id="compareTab" class="panel">
+<div id="compareResults" class="results"></div>
+</section>
 
-    <section class="panel">
-      <div class="source-panel">
-        <div>
-          <label>Activation rapide des sources</label>
-          <div class="source-list" id="sourceList"></div>
-        </div>
-        <button type="button" class="secondary" id="restoreSourceDefaults">Réactiver selon Excel</button>
-      </div>
-    </section>
+<section id="ycompatTab" class="panel">
+<div class="filters">
+<input id="searchYPrimary" placeholder="Molécule principale" />
+<input id="searchYSecondary" placeholder="Molécule co-admin" />
+</div>
+<div id="yResults" class="results"></div>
+</section>
 
-    <section id="results" class="results"></section>
-    
-  <script>
-    const EXCEL_URL = "./breaking_stab_database_v2_sources_toggle.xlsx";
-    let rows = [];
-    let sources = [];
-    let sourceRuntimeEnabled = new Map();
+<section id="reverseTab" class="panel">
+<div class="filters">
+<input id="revMolecule" placeholder="Molécule" />
+<input id="revDose" type="number" placeholder="Dose" />
+<select id="revMode"><option value="continuous">Continu</option><option value="discontinuous">Discontinu</option></select>
+<select id="revFreq"><option value="1">1x/j</option><option value="2">2x/j</option><option value="3">3x/j</option></select>
+<button id="revRun">Calculer</button>
+</div>
+<div id="revResults" class="results"></div>
+</section>
 
-    const els = {
-      notice: document.getElementById("loadNotice"),
-      search: document.getElementById("search"),
-      device: document.getElementById("device"),
-      source: document.getElementById("source"),
-      solvent: document.getElementById("solvent"),
-      mode: document.getElementById("mode"),
-      minDuration: document.getElementById("minDuration"),
-      minTemp: document.getElementById("minTemp"),
-      hydric: document.getElementById("hydric"),
-      validation: document.getElementById("validation"),
-      scope: document.getElementById("scope"),
-      onlyEnabled: document.getElementById("onlyEnabled"),
-      hideRejected: document.getElementById("hideRejected"),
-      compact: document.getElementById("compact"),
-      countPill: document.getElementById("countPill"),
-      sourcePill: document.getElementById("sourcePill"),
-      results: document.getElementById("results"),
-      sourceList: document.getElementById("sourceList"),
-      reset: document.getElementById("reset"),
-      restoreSourceDefaults: document.getElementById("restoreSourceDefaults")
-    };
+<script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
 
-    function norm(v) { return String(v ?? "").trim(); }
-    function low(v) { return norm(v).toLowerCase(); }
-    function yes(v) { return ["oui", "yes", "true", "1", "x", "actif", "active"].includes(low(v)); }
-    function no(v) { return ["non", "no", "false", "0", "inactif", "inactive"].includes(low(v)); }
-    function numberOrNull(v) {
-      if (v === null || v === undefined || v === "") return null;
-      const n = Number(String(v).replace(",", "."));
-      return Number.isFinite(n) ? n : null;
-    }
-    function escapeHtml(str = "") {
-      return String(str).replaceAll("&", "&amp;").replaceAll("<", "&lt;").replaceAll(">", "&gt;").replaceAll('"', "&quot;").replaceAll("'", "&#039;");
-    }
+<script>
+const stabExcel = 'breaking_stab_database_v2_sources_toggle.xlsx';
+const yExcel = 'breaking_stab_Y_compatibility_final.xlsx';
+let stabData=[], yData=[];
 
-    function pick(row, names) {
-      for (const name of names) {
-        if (row[name] !== undefined && row[name] !== null && String(row[name]).trim() !== "") return row[name];
-      }
-      return "";
-    }
+const tabs = document.querySelectorAll('.tab-button');
+tabs.forEach(t=>t.addEventListener('click',()=>{
+  tabs.forEach(b=>b.classList.remove('active'));
+  t.classList.add('active');
+  document.querySelectorAll('.panel').forEach(p=>p.classList.remove('active'));
+  document.getElementById(t.dataset.tab).classList.add('active');
+}));
 
-    function normalizeStabilityRow(r) {
-      return {
-        id: norm(pick(r, ["id", "stability_id"])),
-        molecule: norm(pick(r, ["molecule", "Molécule", "medication"])),
-        source_id: norm(pick(r, ["source_id", "source", "Source"])),
-        source_name: norm(pick(r, ["source_name", "source_label", "source", "Source"])),
-        source_enabled: pick(r, ["source_enabled"]),
-        visibility_scope: norm(pick(r, ["visibility_scope"])),
-        include_in_public_json: pick(r, ["include_in_public_json"]),
-        include_in_internal_json: pick(r, ["include_in_internal_json"]),
-        source_status: norm(pick(r, ["source_status"])),
-        source_type: norm(pick(r, ["source_type"])),
-        device: norm(pick(r, ["device", "device_id", "dispositif"])),
-        administration_mode: norm(pick(r, ["administration_mode", "mode"])),
-        continuous_possible: pick(r, ["continuous_possible", "continu_possible"]),
-        discontinuous_possible: pick(r, ["discontinuous_possible", "discontinu_possible"]),
-        solvent: norm(pick(r, ["solvent", "soluté", "solute"])),
-        concentration_min: numberOrNull(pick(r, ["concentration_min", "conc_min"])),
-        concentration_max: numberOrNull(pick(r, ["concentration_max", "conc_max"])),
-        concentration_unit: norm(pick(r, ["concentration_unit", "conc_unit"])),
-        volume_min: numberOrNull(pick(r, ["volume_min"])),
-        volume_max: numberOrNull(pick(r, ["volume_max"])),
-        temperature_min: numberOrNull(pick(r, ["temperature_min", "temp_min"])),
-        temperature_max: numberOrNull(pick(r, ["temperature_max", "temp_max"])),
-        temperature_label: norm(pick(r, ["temperature_label", "temperature"])),
-        stability_duration_h: numberOrNull(pick(r, ["stability_duration_h", "duration_h"])),
-        runout_duration_h: numberOrNull(pick(r, ["runout_duration_h"])),
-        light_protection: pick(r, ["light_protection"]),
-        hydric_restriction_compatible: pick(r, ["hydric_restriction_compatible"]),
-        central_line_required: pick(r, ["central_line_required"]),
-        peripheral_line_possible: pick(r, ["peripheral_line_possible"]),
-        recommendation: norm(pick(r, ["recommendation", "reco"])),
-        warning_level: norm(pick(r, ["warning_level"])),
-        expert_validation_status: norm(pick(r, ["expert_validation_status", "validation_status"])),
-        expert_validator: norm(pick(r, ["expert_validator"])),
-        validation_date: norm(pick(r, ["validation_date"])),
-        comment: norm(pick(r, ["comment", "note", "notes"])),
-        source_quote: norm(pick(r, ["source_quote"])),
-        source_url: norm(pick(r, ["source_url", "url"])),
-        raw: r
-      };
-    }
+async function loadExcel(){
+  let resp = await fetch(stabExcel);
+  let data = await resp.arrayBuffer();
+  let wb = XLSX.read(data,{type:'array'});
+  stabData = XLSX.utils.sheet_to_json(wb.Sheets['Stability']).filter(r=>r.source_enabled==='Oui');
+  populateSourceFilter();
+  renderStab(stabData);
 
-    function normalizeSourceRow(r) {
-      const id = norm(pick(r, ["source_id", "id", "source"]));
-      return {
-        source_id: id,
-        source_name: norm(pick(r, ["source_name", "name", "source", "Source"])) || id,
-        source_enabled: pick(r, ["source_enabled", "enabled"]),
-        visibility_scope: norm(pick(r, ["visibility_scope", "scope"])),
-        include_in_public_json: pick(r, ["include_in_public_json"]),
-        include_in_internal_json: pick(r, ["include_in_internal_json"]),
-        source_status: norm(pick(r, ["source_status", "status"])),
-        governance_comment: norm(pick(r, ["governance_comment", "comment"])),
-        source_type: norm(pick(r, ["source_type", "type"])),
-        source_url: norm(pick(r, ["source_url", "url"])),
-        raw: r
-      };
-    }
+  resp = await fetch(yExcel);
+  data = await resp.arrayBuffer();
+  wb = XLSX.read(data,{type:'array'});
+  yData = XLSX.utils.sheet_to_json(wb.Sheets[wb.SheetNames[0]]);
+  renderY(yData);
+}
 
-    async function loadWorkbook() {
-      try {
-        const response = await fetch(EXCEL_URL, { cache: "no-store" });
-        if (!response.ok) throw new Error(`HTTP ${response.status}`);
-        const buffer = await response.arrayBuffer();
-        const workbook = XLSX.read(buffer, { type: "array" });
-        const stabilitySheet = workbook.Sheets["Stability"] || workbook.Sheets[workbook.SheetNames[0]];
-        const sourcesSheet = workbook.Sheets["Sources"];
-        const stabilityRaw = XLSX.utils.sheet_to_json(stabilitySheet, { defval: "" });
-        const sourcesRaw = sourcesSheet ? XLSX.utils.sheet_to_json(sourcesSheet, { defval: "" }) : [];
-        sources = sourcesRaw.map(normalizeSourceRow).filter(s => s.source_id || s.source_name);
-        const sourceMap = new Map(sources.map(s => [s.source_id || s.source_name, s]));
-        rows = stabilityRaw.map(normalizeStabilityRow).filter(r => r.molecule);
-        rows = rows.map(r => {
-          const s = sourceMap.get(r.source_id) || sourceMap.get(r.source_name) || null;
-          if (!s) return r;
-          return {
-            ...r,
-            source_name: r.source_name || s.source_name,
-            source_enabled: r.source_enabled || s.source_enabled,
-            visibility_scope: r.visibility_scope || s.visibility_scope,
-            include_in_public_json: r.include_in_public_json || s.include_in_public_json,
-            include_in_internal_json: r.include_in_internal_json || s.include_in_internal_json,
-            source_status: r.source_status || s.source_status,
-            source_type: r.source_type || s.source_type,
-            source_url: r.source_url || s.source_url
-          };
-        });
-        initRuntimeSources();
-        populateFilters();
-        renderSourceToggles();
-        els.notice.textContent = `Base chargée : ${rows.length} lignes de stabilité, ${sources.length} sources.`;
-        render();
-      } catch (err) {
-        console.error(err);
-        els.notice.innerHTML = `<strong>Erreur de chargement Excel.</strong> Vérifier que ${escapeHtml(EXCEL_URL)} est bien présent à la racine du dépôt GitHub. Détail : ${escapeHtml(err.message)}`;
-      }
-    }
+function populateSourceFilter(){
+  const sel = document.getElementById('sourceFilter');
+  const sset = new Set(stabData.map(d=>d.source_name));
+  sel.innerHTML='<option value="">Toutes les sources actives</option>';
+  sset.forEach(s=>{const o=document.createElement('option');o.value=s;o.textContent=s;sel.appendChild(o);});
+}
 
-    function initRuntimeSources() {
-      sourceRuntimeEnabled.clear();
-      const allNames = Array.from(new Set(rows.map(r => r.source_id || r.source_name).filter(Boolean)));
-      for (const name of allNames) {
-        const row = rows.find(r => (r.source_id || r.source_name) === name);
-        sourceRuntimeEnabled.set(name, !no(row?.source_enabled));
-      }
-    }
+function renderStab(data){
+  const container=document.getElementById('stabResults');
+  container.innerHTML='';
+  data.forEach(d=>{
+    const card=document.createElement('div');
+    card.className='stab-card';
+    const deviceSummary = `${d.device} ${d.solvent} ${d.concentration_min||''}-${d.concentration_max||''}${d.concentration_unit||''}`;
+    const barClass = d.stability_duration_h>=24?'ok':d.stability_duration_h>=12?'warn':'stop';
+    card.innerHTML=`<strong>${d.molecule}</strong> — Source: ${d.source_name}<br>
+      <span class='pill device'>${deviceSummary}</span>
+      <div class='stab-bar'><span class='stab-fill ${barClass}' style='width:${Math.min(d.stability_duration_h*4,100)}%'></span></div>`;
+    container.appendChild(card);
+  });
+}
+document.getElementById('sourceFilter').addEventListener('change',e=>{
+  const val=e.target.value;
+  renderStab(val? stabData.filter(d=>d.source_name===val): stabData);
+});
+document.getElementById('searchMolecule').addEventListener('input',e=>{
+  const term=e.target.value.toLowerCase();
+  renderStab(stabData.filter(d=>d.molecule.toLowerCase().includes(term)));
+});
 
-    function uniqueValues(field) {
-      return Array.from(new Set(rows.map(r => norm(r[field])).filter(Boolean))).sort((a,b) => a.localeCompare(b, "fr"));
-    }
-    function fillSelect(select, values) {
-      const first = select.querySelector("option")?.outerHTML || '<option value="">Tous</option>';
-      select.innerHTML = first + values.map(v => `<option value="${escapeHtml(v)}">${escapeHtml(v)}</option>`).join("");
-    }
-    function populateFilters() {
-      fillSelect(els.device, uniqueValues("device"));
-      fillSelect(els.source, Array.from(new Set(rows.map(r => r.source_name || r.source_id).filter(Boolean))).sort((a,b) => a.localeCompare(b, "fr")));
-      fillSelect(els.solvent, uniqueValues("solvent"));
-    }
+function renderY(data){
+  const container=document.getElementById('yResults');
+  container.innerHTML='';
+  data.forEach(d=>{
+    const card=document.createElement('div');
+    card.className='stab-card';
+    const compClass=d.compatible==='compatible'?'ok':d.compatible==='warn'?'warn':'stop';
+    card.innerHTML=`<strong>${d.molecule_primary}</strong> + <strong>${d.molecule_Y}</strong> — Device: ${d.device}<br>
+      <span class='stab-bar'><span class='stab-fill ${compClass}' style='width:100%'></span></span><br>
+      Source: ${d.source_name}`;
+    container.appendChild(card);
+  });
+}
+document.getElementById('searchYPrimary').addEventListener('input', e=>{
+  const term=e.target.value.toLowerCase();
+  renderY(yData.filter(d=>d.molecule_primary.toLowerCase().includes(term)));
+});
+document.getElementById('searchYSecondary').addEventListener('input', e=>{
+  const term=e.target.value.toLowerCase();
+  renderY(yData.filter(d=>d.molecule_Y.toLowerCase().includes(term)));
+});
+document.getElementById('revRun').addEventListener('click',()=>{
+  const mol=document.getElementById('revMolecule').value;
+  const dose=parseFloat(document.getElementById('revDose').value);
+  const mode=document.getElementById('revMode').value;
+  const freq=parseInt(document.getElementById('revFreq').value);
+  const revContainer=document.getElementById('revResults');
+  const filtered=stabData.filter(d=>d.molecule===mol && ((mode==='continuous' && d.continuous_possible==='TRUE') || (mode==='discontinuous' && d.discontinuous_possible==='TRUE')));
+  revContainer.innerHTML='';
+  filtered.forEach(d=>{
+    const volumes=d.volume_min && d.volume_max?`${d.volume_min}-${d.volume_max} mL`:'variable';
+    const card=document.createElement('div');
+    card.className='stab-card';
+    card.innerHTML=`<strong>${d.molecule}</strong> — ${d.device} — Solvent: ${d.solvent} — Dose possible: ${volumes} — Temp Max: ${d.temperature_max} — Durée: ${d.stability_duration_h}h`;
+    revContainer.appendChild(card);
+  });
+});
 
-    function renderSourceToggles() {
-      const items = Array.from(sourceRuntimeEnabled.keys()).sort((a,b) => a.localeCompare(b, "fr"));
-      els.sourceList.innerHTML = items.map(name => {
-        const checked = sourceRuntimeEnabled.get(name) ? "checked" : "";
-        return `<label class="source-toggle"><input type="checkbox" data-source-toggle="${escapeHtml(name)}" ${checked}>${escapeHtml(name)}</label>`;
-      }).join("");
-      els.sourceList.querySelectorAll("input[data-source-toggle]").forEach(input => {
-        input.addEventListener("change", e => {
-          sourceRuntimeEnabled.set(e.target.dataset.sourceToggle, e.target.checked);
-          render();
-        });
-      });
-    }
+loadExcel();
+</script>
 
-    function passesScope(row) {
-      const scope = els.scope.value;
-      if (scope === "all") return true;
-      if (scope === "public") return yes(row.include_in_public_json) || low(row.visibility_scope).includes("public");
-      if (scope === "internal") return yes(row.include_in_internal_json) || low(row.visibility_scope).includes("interne") || low(row.visibility_scope).includes("hôpital") || low(row.visibility_scope).includes("hopital");
-      return true;
-    }
-
-    function filteredRows() {
-      const q = low(els.search.value);
-      const selectedSource = els.source.value;
-      const selectedDevice = els.device.value;
-      const selectedSolvent = els.solvent.value;
-      const minDuration = numberOrNull(els.minDuration.value);
-      const minTemp = numberOrNull(els.minTemp.value);
-      const validation = low(els.validation.value);
-      return rows.filter(r => {
-        const sourceKey = r.source_id || r.source_name;
-        const sourceLabel = r.source_name || r.source_id;
-        if (els.onlyEnabled.checked && sourceRuntimeEnabled.has(sourceKey) && !sourceRuntimeEnabled.get(sourceKey)) return false;
-        if (!passesScope(r)) return false;
-        if (els.hideRejected.checked && ["refusé", "refuse", "obsolète", "obsolete"].some(x => low(r.expert_validation_status).includes(x))) return false;
-        if (q && !(`${r.molecule} ${r.comment} ${r.recommendation}`.toLowerCase().includes(q))) return false;
-        if (selectedSource && sourceLabel !== selectedSource) return false;
-        if (selectedDevice && r.device !== selectedDevice) return false;
-        if (selectedSolvent && r.solvent !== selectedSolvent) return false;
-        if (els.mode.value === "continuous" && !yes(r.continuous_possible) && !low(r.administration_mode).includes("continu")) return false;
-        if (els.mode.value === "discontinuous" && !yes(r.discontinuous_possible) && !low(r.administration_mode).includes("discontinu")) return false;
-        if (minDuration !== null && (r.stability_duration_h === null || r.stability_duration_h < minDuration)) return false;
-        if (minTemp !== null && (r.temperature_max === null || r.temperature_max < minTemp)) return false;
-        if (els.hydric.value === "true" && !yes(r.hydric_restriction_compatible)) return false;
-        if (els.hydric.value === "false" && yes(r.hydric_restriction_compatible)) return false;
-        if (validation && !low(r.expert_validation_status).includes(validation)) return false;
-        return true;
-      });
-    }
-
-    function badge(text, kind="neutral") {
-      if (!text) return "";
-      return `<span class="badge ${kind}">${escapeHtml(text)}</span>`;
-    }
-    function fmtBool(v) {
-      if (yes(v)) return "Oui";
-      if (no(v)) return "Non";
-      return "Non documenté";
-    }
-    function fmtRange(min, max, unit="") {
-      if (min !== null && max !== null && min !== max) return `${min}–${max} ${unit}`.trim();
-      if (max !== null) return `≤ ${max} ${unit}`.trim();
-      if (min !== null) return `≥ ${min} ${unit}`.trim();
-      return "—";
-    }
-    function fmtTemp(r) {
-      if (r.temperature_label) return r.temperature_label;
-      return fmtRange(r.temperature_min, r.temperature_max, "°C");
-    }
-    function warningKind(level) {
-      const l = low(level);
-      if (l.includes("crit") || l.includes("stop") || l.includes("danger")) return "stop";
-      if (l.includes("mod") || l.includes("vigil") || l.includes("warn")) return "warn";
-      return "info";
-    }
-    function renderRow(r) {
-      const validation = r.expert_validation_status || "À vérifier";
-      const validKind = low(validation).includes("valid") ? "ok" : low(validation).includes("refus") || low(validation).includes("obsol") ? "stop" : "warn";
-      const duration = r.stability_duration_h !== null ? `${r.stability_duration_h} h` : "—";
-      const runout = r.runout_duration_h !== null ? ` + run-out ${r.runout_duration_h} h` : "";
-      const compactClass = els.compact.checked ? "hidden" : "";
-      const sourceName = r.source_name || r.source_id || "Source non précisée";
-      return `
-        <article class="card">
-          <div class="card-head">
-            <div>
-              <h3>${escapeHtml(r.molecule)}</h3>
-              <div class="source">${escapeHtml(sourceName)}${r.source_type ? " · " + escapeHtml(r.source_type) : ""}</div>
-            </div>
-            <div class="tags">
-              ${badge(validation, validKind)}
-              ${badge(r.device || "Dispositif non précisé", "info")}
-              ${badge(r.solvent || "Soluté non précisé", "neutral")}
-              ${r.warning_level ? badge(r.warning_level, warningKind(r.warning_level)) : ""}
-              ${yes(r.source_enabled) || !no(r.source_enabled) ? badge("source active", "ok") : badge("source inactive", "stop")}
-            </div>
-          </div>
-          <div class="details">
-            <div class="field"><div class="k">Administration</div><div class="v">${escapeHtml(r.administration_mode || "—")}</div></div>
-            <div class="field"><div class="k">Concentration</div><div class="v">${escapeHtml(fmtRange(r.concentration_min, r.concentration_max, r.concentration_unit))}</div></div>
-            <div class="field"><div class="k">Température</div><div class="v">${escapeHtml(fmtTemp(r))}</div></div>
-            <div class="field"><div class="k">Stabilité</div><div class="v">${escapeHtml(duration + runout)}</div></div>
-            <div class="field ${compactClass}"><div class="k">Continu</div><div class="v">${escapeHtml(fmtBool(r.continuous_possible))}</div></div>
-            <div class="field ${compactClass}"><div class="k">Discontinu</div><div class="v">${escapeHtml(fmtBool(r.discontinuous_possible))}</div></div>
-            <div class="field ${compactClass}"><div class="k">Restriction hydrique</div><div class="v">${escapeHtml(fmtBool(r.hydric_restriction_compatible))}</div></div>
-            <div class="field ${compactClass}"><div class="k">Recommandation</div><div class="v">${escapeHtml(r.recommendation || "—")}</div></div>
-          </div>
-          ${r.comment || r.source_quote || r.source_url ? `<div class="notes">${r.comment ? `<strong>Note :</strong> ${escapeHtml(r.comment)}<br>` : ""}${r.source_quote ? `<strong>Extrait source :</strong> ${escapeHtml(r.source_quote)}<br>` : ""}${r.source_url ? `<a href="${escapeHtml(r.source_url)}" target="_blank" rel="noopener">Source</a>` : ""}</div>` : ""}
-        </article>`;
-    }
-
-    function render() {
-      const list = filteredRows();
-      const activeCount = Array.from(sourceRuntimeEnabled.values()).filter(Boolean).length;
-      els.countPill.textContent = `${list.length} résultat${list.length > 1 ? "s" : ""}`;
-      els.sourcePill.textContent = `${activeCount} source${activeCount > 1 ? "s" : ""} active${activeCount > 1 ? "s" : ""}`;
-      if (!list.length) {
-        els.results.innerHTML = `<div class="empty">Aucune donnée ne correspond aux filtres sélectionnés.</div>`;
-        return;
-      }
-      els.results.innerHTML = list.map(renderRow).join("");
-    }
-
-    [els.search, els.device, els.source, els.solvent, els.mode, els.minDuration, els.minTemp, els.hydric, els.validation, els.scope, els.onlyEnabled, els.hideRejected, els.compact].forEach(el => {
-      el.addEventListener("input", render);
-      el.addEventListener("change", render);
-    });
-    els.reset.addEventListener("click", () => {
-      els.search.value = ""; els.device.value = ""; els.source.value = ""; els.solvent.value = ""; els.mode.value = "";
-      els.minDuration.value = ""; els.minTemp.value = ""; els.hydric.value = ""; els.validation.value = "";
-      els.scope.value = "internal"; els.onlyEnabled.checked = true; els.hideRejected.checked = true; els.compact.checked = false;
-      render();
-    });
-    els.restoreSourceDefaults.addEventListener("click", () => { initRuntimeSources(); renderSourceToggles(); render(); });
-
-    loadWorkbook();
-  </script>
 </body>
 </html>
