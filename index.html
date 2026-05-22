@@ -92,9 +92,9 @@ button:hover { transform: translateY(-1px); filter: brightness(1.05); }
 let database = [];
 let ycompat = [];
 async function loadData() {
-  const dbRes = await fetch('data_database(1).json');
+  const dbRes = await fetch('data_database.json');
   database = await dbRes.json();
-  const yRes = await fetch('data_ycompat(1).json');
+  const yRes = await fetch('data_ycompat.json');
   ycompat = await yRes.json();
   renderResults();
 }
