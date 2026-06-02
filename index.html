@@ -846,6 +846,129 @@
       font-weight: 650;
     }
 
+
+    .reverse-source-help {
+      display: block;
+      margin-top: 6px;
+      color: var(--muted);
+      font-size: 0.72rem;
+      font-weight: 650;
+      line-height: 1.25;
+      text-transform: none;
+      letter-spacing: 0;
+    }
+
+    .reverse-source-filter {
+      min-height: 112px;
+    }
+
+    .reverse-source-filter-hidden {
+      display: none;
+    }
+
+    .reverse-source-panel {
+      margin-top: 14px;
+      padding: 14px;
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      background: linear-gradient(180deg, #ffffff, #f8fbff);
+    }
+
+    .reverse-source-panel-head {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: baseline;
+      justify-content: space-between;
+      gap: 8px;
+      margin-bottom: 9px;
+    }
+
+    .reverse-source-panel-head label {
+      margin-bottom: 0;
+    }
+
+    .reverse-source-picker {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      padding: 10px;
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      background: #ffffff;
+      min-height: 52px;
+    }
+
+    .source-chip-btn {
+      width: auto;
+      min-width: 0;
+      padding: 7px 10px;
+      border-radius: 999px;
+      border: 1px solid #cddbe8;
+      background: #f8fbff;
+      color: var(--green);
+      font-size: 0.76rem;
+      font-weight: 850;
+      box-shadow: none;
+      line-height: 1.15;
+    }
+
+    .source-chip-btn::before {
+      content: "+";
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 16px;
+      height: 16px;
+      margin-right: 6px;
+      border-radius: 999px;
+      background: #e3f0fb;
+      color: var(--green);
+      font-size: 0.72rem;
+      font-weight: 900;
+    }
+
+    .source-chip-btn.active {
+      background: var(--green);
+      color: #ffffff;
+      border-color: var(--green);
+    }
+
+    .source-chip-btn.active::before {
+      content: "✓";
+      background: rgba(255,255,255,0.22);
+      color: #ffffff;
+    }
+
+    .source-chip-btn:hover {
+      transform: translateY(-1px);
+      filter: none;
+      box-shadow: 0 7px 14px rgba(23, 38, 55, 0.08);
+    }
+
+    .source-chip-actions {
+      display: flex;
+      gap: 8px;
+      margin-top: 8px;
+      align-items: center;
+    }
+
+    .source-mini-action {
+      width: auto;
+      min-width: 0;
+      padding: 5px 9px;
+      border-radius: 999px;
+      border-color: var(--border);
+      background: #ffffff;
+      color: var(--muted);
+      font-size: 0.72rem;
+      font-weight: 800;
+    }
+
+    .source-mini-action:hover {
+      color: var(--green);
+      filter: none;
+    }
+
     .reverse-hidden { display: none; }
 
     @media (max-width: 760px) {
@@ -930,6 +1053,7 @@
             <option value="SPILF">SPILF/SFPC 2025</option>
             <option value="Tourcoing">CH de Tourcoing 2017</option>
             <option value="interne">Doc interne récent</option>
+            <option value="CHICAS">Doc interne CHICAS</option>
             <option value="Centre Léon Bérard">Centre Léon Bérard – HAD</option>
             <option value="ANAPA">ANAPA – données internes du laboratoire</option>
             <option value="Micrel">Micrel – données internes du laboratoire</option>
@@ -1024,6 +1148,18 @@
             <button id="reverseRun" type="button">Calculer</button>
           </div>
         </div>
+        <div class="reverse-source-panel">
+          <div class="reverse-source-panel-head">
+            <label id="reverseSourceChipsLabel" for="reverseSourceChips">Sources à intégrer</label>
+            <span class="reverse-source-help">Clique sur une ou plusieurs sources. Aucune source cochée = toutes les sources.</span>
+          </div>
+          <select id="reverseSourceFilter" class="reverse-source-filter reverse-source-filter-hidden" multiple aria-hidden="true" tabindex="-1"></select>
+          <div id="reverseSourceChips" class="reverse-source-picker" role="group" aria-labelledby="reverseSourceChipsLabel"></div>
+          <div class="source-chip-actions">
+            <button id="reverseSourceAll" type="button" class="source-mini-action">Tout cocher</button>
+            <button id="reverseSourceNone" type="button" class="source-mini-action">Tout décocher</button>
+          </div>
+        </div>
         <div class="summary-line">
           <span class="pill" id="reverseCountPill">0 option</span>
           <span>Résultat indicatif : la dose saisie est interprétée comme dose journalière. En discontinu, la dose par administration est calculée selon la fréquence choisie ou, si la case est cochée, selon le fractionnement RCP/usuel intégré. Vérifier la source originale, le dispositif, la température, le solvant et la procédure locale.</span>
@@ -1037,6 +1173,7 @@
     </section>
   </main>
 
+  <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
   <script>
     
     function escapeHtml(str = "") {
@@ -1048,2570 +1185,70 @@
         .replaceAll("'", "&#039;");
     }
 
-const data = [
-      {
-        molecule: "Aciclovir",
-        source: "Centre Léon Bérard – HAD + doc interne récent",
-        mode: "Discontinue recommandée ; perfusion ≥60 min ; continu non standard",
-        poche: "NaCl/G5 ; conc max 5 mg/mL ; stab 12 h RT",
-        pse: "--",
-        elastomere: "--",
-        anapa: "--",
-        micrel: "--",
-        reco: "Discontinue",
-        note: "Perfusion lente recommandée ; vigilance rénale et extravasation."
-      },
-      {
-        molecule: "Aciclovir",
-        source: "ANAPA – données internes du laboratoire",
-        mode: "Administration ambulatoire testée sur diffuseur non élastomère ANAPA",
-        poche: "--",
-        pse: "--",
-        elastomere: "--",
-        anapa: "Soluté non précisé ; conc 10 mg/mL ; stab 3 j à 5°C ou 30°C + run-out 20 h ; 7 j RT + run-out",
-        micrel: "--",
-        reco: "ANAPA possible selon conditions testées",
-        note: "ANAPA est séparé des diffuseurs élastomères."
-      },
-      {
-        molecule: "Amikacine",
-        source: "CH de Tourcoing 2017 + doc interne récent",
-        mode: "Discontinue recommandée ; perfusion 30 min ; continu non recommandé",
-        poche: "NaCl/G5 ; conc max 20 mg/mL ; stab 24 h RT",
-        pse: "Pas de PSE continu ; IVSE intermittent uniquement",
-        elastomere: "--",
-        anapa: "--",
-        micrel: "--",
-        reco: "Discontinue",
-        note: "Aminoside : administration discontinue avec suivi pharmacologique."
-      },
-      {
-        molecule: "Amikacine",
-        source: "ANAPA – données internes du laboratoire",
-        mode: "Administration ambulatoire testée sur diffuseur non élastomère ANAPA",
-        poche: "--",
-        pse: "--",
-        elastomere: "--",
-        anapa: "Soluté non précisé ; conc 5 mg/mL ; stab 72 h à 30°C + run-out 20 h ; 72 h à 5°C + run-out ; 7 j RT + run-out",
-        micrel: "--",
-        reco: "ANAPA possible selon conditions testées",
-        note: "Stabilité physicochimique ≠ recommandation clinique de continu."
-      },
-      {
-        molecule: "Amikacine",
-        source: "Micrel – données internes du laboratoire",
-        mode: "Pompe Rythmic PVC",
-        poche: "--",
-        pse: "--",
-        elastomere: "--",
-        anapa: "--",
-        micrel: "NaCl 0,9 % ; conc 0,25–20 mg/mL ; stab FT 28 j ; RT 48 h",
-        reco: "Donnée contenant Micrel uniquement",
-        note: "Ne pas extrapoler hors consommables Rythmic compatibles."
-      },
-      {
-        molecule: "Amoxicilline",
-        source: "SPILF/SFPC 2025",
-        mode: "Continu possible mais fractionné",
-        poche: "NaCl 0,9 % ; conc 5 mg/mL ; stab 24 h / NaCl 0,9 % ; conc 20 mg/mL ; stab 12 h / G5 ; conc 10 mg/mL ; stab 2 h / G5 ; conc 50 mg/mL ; stab 1 h ; G5 déconseillé en prolongé",
-        pse: "NaCl 0,9 % ; conc max 20 mg/mL ; PSE 24 h non retenu ; préférer pompe/fractionnement 12 h",
-        elastomere: "--",
-        anapa: "--",
-        micrel: "--",
-        reco: "Continu fractionné",
-        note: "Forte dépendance à la concentration et au solvant."
-      },
-      {
-        molecule: "Amoxicilline",
-        source: "ANAPA – données internes du laboratoire",
-        mode: "Administration ambulatoire testée sur diffuseur non élastomère ANAPA",
-        poche: "--",
-        pse: "--",
-        elastomere: "--",
-        anapa: "NaCl 0,9 % ; conc 25 mg/mL ; stab 12 h",
-        micrel: "--",
-        reco: "ANAPA possible selon protocole",
-        note: "Donnée issue des études de stabilité ANAPA."
-      },
-      {
-        molecule: "Amoxicilline",
-        source: "Micrel – données internes du laboratoire",
-        mode: "Pompe Rythmic PVC ; donnée spécifique solutés de dialyse péritonéale",
-        poche: "--",
-        pse: "--",
-        elastomere: "--",
-        anapa: "--",
-        micrel: "Extraneal®/Dianéal® ; conc 0,125 mg/mL ; stab 48 h à 25°C, 24 h à 37°C, 14 j à 4°C selon soluté ; non directement transposable à l’IV standard",
-        reco: "Donnée Micrel non transposable IV standard",
-        note: "À ne pas assimiler aux données d’amoxicilline IV en NaCl 0,9 % pour perfusion continue."
-      },
-      {
-        molecule: "Amoxicilline/acide clavulanique",
-        source: "SPILF/SFPC 2025 + CH de Tourcoing 2017 + Centre Léon Bérard – HAD",
-        mode: "Continu non recommandé ; discontinue 30–60 min",
-        poche: "NaCl 0,9 % exclusivement ; conc max 20 mg/mL ; stab max 60 min après reconstitution/fin administration ; G5 contre-indiqué/incompatible",
-        pse: "PSE continu non recommandé",
-        elastomere: "--",
-        anapa: "--",
-        micrel: "--",
-        reco: "Discontinue uniquement",
-        note: "À exclure des stratégies continues prolongées."
-      },
-      {
-        molecule: "Aztréonam",
-        source: "SPILF/SFPC 2025",
-        mode: "Continu possible ; prolongée possible",
-        poche: "NaCl 0,9 % ou G5 ; conc 10–125 mg/mL ; stab >24 h",
-        pse: "NaCl 0,9 % ; conc max 125 mg/mL ; stab compatible pour prolongée ; ex 2 g/48 mL sur 3–4 h",
-        elastomere: "--",
-        anapa: "--",
-        micrel: "--",
-        reco: "Continu/prolongé possible",
-        note: "Bon candidat à l’administration prolongée."
-      },
-      {
-        molecule: "Aztréonam",
-        source: "Micrel – données internes du laboratoire",
-        mode: "Pompe Rythmic PVC",
-        poche: "--",
-        pse: "--",
-        elastomere: "--",
-        anapa: "--",
-        micrel: "NaCl 0,9 % ; conc 5–60 mg/mL ; stab FT 28 j ; RT 24 h",
-        reco: "Micrel possible",
-        note: "Donnée spécifique contenant."
-      },
-      {
-        molecule: "Ceftazidime",
-        source: "SPILF/SFPC 2025",
-        mode: "Continu possible",
-        poche: "NaCl 0,9 % ; conc 20–125 mg/mL ; stab 24 h / G5 ; conc 125 mg/mL ; stab 8 h",
-        pse: "NaCl 0,9 % ; conc max 125 mg/mL ; stab 12–24 h selon schéma",
-        elastomere: "--",
-        anapa: "--",
-        micrel: "--",
-        reco: "Continu possible avec vigilance",
-        note: "Vigilance température et concentration."
-      },
-      {
-        molecule: "Ceftazidime",
-        source: "CH de Tourcoing 2017",
-        mode: "Continu fractionné recommandé",
-        poche: "NaCl 0,9 % ou G5 ; conc max 80 mg/mL ; stab 8 h RT",
-        pse: "NaCl 0,9 % ou G5 ; conc max 80 mg/mL ; stab 6–8 h",
-        elastomere: "--",
-        anapa: "--",
-        micrel: "--",
-        reco: "Fractionnement 6–8 h",
-        note: "Source plus restrictive que SPILF."
-      },
-      {
-        molecule: "Ceftazidime",
-        source: "ANAPA – données internes du laboratoire",
-        mode: "Administration ambulatoire testée sur diffuseur non élastomère ANAPA",
-        poche: "--",
-        pse: "--",
-        elastomere: "--",
-        anapa: "NaCl 0,9 % ; conc 20 mg/mL ; stab 24 h RT + run-out 20 h",
-        micrel: "--",
-        reco: "ANAPA possible selon conditions testées",
-        note: "Attention >25°C et produits de dégradation."
-      },
-      {
-        molecule: "Ceftazidime",
-        source: "Micrel – données internes du laboratoire",
-        mode: "Pompe Rythmic PVC",
-        poche: "--",
-        pse: "--",
-        elastomere: "--",
-        anapa: "--",
-        micrel: "NaCl 0,9 % ; conc 5–40 mg/mL ; stab FT 10 j ; RT 24 h ; Fortum 4 mg/mL 25°C lumière 24 h ; 40 mg/mL 4°C abri lumière 7 j",
-        reco: "Micrel possible selon conditions",
-        note: "Donnée spécifique consommables Micrel."
-      },
-      {
-        molecule: "Ceftazidime",
-        source: "PubMed – littérature sélectionnée",
-        mode: "Perfusion continue ambulatoire ; diffuseur élastomère",
-        poche: "--",
-        pse: "Seringue PP ; données compatibles 12–24 h selon concentration/température",
-        elastomere: "NaCl 0,9 % ; diffuseur élastomère ; conc 25–120 mg/mL ; stabilité très dépendante température ; plusieurs études limitent le 24 h >25°C",
-        anapa: "--",
-        micrel: "--",
-        reco: "Perfusion continue possible avec vigilance thermique",
-        note: "Ne pas extrapoler les données élastomère aux poches classiques ni à ANAPA.",
-        pubmed: "https://pubmed.ncbi.nlm.nih.gov/22478981/"
-      },
-      {
-        molecule: "Céfépime",
-        source: "SPILF/SFPC 2025",
-        mode: "Continu possible ; prolongée possible",
-        poche: "NaCl 0,9 % ou G5 ; conc 2,5–125 mg/mL ; stab 24 h",
-        pse: "NaCl 0,9 % ; conc max 125 mg/mL ; stab 24 h possible ; ex 4–6 g/48 mL/24 h",
-        elastomere: "--",
-        anapa: "--",
-        micrel: "--",
-        reco: "Continu/prolongé possible",
-        note: "Comparer avec protocoles locaux si fractionnement plus court."
-      },
-      {
-        molecule: "Céfépime",
-        source: "Micrel – données internes du laboratoire",
-        mode: "Pompe Rythmic PVC",
-        poche: "--",
-        pse: "--",
-        elastomere: "--",
-        anapa: "--",
-        micrel: "NaCl 0,9 % ; conc 5–60 mg/mL ; stab FT 7 j ; RT 24 h",
-        reco: "Micrel possible",
-        note: "Donnée spécifique contenant."
-      },
-      {
-        molecule: "Céfazoline",
-        source: "SPILF/SFPC 2025",
-        mode: "Continu possible",
-        poche: "NaCl 0,9 % ; conc max 125 mg/mL ; stab >24 h / G5 ; conc 125 mg/mL ; stab 24 h",
-        pse: "NaCl 0,9 % ; conc max 125 mg/mL ; stab 24 h possible ; ex 6 g/48 mL/24 h ou 4 g/48 mL/12 h x2",
-        elastomere: "--",
-        anapa: "--",
-        micrel: "--",
-        reco: "Continu possible",
-        note: "Molécule favorable aux stratégies prolongées/continues."
-      },
-      {
-        molecule: "Céfotaxime",
-        source: "SPILF/SFPC 2025",
-        mode: "Continu possible ; stabilité concentration-dépendante",
-        poche: "NaCl 0,9 % ; conc 10–50 mg/mL ; stab 24 h / G5 ; conc 10–20 mg/mL ; stab 24 h / NaCl 0,9 % ou G5 ; conc 83,3–125 mg/mL ; stab 6 h",
-        pse: "NaCl 0,9 % ; conc max pratique 50 mg/mL ; PSE fractionné",
-        elastomere: "--",
-        anapa: "--",
-        micrel: "--",
-        reco: "Continu possible si concentration adaptée",
-        note: "Éviter extrapolation aux fortes concentrations."
-      },
-      {
-        molecule: "Ceftriaxone",
-        source: "SPILF/SFPC 2025",
-        mode: "Continu possible mais intermittent fréquent",
-        poche: "NaCl 0,9 % ou G5 ; conc 20–40 mg/mL ; stab 24 h",
-        pse: "NaCl 0,9 % ou G5 ; conc max 40 mg/mL ; PSE possible",
-        elastomere: "--",
-        anapa: "--",
-        micrel: "--",
-        reco: "Intermittent souvent suffisant",
-        note: "Attention incompatibilité calcium."
-      },
-      {
-        molecule: "Ceftriaxone",
-        source: "Micrel – données internes du laboratoire",
-        mode: "Pompe Rythmic PVC",
-        poche: "--",
-        pse: "--",
-        elastomere: "--",
-        anapa: "--",
-        micrel: "NaCl 0,9 % ; conc 40 mg/mL ; stab 3 j à 23°C, 30 j à 4°C abri lumière / G5 ; conc 40 mg/mL ; stab 1 j à 23°C, 14 j à 4°C / G5 ; conc 2 mg/mL ; stab 14 j",
-        reco: "Micrel possible selon conditions",
-        note: "Soluté et concentration modifient fortement la stabilité."
-      },
-      {
-        molecule: "Clindamycine",
-        source: "CH de Tourcoing 2017 + doc interne récent",
-        mode: "Continu 24 h possible",
-        poche: "NaCl 0,9 % ± G5 selon source ; conc max 75 mg/mL ; stab 24 h RT",
-        pse: "NaCl 0,9 % ; conc max 75 mg/mL ; stab 24 h ; 600 mg à 3,6 g/48 mL",
-        elastomere: "--",
-        anapa: "--",
-        micrel: "--",
-        reco: "Continu possible",
-        note: "Données favorables au PSE/pompe 24 h."
-      },
-      {
-        molecule: "Daptomycine",
-        source: "CH de Tourcoing 2017 + doc interne récent",
-        mode: "Discontinue recommandée ; perfusion 30–60 min ; IVD possible selon source",
-        poche: "NaCl 0,9 % exclusivement ; conc max 50 mg/mL ; stab 12 h RT ; G5 incompatible",
-        pse: "--",
-        elastomere: "--",
-        anapa: "--",
-        micrel: "--",
-        reco: "Discontinue",
-        note: "NaCl exclusivement."
-      },
-      {
-        molecule: "Ertapénem",
-        source: "CH de Tourcoing 2017 + doc interne récent",
-        mode: "Discontinue recommandée ; perfusion 30 min ; prolongée non standard",
-        poche: "NaCl 0,9 % exclusivement ; conc max 20 mg/mL ; stab 6 h RT ; G5 incompatible",
-        pse: "--",
-        elastomere: "--",
-        anapa: "--",
-        micrel: "--",
-        reco: "Discontinue",
-        note: "Molécule pratique en OPAT intermittent."
-      },
-      {
-        molecule: "Méropénem",
-        source: "CH de Tourcoing 2017 + doc interne récent",
-        mode: "Fractionnement 6–8 h recommandé",
-        poche: "NaCl 0,9 %/G5 selon source ; conc max 40 mg/mL ; stab 6–8 h RT",
-        pse: "NaCl 0,9 % ; conc max 40 mg/mL ; stab 6–8 h ; IVSE 8 h x3/j",
-        elastomere: "--",
-        anapa: "--",
-        micrel: "--",
-        reco: "Fractionnement court",
-        note: "Stabilité courte à température ambiante."
-      },
-      {
-        molecule: "Méropénem",
-        source: "Micrel – données internes du laboratoire",
-        mode: "Pompe Rythmic PVC",
-        poche: "--",
-        pse: "--",
-        elastomere: "--",
-        anapa: "--",
-        micrel: "NaCl 0,9 % ; conc 5–40 mg/mL ; stab FT 18 h ; RT 6 h",
-        reco: "Changement fréquent",
-        note: "Pas de 24 h à RT."
-      },
-      {
-        molecule: "Méropénem",
-        source: "PubMed – littérature sélectionnée",
-        mode: "Perfusion continue/prolongée ; OPAT ; diffuseur élastomère",
-        poche: "--",
-        pse: "Seringue PP ; fractionnement 6–8 h fréquemment recommandé",
-        elastomere: "NaCl 0,9 % ; diffuseur élastomère ; conc 6,25–25 mg/mL ; stabilité souvent <12 h à température ambiante",
-        anapa: "--",
-        micrel: "--",
-        reco: "Éviter extrapolation 24 h sans contrôle thermique",
-        note: "Ne pas extrapoler élastomère vers poche, ANAPA ou Micrel.",
-        pubmed: "https://pubmed.ncbi.nlm.nih.gov/31447546/"
-      },
-      {
-        molecule: "Pipéracilline/tazobactam",
-        source: "SPILF/SFPC 2025 + doc interne récent",
-        mode: "Continu 24 h possible ; prolongée possible",
-        poche: "NaCl 0,9 %/G5 ; conc max 80–200 mg/mL exprimé pipéracilline selon source ; stab 24 h RT",
-        pse: "NaCl 0,9 %/G5 ; conc max 80–200 mg/mL ; stab 12–24 h selon schéma",
-        elastomere: "--",
-        anapa: "--",
-        micrel: "--",
-        reco: "Continu/prolongé possible",
-        note: "Données favorables selon concentration."
-      },
-      {
-        molecule: "Pipéracilline/tazobactam",
-        source: "Micrel – données internes du laboratoire",
-        mode: "Pompe Rythmic PVC",
-        poche: "--",
-        pse: "--",
-        elastomere: "--",
-        anapa: "--",
-        micrel: "NaCl 0,9 % ; conc pipéracilline 10–80 mg/mL + tazobactam 1,25–10 mg/mL ; stab FT 7 j ; RT 24 h",
-        reco: "Micrel possible selon conditions",
-        note: "Donnée spécifique contenant."
-      },
-      {
-        molecule: "Pipéracilline/tazobactam",
-        source: "PubMed – littérature sélectionnée",
-        mode: "Perfusion continue ambulatoire ; diffuseur élastomère",
-        poche: "--",
-        pse: "Seringue PP ; données compatibles 24 h selon concentration",
-        elastomere: "NaCl 0,9 % ; diffuseur élastomère ; nombreuses études compatibles 24 h selon concentration/température",
-        anapa: "--",
-        micrel: "--",
-        reco: "Bon candidat perfusion continue",
-        note: "Donnée élastomère séparée d’ANAPA et des poches classiques.",
-        pubmed: "https://ejhp.bmj.com/content/29/4/212"
-      },
-      {
-        molecule: "Vancomycine",
-        source: "SPILF/SFPC 2025 + doc interne récent",
-        mode: "Continu 24 h possible",
-        poche: "NaCl 0,9 % ou G5 ; conc 25–37,5 mg/mL SPILF ; stab 24 h / doc interne : NaCl 0,9 % ; conc 80 mg/mL VVC ou 5 mg/mL VVP ; stab 24 h",
-        pse: "NaCl 0,9 % ; conc max 80 mg/mL VVC ou 5 mg/mL VVP ; stab 24 h selon doc interne",
-        elastomere: "--",
-        anapa: "--",
-        micrel: "--",
-        reco: "Continu possible",
-        note: "Adapter concentration à la voie veineuse."
-      },
-      {
-        molecule: "Vancomycine",
-        source: "PubMed – littérature sélectionnée",
-        mode: "Perfusion continue ; diffuseur élastomère et seringue PP",
-        poche: "--",
-        pse: "Seringue PP ; stabilité 24 h rapportée dans plusieurs études",
-        elastomere: "NaCl 0,9 % ou G5 ; diffuseur élastomère ; données compatibles 24 h selon concentration",
-        anapa: "--",
-        micrel: "--",
-        reco: "Très bon candidat à la perfusion continue",
-        note: "Élastomère séparé d’ANAPA.",
-        pubmed: "https://pmc.ncbi.nlm.nih.gov/articles/PMC2901781/"
-      },
-      {
-        molecule: "Linezolide",
-        source: "CH de Tourcoing 2017 + doc interne récent + Centre Léon Bérard – HAD",
-        mode: "Discontinue recommandée ; prêt à l’emploi ; perfusion 30–120 min",
-        poche: "Poche prête à l’emploi ; soluté de présentation ; conc commerciale 2 mg/mL ; stab 21 j RT ; NaCl/G5 compatibles selon source",
-        pse: "--",
-        elastomere: "--",
-        anapa: "--",
-        micrel: "--",
-        reco: "Discontinue",
-        note: "Donnée à vérifier selon présentation locale."
-      },
-      {
-        molecule: "Cotrimoxazole IV / Bactrim®",
-        source: "Protocole Pharmacie Interjurassienne + doc interne récent",
-        mode: "Discontinue recommandée ; perfusion 60 min ; durée max 90 min ; pas d’administration pure",
-        poche: "NaCl 0,9 % ou G5 ; dilution standard : 1 amp + 125 mL, 2 amp + 250 mL, 3 amp + 500 mL ; stab solution diluée 6 h RT à l’abri lumière ; sol. mère 1 h RT / restriction hydrique : 1 amp + 75 mL, 2 amp + 150 mL, 3 amp + 250 mL ; stab 2 h RT à l’abri lumière",
-        pse: "--",
-        elastomere: "--",
-        anapa: "--",
-        micrel: "--",
-        reco: "Discontinue ; attention restriction hydrique",
-        note: "voie centrale préférable si disponible car très phlébogène ; jeter si trouble/cristaux."
-      },
-      {
-        molecule: "Gentamicine",
-        source: "Doc interne récent",
-        mode: "Discontinue recommandée ; aminoside ; IVSE sur 30 min",
-        poche: "NaCl 0,9 % ou G5 ; conc max 10 mg/mL ; stab 24 h RT",
-        pse: "NaCl 0,9 % ou G5 ; conc max 10 mg/mL ; stab 24 h RT ; IVSE intermittent 30 min",
-        elastomere: "--",
-        anapa: "--",
-        micrel: "--",
-        reco: "Discontinue",
-        note: "Suivi pic/résiduel selon protocole aminosides."
-      },
-      {
-        molecule: "Levofloxacine",
-        source: "CH de Tourcoing 2017 + doc interne récent",
-        mode: "Discontinue recommandée ; prêt à l’emploi ; perfusion 60 min",
-        poche: "Prêt à l’emploi ; soluté de présentation ; conc commerciale ; stab non détaillée dans source récente / Tourcoing : prêt à l’emploi",
-        pse: "--",
-        elastomere: "--",
-        anapa: "--",
-        micrel: "--",
-        reco: "Discontinue",
-        note: "Donnée de stabilité détaillée limitée dans les sources intégrées."
-      },
-      {
-        molecule: "Métronidazole",
-        source: "CH de Tourcoing 2017 + doc interne récent",
-        mode: "Discontinue recommandée ; prêt à l’emploi ; perfusion 30–60 min",
-        poche: "Prêt à l’emploi ; 500 mg/100 mL ; soluté de présentation ; stab non détaillée dans source récente / Tourcoing : prêt à l’emploi",
-        pse: "--",
-        elastomere: "--",
-        anapa: "--",
-        micrel: "--",
-        reco: "Discontinue",
-        note: "Ne pas inventer de stabilité si la source indique seulement prêt à l’emploi."
-      },
-      {
-        molecule: "Ofloxacine",
-        source: "CH de Tourcoing 2017 + doc interne récent",
-        mode: "Discontinue recommandée ; prêt à l’emploi ; perfusion 30 min",
-        poche: "Prêt à l’emploi ; 200 mg/40 mL ; soluté de présentation ; stab non détaillée",
-        pse: "--",
-        elastomere: "--",
-        anapa: "--",
-        micrel: "--",
-        reco: "Discontinue",
-        note: "Donnée limitée à la modalité d’administration dans les sources."
-      },
-      {
-        molecule: "Colistine",
-        source: "Doc interne récent",
-        mode: "Continu 24 h possible",
-        poche: "NaCl 0,9 % ; conc max 0,02 MUI/mL ; stab 24 h RT",
-        pse: "NaCl 0,9 % ; conc max 0,02 MUI/mL ; stab 24 h RT",
-        elastomere: "--",
-        anapa: "--",
-        micrel: "--",
-        reco: "Continu possible",
-        note: "Préparation très diluée selon document interne."
-      },
-      {
-        molecule: "Fosfomycine IV",
-        source: "Doc interne récent",
-        mode: "Continu 24 h possible ; IVSE ou pompe volumétrique",
-        poche: "NaCl 0,9 % ; conc max 40 mg/mL ; stab 24 h RT",
-        pse: "NaCl 0,9 % ; conc max 40 mg/mL ; stab 24 h RT ; IVSE/pompe possible",
-        elastomere: "--",
-        anapa: "--",
-        micrel: "--",
-        reco: "Continu possible",
-        note: "Exemples internes : 4 g/100 mL, 16 g/500 mL."
-      },
-      {
-        molecule: "Témocilline",
-        source: "Doc interne récent",
-        mode: "Continu 24 h possible ; IVSE ou pompe volumétrique",
-        poche: "NaCl 0,9 % ; conc max 80 mg/mL ; stab 24 h RT",
-        pse: "NaCl 0,9 % ; conc max 80 mg/mL ; stab 24 h RT ; ex 4–6 g/48 mL/24 h",
-        elastomere: "--",
-        anapa: "--",
-        micrel: "--",
-        reco: "Continu possible",
-        note: "Donnée exploitable pour stratégie continue."
-      },
-      {
-        molecule: "Teicoplanine",
-        source: "Doc interne récent",
-        mode: "Discontinue recommandée ; perfusion 60 min",
-        poche: "NaCl 0,9 % ; 100–200 mg/50 mL ou 400 mg/100 mL ; stab 24 h RT ; conc max non explicitée",
-        pse: "--",
-        elastomere: "--",
-        anapa: "--",
-        micrel: "--",
-        reco: "Discontinue",
-        note: "SPILF 2025 : pas de donnée de stabilité retenue pour perfusion prolongée/continue."
-      },
-      {
-        molecule: "Spiramycine",
-        source: "Doc interne récent",
-        mode: "Discontinue recommandée ; perfusion 60 min",
-        poche: "G5 ; conc non précisée ; stab 12 h RT",
-        pse: "--",
-        elastomere: "--",
-        anapa: "--",
-        micrel: "--",
-        reco: "Discontinue",
-        note: "NaCl non retenu dans l’extrait source."
-      },
-      {
-        molecule: "Rifampicine IV",
-        source: "Doc interne récent",
-        mode: "Discontinue recommandée ; perfusion 90 min",
-        poche: "G5 ; 600 mg/250 mL ; solvant fourni obligatoire ; NaCl incompatible ; stab non précisée",
-        pse: "--",
-        elastomere: "--",
-        anapa: "--",
-        micrel: "--",
-        reco: "Discontinue",
-        note: "Incompatibilité NaCl à afficher clairement."
-      },
-      {
-        molecule: "Voriconazole IV",
-        source: "Doc interne récent + Centre Léon Bérard – HAD",
-        mode: "Discontinue/prolongée ; perfusion 1–3 h ; débit max 3 mg/kg/h ; pas IVD",
-        poche: "NaCl 0,9 % ou G5 ; conc 0,5–5 mg/mL ; stab 24 h entre 2–8°C",
-        pse: "--",
-        elastomere: "--",
-        anapa: "--",
-        micrel: "--",
-        reco: "Discontinue/prolongée",
-        note: "Vitesse maximale à respecter."
-      },
-      {
-        molecule: "Caspofungine",
-        source: "Doc interne récent + Centre Léon Bérard – HAD",
-        mode: "Discontinue recommandée ; perfusion 60 min",
-        poche: "NaCl 0,9 % exclusivement ; 50 mg/100 mL ou 70 mg/250 mL ; stab 24 h RT ; G5 incompatible",
-        pse: "--",
-        elastomere: "--",
-        anapa: "--",
-        micrel: "--",
-        reco: "Discontinue",
-        note: "NaCl exclusivement."
-      },
-      {
-        molecule: "Fluconazole",
-        source: "Doc interne récent",
-        mode: "Discontinue recommandée ; prêt à l’emploi ; perfusion 60 min",
-        poche: "Prêt à l’emploi ; conc commerciale ; stabilité non précisée",
-        pse: "--",
-        elastomere: "--",
-        anapa: "--",
-        micrel: "--",
-        reco: "Discontinue",
-        note: "Donnée limitée à la présentation prête à l’emploi."
-      },
-      {
-        molecule: "Artesunate",
-        source: "Doc interne récent + CH de Tourcoing 2017",
-        mode: "Discontinue recommandée ; perfusion 30 min ou IV lente selon source",
-        poche: "NaCl 0,9 % ; conc max 10 mg/mL ; stab 6 h RT",
-        pse: "--",
-        elastomere: "--",
-        anapa: "--",
-        micrel: "--",
-        reco: "Discontinue",
-        note: "Solvant fourni / bicarbonate selon source."
-      },
-      {
-        molecule: "Pentamidine",
-        source: "Doc interne récent + CH de Tourcoing 2017",
-        mode: "Discontinue recommandée ; perfusion 60 min ; aérosol possible selon indication",
-        poche: "G5 ; 300 mg/100 mL selon doc interne ; NaCl incompatible ; stab non précisée",
-        pse: "--",
-        elastomere: "--",
-        anapa: "--",
-        micrel: "--",
-        reco: "Discontinue",
-        note: "NaCl incompatible."
-      },
-      {
-        molecule: "Aztréonam",
-        source: "Centre Léon Bérard – HAD",
-        mode: "Perfusion IV continue en diffuseur élastomère ; 24 h",
-        poche: "--",
-        pse: "--",
-        elastomere: "NaCl 0,9 % ; diffuseur élastomère ; conc max 100 mg/mL ; stab 24 h",
-        anapa: "--",
-        micrel: "--",
-        reco: "Diffuseur élastomère 24 h possible",
-        note: "Dans ce document, “diffuseur” = diffuseur élastomère ; à ne pas confondre avec ANAPA."
-      },
-      {
-        molecule: "Céfazoline",
-        source: "Centre Léon Bérard – HAD",
-        mode: "Perfusion IV continue en diffuseur élastomère ; 24 h ; abri lumière",
-        poche: "--",
-        pse: "--",
-        elastomere: "NaCl 0,9 % ou G5 ; diffuseur élastomère ; conc max 40 mg/mL ; stab 24 h ; abri lumière",
-        anapa: "--",
-        micrel: "--",
-        reco: "Diffuseur élastomère 24 h possible",
-        note: "Donnée Centre Léon Bérard – HAD."
-      },
-      {
-        molecule: "Céfépime",
-        source: "Centre Léon Bérard – HAD",
-        mode: "Perfusion IV continue en diffuseur élastomère ; changement toutes les 12 h ; abri lumière",
-        poche: "--",
-        pse: "--",
-        elastomere: "NaCl 0,9 % ; diffuseur élastomère ; stabilité 12 h ; abri lumière ; conc max non précisée dans l’extrait",
-        anapa: "--",
-        micrel: "--",
-        reco: "Diffuseur élastomère 12 h",
-        note: "Plus restrictif que SPILF/Micrel ; lié au dispositif et à la pratique HAD."
-      },
-      {
-        molecule: "Céfotaxime",
-        source: "Centre Léon Bérard – HAD",
-        mode: "Perfusion IV continue en diffuseur élastomère ; 24 h ; abri lumière",
-        poche: "--",
-        pse: "--",
-        elastomere: "NaCl 0,9 % ; diffuseur élastomère ; conc max 40 mg/mL ; stab 24 h ; abri lumière",
-        anapa: "--",
-        micrel: "--",
-        reco: "Diffuseur élastomère 24 h possible",
-        note: "Donnée Centre Léon Bérard – HAD."
-      },
-      {
-        molecule: "Céfoxitine",
-        source: "Centre Léon Bérard – HAD",
-        mode: "Perfusion IV continue en diffuseur élastomère ; 24 h ; abri lumière",
-        poche: "--",
-        pse: "--",
-        elastomere: "NaCl 0,9 % ; diffuseur élastomère ; conc max 40 mg/mL ; stab 24 h ; abri lumière",
-        anapa: "--",
-        micrel: "--",
-        reco: "Diffuseur élastomère 24 h possible",
-        note: "Donnée Centre Léon Bérard – HAD."
-      },
-      {
-        molecule: "Ceftazidime",
-        source: "Centre Léon Bérard – HAD",
-        mode: "Perfusion IV continue en diffuseur élastomère ; durée selon dose ; abri lumière",
-        poche: "--",
-        pse: "--",
-        elastomere: "NaCl 0,9 % ; diffuseur élastomère ; conc max 40 mg/mL ; si dose <6 g : stab 24 h ; si dose ≥6 g : changement q12 h ; abri lumière",
-        anapa: "--",
-        micrel: "--",
-        reco: "Diffuseur élastomère 12–24 h selon dose",
-        note: "Attention température >25°C et produits de dégradation."
-      },
-      {
-        molecule: "Aciclovir",
-        source: "NEOPUMP – données internes fabricant élastomère",
-        mode: "Diffuseur élastomère Easyflow/NEOPUMP ; données internes fabricant ",
-        poche: "--",
-        pse: "--",
-        elastomere: "NaCl 0,9 % ; conc 10 mg/mL (1 g/100 mL) ; stab 24 h à 25°C et 32°C",
-        anapa: "--",
-        micrel: "--",
-        reco: "NEOPUMP élastomère 24 h",
-        note: "Donnée spécifique diffuseur élastomère NEOPUMP/Easyflow."
-      },
-      {
-        molecule: "Amikacine",
-        source: "NEOPUMP – données internes fabricant élastomère",
-        mode: "Diffuseur élastomère Easyflow/NEOPUMP ; données internes fabricant ",
-        poche: "--",
-        pse: "--",
-        elastomere: "NaCl 0,9 % ; conc 2 mg/mL (0,5 g/240 mL) et 5 mg/mL (0,5 g/100 mL) ; stab 24 h à 25°C et 32°C",
-        anapa: "--",
-        micrel: "--",
-        reco: "NEOPUMP élastomère 24 h physicochimique",
-        note: "Stabilité physicochimique ≠ recommandation clinique de perfusion continue pour aminoside."
-      },
-      {
-        molecule: "Amoxicilline",
-        source: "NEOPUMP – données internes fabricant élastomère",
-        mode: "Diffuseur élastomère Easyflow/NEOPUMP ; données internes fabricant ",
-        poche: "--",
-        pse: "--",
-        elastomere: "NaCl 0,9 % ; conc 10 mg/mL (2,4 g/240 mL) : stab 24 h à 25°C et 32°C ; conc 20 mg/mL (4,9 g/240 mL) : stab 6 h à 25°C et 32°C",
-        anapa: "--",
-        micrel: "--",
-        reco: "NEOPUMP : 24 h si 10 mg/mL ; 6 h si 20 mg/mL",
-        note: "Forte dépendance à la concentration."
-      },
-      {
-        molecule: "Amoxicilline/acide clavulanique",
-        source: "NEOPUMP – données internes fabricant élastomère",
-        mode: "Diffuseur élastomère Easyflow/NEOPUMP ; données internes fabricant ",
-        poche: "--",
-        pse: "--",
-        elastomere: "NaCl 0,9 % exclusivement ; conc 10 mg/mL : stab 24 h à 4°C, 12 h à 25°C ; conc 12 mg/mL : stab 24 h à 4°C, 12 h à 25°C ; pas de donnée 32°C ; G5 contre-indiqué/incompatible",
-        anapa: "--",
-        micrel: "--",
-        reco: "NEOPUMP : 12 h à 25°C ; pas 24 h RT",
-        note: "Discordant avec la recommandation pratique de ne pas utiliser en continu prolongé ; donnée fabricant à contextualiser."
-      },
-      {
-        molecule: "Ampicilline",
-        source: "NEOPUMP – données internes fabricant élastomère",
-        mode: "Diffuseur élastomère Easyflow/NEOPUMP ; données internes fabricant ",
-        poche: "--",
-        pse: "--",
-        elastomere: "NaCl 0,9 % ; conc 5 mg/mL (0,5 g/100 mL) et 20 mg/mL (5 g/240 mL) ; stab 24 h à 4°C, 25°C et 32°C",
-        anapa: "--",
-        micrel: "--",
-        reco: "NEOPUMP élastomère 24 h",
-        note: "Donnée spécifique diffuseur élastomère."
-      },
-      {
-        molecule: "Céfazoline",
-        source: "NEOPUMP – données internes fabricant élastomère",
-        mode: "Diffuseur élastomère Easyflow/NEOPUMP ; données internes fabricant ",
-        poche: "--",
-        pse: "--",
-        elastomere: "NaCl 0,9 % ; conc 1 mg/mL, 2 mg/mL et 25 mg/mL (6 g/240 mL) ; stab 24 h à 25°C et 32°C ; à 25 mg/mL : 7 j à 4°C",
-        anapa: "--",
-        micrel: "--",
-        reco: "NEOPUMP élastomère 24 h",
-        note: "Donnée spécifique diffuseur élastomère."
-      },
-      {
-        molecule: "Céfépime",
-        source: "NEOPUMP – données internes fabricant élastomère",
-        mode: "Diffuseur élastomère Easyflow/NEOPUMP ; données internes fabricant ",
-        poche: "--",
-        pse: "--",
-        elastomere: "NaCl 0,9 % ; conc 20 mg/mL (2 g/100 mL) ; stab 7 j à 4°C ; 24 h à 25°C et 32°C",
-        anapa: "--",
-        micrel: "--",
-        reco: "NEOPUMP élastomère 24 h",
-        note: "Donnée spécifique diffuseur élastomère."
-      },
-      {
-        molecule: "Céfotaxime",
-        source: "NEOPUMP – données internes fabricant élastomère",
-        mode: "Diffuseur élastomère Easyflow/NEOPUMP ; données internes fabricant ",
-        poche: "--",
-        pse: "--",
-        elastomere: "NaCl 0,9 % ; conc 10, 20 et 25 mg/mL ; stab 24 h à 25°C et 32°C ; 25 mg/mL = 6 g/240 mL",
-        anapa: "--",
-        micrel: "--",
-        reco: "NEOPUMP élastomère 24 h",
-        note: "Donnée spécifique diffuseur élastomère."
-      },
-      {
-        molecule: "Ceftazidime",
-        source: "NEOPUMP – données internes fabricant élastomère",
-        mode: "Diffuseur élastomère Easyflow/NEOPUMP ; données internes fabricant ",
-        poche: "--",
-        pse: "--",
-        elastomere: "NaCl 0,9 % ; conc 20 mg/mL (2 g/100 mL) et 25 mg/mL (6 g/240 mL) ; stab 7 j à 4°C et 25°C ; 24 h à 32°C",
-        anapa: "--",
-        micrel: "--",
-        reco: "NEOPUMP élastomère 24 h à 32°C ; 7 j à 25°C selon fabricant",
-        note: "À confronter à la vigilance clinique sur température et produits de dégradation."
-      },
-      {
-        molecule: "Ceftriaxone",
-        source: "NEOPUMP – données internes fabricant élastomère",
-        mode: "Diffuseur élastomère Easyflow/NEOPUMP ; données internes fabricant ",
-        poche: "--",
-        pse: "--",
-        elastomere: "NaCl 0,9 % ; conc 10 mg/mL (1 g/100 mL), 16 mg/mL (4 g/240 mL) et 20 mg/mL ; stab 14 j à 4°C ; 24 h à 25°C et 32°C",
-        anapa: "--",
-        micrel: "--",
-        reco: "NEOPUMP élastomère 24 h",
-        note: "Donnée spécifique diffuseur élastomère."
-      },
-      {
-        molecule: "Cefuroxime",
-        source: "NEOPUMP – données internes fabricant élastomère",
-        mode: "Diffuseur élastomère Easyflow/NEOPUMP ; données internes fabricant ",
-        poche: "--",
-        pse: "--",
-        elastomere: "NaCl 0,9 % ; conc 15 mg/mL ; stab 7 j à 4°C ; pas de donnée 25/32°C dans le tableau",
-        anapa: "--",
-        micrel: "--",
-        reco: "NEOPUMP : donnée réfrigérée uniquement",
-        note: "Pas de stabilité ambiante exploitable dans le tableau."
-      },
-      {
-        molecule: "Ciprofloxacine",
-        source: "CH de Tourcoing 2017 + doc interne récent",
-        mode: "Discontinue recommandée ; prêt à l’emploi ; perfusion 60 min",
-        poche: "Prêt à l’emploi ; NaCl 0,9 % ; conc commerciale 1–2 mg/mL ; stab 24 h RT",
-        pse: "--",
-        elastomere: "--",
-        anapa: "--",
-        micrel: "--",
-        reco: "Discontinue",
-        note: "Présentation prête à l’emploi la plus utilisée en pratique."
-      },
-      {
-        molecule: "Ciprofloxacine",
-        source: "PubMed – littérature sélectionnée",
-        mode: "Perfusion prolongée / diffuseur élastomère",
-        poche: "--",
-        pse: "Seringue PP ; données limitées mais compatibles courte durée",
-        elastomere: "Diffuseur élastomère ; conc 1–2 mg/mL ; stabilité 24 h rapportée dans plusieurs études OPAT",
-        anapa: "--",
-        micrel: "--",
-        reco: "Diffuseur élastomère possible",
-        note: "Attention photoprotection selon spécialité.",
-        pubmed: "https://pubmed.ncbi.nlm.nih.gov/20458106/"
-      },
-      {
-        molecule: "Ciprofloxacine",
-        source: "NEOPUMP – données internes fabricant élastomère",
-        mode: "Diffuseur élastomère Easyflow/NEOPUMP ; données internes fabricant ",
-        poche: "--",
-        pse: "--",
-        elastomere: "NaCl 0,9 % ; conc 1 mg/mL et 2 mg/mL : stab 24 h à 25°C et 32°C ; 200 mg/100 mL : stab 12 j à 4°C et 25°C",
-        anapa: "--",
-        micrel: "--",
-        reco: "NEOPUMP élastomère 24 h",
-        note: "Donnée spécifique diffuseur élastomère."
-      },
-      {
-        molecule: "Clindamycine",
-        source: "NEOPUMP – données internes fabricant élastomère",
-        mode: "Diffuseur élastomère Easyflow/NEOPUMP ; données internes fabricant ",
-        poche: "--",
-        pse: "--",
-        elastomere: "NaCl 0,9 % ; conc 10 mg/mL ; stab 7 j à 4°C ; pas de donnée 25/32°C dans le tableau",
-        anapa: "--",
-        micrel: "--",
-        reco: "NEOPUMP : donnée réfrigérée uniquement",
-        note: "Pas de stabilité ambiante exploitable dans le tableau."
-      },
-      {
-        molecule: "Colistine",
-        source: "NEOPUMP – données internes fabricant élastomère",
-        mode: "Diffuseur élastomère Easyflow/NEOPUMP ; données internes fabricant ",
-        poche: "--",
-        pse: "--",
-        elastomere: "NaCl 0,9 % ; colistiméthate sodique ; conc 0,015 MUI/mL ; stab 7 j à 4°C ; pas de donnée 25/32°C dans le tableau",
-        anapa: "--",
-        micrel: "--",
-        reco: "NEOPUMP : donnée réfrigérée uniquement",
-        note: "Pas de stabilité ambiante exploitable dans le tableau."
-      },
-      {
-        molecule: "Daptomycine",
-        source: "NEOPUMP – données internes fabricant élastomère",
-        mode: "Diffuseur élastomère Easyflow/NEOPUMP ; données internes fabricant ",
-        poche: "--",
-        pse: "--",
-        elastomere: "NaCl 0,9 % ; conc 9 mg/mL ; stab 7 j à 4°C ; pas de donnée 25/32°C dans le tableau",
-        anapa: "--",
-        micrel: "--",
-        reco: "NEOPUMP : donnée réfrigérée uniquement",
-        note: "Pas de stabilité ambiante exploitable dans le tableau."
-      },
-      {
-        molecule: "Ertapénem",
-        source: "NEOPUMP – données internes fabricant élastomère",
-        mode: "Diffuseur élastomère Easyflow/NEOPUMP ; données internes fabricant ",
-        poche: "--",
-        pse: "--",
-        elastomere: "NaCl 0,9 % ; conc 10 mg/mL (1 g/100 mL) : stab 7 j à 4°C, 12 h à 25°C et 32°C ; conc 20 mg/mL (2 g/100 mL) : stab 1 h à 25°C et 32°C",
-        anapa: "--",
-        micrel: "--",
-        reco: "NEOPUMP : 12 h à 10 mg/mL ; 1 h à 20 mg/mL",
-        note: "Forte dépendance à la concentration."
-      },
-      {
-        molecule: "Fluconazole",
-        source: "NEOPUMP – données internes fabricant élastomère",
-        mode: "Diffuseur élastomère Easyflow/NEOPUMP ; données internes fabricant ",
-        poche: "--",
-        pse: "--",
-        elastomere: "NaCl 0,9 % ; conc 1 mg/mL et 2 mg/mL ; stab 24 h à 25°C et 32°C",
-        anapa: "--",
-        micrel: "--",
-        reco: "NEOPUMP élastomère 24 h",
-        note: "Donnée spécifique diffuseur élastomère."
-      },
-      {
-        molecule: "Fosfomycine IV",
-        source: "NEOPUMP – données internes fabricant élastomère",
-        mode: "Diffuseur élastomère Easyflow/NEOPUMP ; données internes fabricant ",
-        poche: "--",
-        pse: "--",
-        elastomere: "NaCl 0,9 % ; conc 2 mg/mL et 8 mg/mL : stab 24 h à 25°C et 32°C ; conc 30 mg/mL : stab 5 j à 25°C",
-        anapa: "--",
-        micrel: "--",
-        reco: "NEOPUMP élastomère 24 h",
-        note: "Donnée spécifique diffuseur élastomère."
-      },
-      {
-        molecule: "Gentamicine",
-        source: "NEOPUMP – données internes fabricant élastomère",
-        mode: "Diffuseur élastomère Easyflow/NEOPUMP ; données internes fabricant ",
-        poche: "--",
-        pse: "--",
-        elastomere: "NaCl 0,9 % ; conc 5 mg/mL et 8 mg/mL ; stab 24 h à 25°C et 32°C",
-        anapa: "--",
-        micrel: "--",
-        reco: "NEOPUMP élastomère 24 h physicochimique",
-        note: "Stabilité physicochimique ≠ recommandation clinique de perfusion continue pour aminoside."
-      },
-      {
-        molecule: "Imipénème/cilastatine",
-        source: "NEOPUMP – données internes fabricant élastomère",
-        mode: "Diffuseur élastomère Easyflow/NEOPUMP ; données internes fabricant ",
-        poche: "--",
-        pse: "--",
-        elastomere: "NaCl 0,9 % ; conc 5+5 mg/mL et 8+8 mg/mL ; stab 1 h à 25°C et 32°C",
-        anapa: "--",
-        micrel: "--",
-        reco: "NEOPUMP : stabilité très courte",
-        note: "Pas adapté à une perfusion continue longue sans changement très fréquent."
-      },
-      {
-        molecule: "Méropénem",
-        source: "NEOPUMP – données internes fabricant élastomère",
-        mode: "Diffuseur élastomère Easyflow/NEOPUMP ; données internes fabricant ",
-        poche: "--",
-        pse: "--",
-        elastomere: "NaCl 0,9 % ; conc 20 mg/mL : stab 7 j à 4°C, 12 h à 25°C, 1 h à 32°C ; conc 25 mg/mL : stab 12 h à 25°C, 1 h à 32°C ; conc 10 mg/mL : stab 4 j à 4°C, 24 h à 25°C et 32°C ; conc 4 mg/mL : stab 7 j à 4°C",
-        anapa: "--",
-        micrel: "--",
-        reco: "NEOPUMP : très concentration-dépendant",
-        note: "La stabilité 24 h à 32°C n’est rapportée que pour 10 mg/mL dans le tableau."
-      },
-      {
-        molecule: "Oxacilline",
-        source: "NEOPUMP – données internes fabricant élastomère",
-        mode: "Diffuseur élastomère Easyflow/NEOPUMP ; données internes fabricant ",
-        poche: "--",
-        pse: "--",
-        elastomere: "NaCl 0,9 % ; conc 5 mg/mL : stab 24 h à 25°C et 32°C ; conc 8 mg/mL : stab 12 h à 25°C et 32°C",
-        anapa: "--",
-        micrel: "--",
-        reco: "NEOPUMP : 24 h à 5 mg/mL ; 12 h à 8 mg/mL",
-        note: "Donnée spécifique diffuseur élastomère."
-      },
-      {
-        molecule: "Pipéracilline",
-        source: "NEOPUMP – données internes fabricant élastomère",
-        mode: "Diffuseur élastomère Easyflow/NEOPUMP ; données internes fabricant ",
-        poche: "--",
-        pse: "--",
-        elastomere: "NaCl 0,9 % ; conc 10 mg/mL et 33 mg/mL ; stab 24 h à 25°C et 32°C",
-        anapa: "--",
-        micrel: "--",
-        reco: "NEOPUMP élastomère 24 h",
-        note: "Donnée spécifique diffuseur élastomère."
-      },
-      {
-        molecule: "Pipéracilline/tazobactam",
-        source: "NEOPUMP – données internes fabricant élastomère",
-        mode: "Diffuseur élastomère Easyflow/NEOPUMP ; données internes fabricant ",
-        poche: "--",
-        pse: "--",
-        elastomere: "NaCl 0,9 % ; conc 45 mg/mL (4 g+0,5 g/100 mL) et 80 mg/mL (16 g+2 g/240 mL) : stab 24 h à 25°C et 32°C ; conc 40+5 mg/mL : stab 7 j à 4°C et 25°C",
-        anapa: "--",
-        micrel: "--",
-        reco: "NEOPUMP élastomère 24 h",
-        note: "Donnée spécifique diffuseur élastomère."
-      },
-      {
-        molecule: "Rifampicine IV",
-        source: "NEOPUMP – données internes fabricant élastomère",
-        mode: "Diffuseur élastomère Easyflow/NEOPUMP ; données internes fabricant ",
-        poche: "--",
-        pse: "--",
-        elastomere: "NaCl 0,9 % ; conc 0,5 mg/mL : stab 24 h à 25°C et 32°C ; conc 3 mg/mL : stab 6 h à 25°C et 32°C",
-        anapa: "--",
-        micrel: "--",
-        reco: "NEOPUMP : dépend concentration",
-        note: "Attention : autres sources indiquent incompatibilité NaCl pour la préparation usuelle ; donnée NEOPUMP à vérifier avant transposition."
-      },
-      {
-        molecule: "Teicoplanine",
-        source: "NEOPUMP – données internes fabricant élastomère",
-        mode: "Diffuseur élastomère Easyflow/NEOPUMP ; données internes fabricant ",
-        poche: "--",
-        pse: "--",
-        elastomere: "NaCl 0,9 % ; conc 4 mg/mL ; stab 24 h à 4°C ; pas de donnée 25/32°C dans le tableau",
-        anapa: "--",
-        micrel: "--",
-        reco: "NEOPUMP : donnée réfrigérée uniquement",
-        note: "Pas de stabilité ambiante exploitable dans le tableau."
-      },
-      {
-        molecule: "Tobramycine",
-        source: "NEOPUMP – données internes fabricant élastomère",
-        mode: "Diffuseur élastomère Easyflow/NEOPUMP ; données internes fabricant ",
-        poche: "--",
-        pse: "--",
-        elastomere: "NaCl 0,9 % ; conc 1 mg/mL et 7,5 mg/mL : stab 24 h à 25°C et 32°C ; conc 4 mg/mL : stab 10 j à 4°C",
-        anapa: "--",
-        micrel: "--",
-        reco: "NEOPUMP élastomère 24 h physicochimique",
-        note: "Stabilité physicochimique ≠ recommandation clinique de perfusion continue pour aminoside."
-      },
-      {
-        molecule: "Vancomycine",
-        source: "NEOPUMP – données internes fabricant élastomère",
-        mode: "Diffuseur élastomère Easyflow/NEOPUMP ; données internes fabricant ",
-        poche: "--",
-        pse: "--",
-        elastomere: "NaCl 0,9 % ; conc 5 mg/mL et 8 mg/mL : stab 24 h à 25°C et 32°C ; conc 4 mg/mL : stab 14 j à 4°C et 25°C",
-        anapa: "--",
-        micrel: "--",
-        reco: "NEOPUMP élastomère 24 h",
-        note: "Donnée spécifique diffuseur élastomère."
-      },
-      {
-        molecule: "Ciprofloxacine",
-        source: "Micrel – données internes du laboratoire",
-        mode: "Pompe Rythmic PVC",
-        poche: "--",
-        pse: "--",
-        elastomere: "--",
-        anapa: "--",
-        micrel: "NaCl 0,9 % ou G5 ; conc 1–2 mg/mL ; stab 30 j à 2–8°C abri lumière et 30 j à 21–24°C lumière ; conc 1,5 mg/mL : stab 48 h à 25°C",
-        reco: "Micrel possible selon conditions",
-        note: "Donnée spécifique consommables Micrel/Rythmic."
-      },
-      {
-        molecule: "Cefuroxime",
-        source: "Micrel – données internes du laboratoire",
-        mode: "Pompe Rythmic PVC",
-        poche: "--",
-        pse: "--",
-        elastomere: "--",
-        anapa: "--",
-        micrel: "NaCl 0,9 % ou G5 ; conc 5–10 mg/mL : stab 24 h à 25°C et 30 j à 5°C ; G5 conc 15 mg/mL : stab 11–15 j à 4°C selon conditions",
-        reco: "Micrel possible selon conditions",
-        note: "Donnée spécifique consommables Micrel/Rythmic."
-      },
-      {
-        molecule: "Oxacilline",
-        source: "Micrel – données internes du laboratoire",
-        mode: "Pompe Rythmic PVC",
-        poche: "--",
-        pse: "--",
-        elastomere: "--",
-        anapa: "--",
-        micrel: "NaCl 0,9 % ; conc 10–80 mg/mL ; stab FT 10 j ; RT 24 h",
-        reco: "Micrel possible selon conditions",
-        note: "Donnée spécifique consommables Micrel/Rythmic."
-      },
-      {
-        molecule: "Pipéracilline",
-        source: "Micrel – données internes du laboratoire",
-        mode: "Pompe Rythmic PVC",
-        poche: "--",
-        pse: "--",
-        elastomere: "--",
-        anapa: "--",
-        micrel: "NaCl 0,9 % ; conc 10–80 mg/mL ; stab FT 14 j ; RT 24 h",
-        reco: "Micrel possible selon conditions",
-        note: "Donnée spécifique consommables Micrel/Rythmic."
-      },
-      {
-        molecule: "Imipénème/cilastatine",
-        source: "Micrel – données internes du laboratoire",
-        mode: "Pompe Rythmic PVC",
-        poche: "--",
-        pse: "--",
-        elastomere: "--",
-        anapa: "--",
-        micrel: "NaCl 0,9 % ; conc 5 + 5 mg/mL ; stab FT 24 h ; RT 9 h",
-        reco: "Micrel : stabilité courte",
-        note: "Donnée spécifique consommables Micrel/Rythmic."
-      },
-      {
-        molecule: "Ticarcilline",
-        source: "Micrel – données internes du laboratoire",
-        mode: "Pompe Rythmic PVC",
-        poche: "--",
-        pse: "--",
-        elastomere: "--",
-        anapa: "--",
-        micrel: "NaCl 0,9 % ; conc 5–50 mg/mL ; stab FT 15 j ; RT 24 h",
-        reco: "Micrel possible selon conditions",
-        note: "Donnée spécifique consommables Micrel/Rythmic."
-      },
-      {
-        molecule: "Ticarcilline/acide clavulanique",
-        source: "Micrel – données internes du laboratoire",
-        mode: "Pompe Rythmic PVC",
-        poche: "--",
-        pse: "--",
-        elastomere: "--",
-        anapa: "--",
-        micrel: "NaCl 0,9 % ; conc ticarcilline 10 mg/mL + clavulanate 150 mg/mL selon tableau ; stab FT 10 j ; RT 20 h",
-        reco: "Micrel possible selon conditions",
-        note: "Vérifier l’expression exacte des concentrations avant usage clinique."
-      },
-      {
-        molecule: "Tobramycine",
-        source: "Micrel – données internes du laboratoire",
-        mode: "Pompe Rythmic PVC",
-        poche: "--",
-        pse: "--",
-        elastomere: "--",
-        anapa: "--",
-        micrel: "NaCl 0,9 % ; conc 0,5–5 mg/mL ; stab FT 7 j ; RT 48 h",
-        reco: "Micrel 48 h physicochimique",
-        note: "Stabilité physicochimique ≠ recommandation clinique de perfusion continue pour aminoside."
-      },
-      {
-        molecule: "Vancomycine",
-        source: "Micrel – données internes du laboratoire",
-        mode: "Pompe Rythmic PVC",
-        poche: "--",
-        pse: "--",
-        elastomere: "--",
-        anapa: "--",
-        micrel: "NaCl 0,9 % ; conc 10–20 mg/mL ; stab FT 10 j ; RT 24 h",
-        reco: "Micrel possible selon conditions",
-        note: "Donnée spécifique consommables Micrel/Rythmic."
-      },
-      {
-        molecule: "Dalbavancine",
-        source: "CH de Tourcoing 2017",
-        mode: "Discontinue recommandée ; perfusion lente ≥60 min",
-        poche: "G5 exclusivement ; conc finale 1–5 mg/mL ; stab reconstitué 24 h <25°C ; stab dilué 12 h <25°C ; NaCl incompatible",
-        pse: "--",
-        elastomere: "--",
-        anapa: "--",
-        micrel: "--",
-        reco: "Discontinue",
-        note: "Risque de précipitation avec NaCl."
-      },
-      {
-        molecule: "Tedizolide",
-        source: "CH de Tourcoing 2017",
-        mode: "Discontinue recommandée ; perfusion IV",
-        poche: "NaCl 0,9 % ; dilution 250 mL ; stab 4 h RT ; 24 h entre 2–8°C",
-        pse: "--",
-        elastomere: "--",
-        anapa: "--",
-        micrel: "--",
-        reco: "Discontinue",
-        note: "Utilisation immédiate préférable selon source."
-      },
-      {
-        molecule: "Isavuconazole",
-        source: "CH de Tourcoing 2017",
-        mode: "Discontinue recommandée ; perfusion ≥60 min ; filtre en ligne 0,2–1,2 µm",
-        poche: "NaCl 0,9 % ou G5 ; conc 0,8 mg/mL ; stab 6 h RT ; 24 h entre 2–8°C",
-        pse: "--",
-        elastomere: "--",
-        anapa: "--",
-        micrel: "--",
-        reco: "Discontinue",
-        note: "Ne pas agiter ; filtre sur ligne de perfusion."
-      },
-      {
-        molecule: "Micafungine",
-        source: "CH de Tourcoing 2017",
-        mode: "Discontinue recommandée ; perfusion 60 min ; abri lumière",
-        poche: "NaCl 0,9 % ou G5 ; poche 100 mL ; stab 24 h à 25°C à l’abri lumière selon source",
-        pse: "--",
-        elastomere: "--",
-        anapa: "--",
-        micrel: "--",
-        reco: "Discontinue",
-        note: "Ne pas agiter ; limiter la formation de mousse."
-      }
-    ];
+let data = [];
+    let yCompat = {};
+    const BREAKING_STAB_DB_FILE = "breaking_stab_database.xlsx";
 
-    const yCompat = {
-  "Aciclovir": {
-    "Amikacine": "C",
-    "Amphotéricine B": "C",
-    "Caspofungine": "I",
-    "Céfépime": "I",
-    "Ceftazidime": "C",
-    "Ceftriaxone": "C",
-    "Ciclosporine": "I",
-    "Cotrimoxazole IV": "C",
-    "Dexaméthasone": "C",
-    "Esoméprazole": "I",
-    "Fluconazole": "C",
-    "Foscarnet": "I",
-    "Gentamicine": "C/I",
-    "Imipénème/cilastatine": "C",
-    "Kétamine": "I",
-    "Labétalol": "I",
-    "Magnésium sulfate": "C",
-    "Méropénem": "I",
-    "Méthylprednisolone": "C",
-    "Métronidazole": "C",
-    "Morphine": "I",
-    "Naloxone": "I",
-    "Nicardipine": "I",
-    "Octréotide / somatostatine": "C",
-    "Ondansétron": "I",
-    "Paracétamol": "I",
-    "Phloroglucinol": "I",
-    "Pipéracilline/tazobactam": "I",
-    "Potassium chlorure": "C",
-    "Bicarbonate de sodium": "C",
-    "Tacrolimus": "I",
-    "Vancomycine": "C"
-  },
-  "Amikacine": {
-    "Aciclovir": "C",
-    "Amoxicilline": "I",
-    "Amoxicilline/acide clavulanique": "I",
-    "Amphotéricine B": "I",
-    "Calcium chlorure": "C",
-    "Calcium gluconate": "C/I",
-    "Céfépime": "C/I",
-    "Ceftazidime": "I",
-    "Ceftriaxone": "I",
-    "Ciclosporine": "C",
-    "Ciprofloxacine": "C/I",
-    "Cotrimoxazole IV": "I",
-    "Défibrotide": "I",
-    "Dexaméthasone": "C",
-    "Esoméprazole": "I",
-    "Fluconazole": "C",
-    "Furosémide": "C",
-    "Gentamicine": "C",
-    "Héparine sodique": "I",
-    "Imipénème/cilastatine": "I",
-    "Labétalol": "C",
-    "Magnésium sulfate": "C",
-    "Méropénem": "I",
-    "Méthylprednisolone": "C",
-    "Métronidazole": "C",
-    "Midazolam": "C",
-    "Morphine": "C",
-    "Nicardipine": "C",
-    "Octréotide / somatostatine": "C",
-    "Ondansétron": "C",
-    "Phénytoïne": "I",
-    "Pipéracilline/tazobactam": "I",
-    "Potassium chlorure": "C",
-    "Bicarbonate de sodium": "C",
-    "Tacrolimus": "C",
-    "Teicoplanine": "I",
-    "Vancomycine": "C",
-    "Adrénaline": "C",
-    "Nutrition parentérale": "C"
-  },
-  "Amoxicilline": {
-    "Amikacine": "I",
-    "Ciprofloxacine": "I",
-    "Gentamicine": "I",
-    "Imipénème/cilastatine": "I",
-    "Magnésium sulfate": "I",
-    "Midazolam": "I",
-    "Néfopam": "I",
-    "Bicarbonate de sodium": "I"
-  },
-  "Amoxicilline/acide clavulanique": {
-    "Amikacine": "I",
-    "Ciprofloxacine": "I",
-    "Clarithromycine": "C",
-    "Dexaméthasone": "I",
-    "Gentamicine": "I",
-    "Hydrocortisone": "I",
-    "Mannitol": "I",
-    "Méthylprednisolone": "I",
-    "Métronidazole": "I",
-    "Midazolam": "I",
-    "Phloroglucinol": "I",
-    "Bicarbonate de sodium": "I",
-    "Nutrition parentérale": "C"
-  },
-  "Amphotéricine B": {
-    "Aciclovir": "C",
-    "Amikacine": "I",
-    "Calcium chlorure": "I",
-    "Calcium gluconate": "I",
-    "Caspofungine": "I",
-    "Céfépime": "I",
-    "Ceftazidime": "I",
-    "Ceftriaxone": "I",
-    "Chlorpromazine": "I",
-    "Ciclosporine": "I",
-    "Ciprofloxacine": "I",
-    "Esoméprazole": "I",
-    "Fluconazole": "I",
-    "Foscarnet": "I",
-    "Magnésium sulfate": "I",
-    "Naloxone": "I",
-    "Ondansétron": "I",
-    "Pipéracilline/tazobactam": "I",
-    "Potassium chlorure": "I"
-  },
-  "Calcium chlorure": {
-    "Amikacine": "C",
-    "Amphotéricine B": "I",
-    "Calcium gluconate": "C",
-    "Ceftazidime": "I",
-    "Ceftriaxone": "I",
-    "Ciclosporine": "C",
-    "Dexaméthasone": "I",
-    "Fluconazole": "I",
-    "Foscarnet": "I",
-    "Furosémide": "C",
-    "Gentamicine": "C",
-    "Héparine sodique": "C",
-    "Imipénème/cilastatine": "I",
-    "Labétalol": "C",
-    "Magnésium sulfate": "I",
-    "Méthylprednisolone": "I",
-    "Métronidazole": "I",
-    "Midazolam": "C",
-    "Morphine": "C",
-    "Nicardipine": "C",
-    "Octréotide / somatostatine": "C",
-    "Ondansétron": "C",
-    "Pantoprazole": "I",
-    "Potassium chlorure": "C/I",
-    "Potassium phosphate": "I",
-    "Bicarbonate de sodium": "I",
-    "Tacrolimus": "C",
-    "Vancomycine": "C",
-    "Adrénaline": "C"
-  },
-  "Calcium gluconate": {
-    "Amikacine": "C/I",
-    "Amphotéricine B": "I",
-    "Calcium chlorure": "C",
-    "Céfépime": "C",
-    "Ceftazidime": "C",
-    "Ceftriaxone": "I",
-    "Ciclosporine": "C",
-    "Ciprofloxacine": "C",
-    "Clindamycine": "I",
-    "Dexaméthasone": "I",
-    "Fluconazole": "I",
-    "Foscarnet": "I",
-    "Furosémide": "C",
-    "Gentamicine": "C/I",
-    "Héparine sodique": "C",
-    "Imipénème/cilastatine": "I",
-    "Labétalol": "C",
-    "Magnésium sulfate": "C/I",
-    "Méropénem": "I",
-    "Méthylprednisolone": "I",
-    "Métronidazole": "C",
-    "Midazolam": "C",
-    "Morphine": "C/I",
-    "Nicardipine": "C",
-    "Octréotide / somatostatine": "C",
-    "Ondansétron": "C",
-    "Pipéracilline/tazobactam": "C",
-    "Potassium chlorure": "C",
-    "Potassium phosphate": "I",
-    "Bicarbonate de sodium": "I",
-    "Tacrolimus": "C",
-    "Vancomycine": "C",
-    "Adrénaline": "C"
-  },
-  "Caspofungine": {
-    "Aciclovir": "I",
-    "Amphotéricine B": "I",
-    "Céfépime": "I",
-    "Ceftriaxone": "I",
-    "Esoméprazole": "I",
-    "Pantoprazole": "I",
-    "Pipéracilline/tazobactam": "I",
-    "Potassium chlorure": "I"
-  },
-  "Céfépime": {
-    "Aciclovir": "I",
-    "Amikacine": "C/I",
-    "Amphotéricine B": "I",
-    "Calcium gluconate": "C",
-    "Caspofungine": "I",
-    "Ciprofloxacine": "I",
-    "Clarithromycine": "C",
-    "Cotrimoxazole IV": "C",
-    "Dexaméthasone": "C",
-    "Fluconazole": "C",
-    "Furosémide": "C",
-    "Gentamicine": "I",
-    "Imipénème/cilastatine": "C",
-    "Labétalol": "I",
-    "Magnésium sulfate": "I",
-    "Méthylprednisolone": "C",
-    "Métronidazole": "C/I",
-    "Midazolam": "I",
-    "Morphine": "I",
-    "Nicardipine": "I",
-    "Octréotide / somatostatine": "C",
-    "Ondansétron": "I",
-    "Phénytoïne": "I",
-    "Pipéracilline/tazobactam": "C",
-    "Potassium chlorure": "C",
-    "Bicarbonate de sodium": "C",
-    "Tacrolimus": "I",
-    "Vancomycine": "I"
-  },
-  "Ceftazidime": {
-    "Aciclovir": "C",
-    "Amikacine": "I",
-    "Amphotéricine B": "I",
-    "Calcium chlorure": "I",
-    "Calcium gluconate": "C",
-    "Ceftriaxone": "C",
-    "Ciclosporine": "C",
-    "Ciprofloxacine": "I",
-    "Clarithromycine": "I",
-    "Dexaméthasone": "C",
-    "Fluconazole": "I",
-    "Furosémide": "C",
-    "Gentamicine": "I",
-    "Héparine sodique": "C",
-    "Imipénème/cilastatine": "C",
-    "Labétalol": "C",
-    "Magnésium sulfate": "C",
-    "Méthylprednisolone": "C",
-    "Métronidazole": "C",
-    "Midazolam": "I",
-    "Morphine": "C",
-    "Nicardipine": "I",
-    "Octréotide / somatostatine": "C",
-    "Ondansétron": "C",
-    "Phénytoïne": "I",
-    "Potassium chlorure": "C",
-    "Bicarbonate de sodium": "I",
-    "Tacrolimus": "C",
-    "Vancomycine": "I",
-    "Adrénaline": "C"
-  },
-  "Ceftriaxone": {
-    "Aciclovir": "C",
-    "Amikacine": "I",
-    "Amphotéricine B": "I",
-    "Calcium chlorure": "I",
-    "Calcium gluconate": "I",
-    "Caspofungine": "I",
-    "Ceftazidime": "C",
-    "Ciclosporine": "C",
-    "Clindamycine": "I",
-    "Dexaméthasone": "C",
-    "Fluconazole": "I",
-    "Folinate de calcium": "I",
-    "Furosémide": "C",
-    "Gentamicine": "I",
-    "Héparine sodique": "C",
-    "Imipénème/cilastatine": "I",
-    "Labétalol": "I",
-    "Magnésium sulfate": "I",
-    "Méthylprednisolone": "C",
-    "Métronidazole": "I",
-    "Midazolam": "C",
-    "Morphine": "C",
-    "Nicardipine": "C",
-    "Octréotide / somatostatine": "C",
-    "Ondansétron": "C",
-    "Paracétamol": "C",
-    "Potassium chlorure": "C",
-    "Bicarbonate de sodium": "C",
-    "Tacrolimus": "C",
-    "Vancomycine": "I",
-    "Adrénaline": "C",
-    "Nutrition parentérale": "I"
-  },
-  "Chlorpromazine": {
-    "Amphotéricine B": "I",
-    "Furosémide": "I",
-    "Pantoprazole": "I",
-    "Pipéracilline/tazobactam": "I"
-  },
-  "Ciclosporine": {
-    "Aciclovir": "I",
-    "Amikacine": "C",
-    "Amphotéricine B": "I",
-    "Calcium chlorure": "C",
-    "Calcium gluconate": "C",
-    "Ceftazidime": "C",
-    "Ceftriaxone": "C",
-    "Ciprofloxacine": "C",
-    "Clindamycine": "C",
-    "Cotrimoxazole IV": "C",
-    "Dexaméthasone": "C",
-    "Fluconazole": "C",
-    "Furosémide": "C",
-    "Gentamicine": "C",
-    "Héparine sodique": "C",
-    "Imipénème/cilastatine": "C",
-    "Kétamine": "I",
-    "Labétalol": "C",
-    "Magnésium sulfate": "I",
-    "Méthylprednisolone": "C",
-    "Métronidazole": "C",
-    "Midazolam": "C",
-    "Morphine": "C",
-    "Mycophénolate mofétil": "I",
-    "Nicardipine": "C",
-    "Octréotide / somatostatine": "C",
-    "Ondansétron": "I",
-    "Pantoprazole": "I",
-    "Potassium chlorure": "C",
-    "Bicarbonate de sodium": "C",
-    "Tacrolimus": "C",
-    "Vancomycine": "C",
-    "Adrénaline": "C",
-    "Nutrition parentérale": "C"
-  },
-  "Ciprofloxacine": {
-    "Amikacine": "C/I",
-    "Amoxicilline": "I",
-    "Amoxicilline/acide clavulanique": "I",
-    "Amphotéricine B": "I",
-    "Calcium gluconate": "C",
-    "Céfépime": "I",
-    "Ceftazidime": "I",
-    "Ciclosporine": "C",
-    "Clarithromycine": "C",
-    "Clindamycine": "I",
-    "Dexaméthasone": "I",
-    "Esoméprazole": "I",
-    "Fluconazole": "C",
-    "Furosémide": "I",
-    "Gentamicine": "C",
-    "Héparine sodique": "I",
-    "Hydrocortisone": "I",
-    "Magnésium sulfate": "I",
-    "Méropénem": "I",
-    "Méthylprednisolone": "I",
-    "Métronidazole": "C",
-    "Midazolam": "C",
-    "Nicardipine": "C",
-    "Octréotide / somatostatine": "C",
-    "Pantoprazole": "I",
-    "Phénytoïne": "I",
-    "Pipéracilline/tazobactam": "I",
-    "Potassium chlorure": "C",
-    "Potassium phosphate": "I",
-    "Bicarbonate de sodium": "I",
-    "Tacrolimus": "C"
-  },
-  "Clarithromycine": {
-    "Amoxicilline/acide clavulanique": "C",
-    "Céfépime": "C",
-    "Ceftazidime": "I",
-    "Ciprofloxacine": "C",
-    "Furosémide": "I",
-    "Gentamicine": "C",
-    "Héparine sodique": "I",
-    "Métronidazole": "C",
-    "Phénytoïne": "I",
-    "Potassium chlorure": "C",
-    "Vancomycine": "C"
-  },
-  "Clindamycine": {
-    "Calcium gluconate": "I",
-    "Ceftriaxone": "I",
-    "Ciprofloxacine": "I",
-    "Esoméprazole": "I",
-    "Fluconazole": "I",
-    "Magnésium sulfate": "I",
-    "Pantoprazole": "I",
-    "Bicarbonate de sodium": "I",
-    "Ciclosporine": "C"
-  },
-  "Cotrimoxazole IV": {
-    "Aciclovir": "C",
-    "Amikacine": "I",
-    "Céfépime": "C",
-    "Ciclosporine": "C",
-    "Défibrotide": "I",
-    "Fluconazole": "I",
-    "Foscarnet": "I",
-    "Gentamicine": "I",
-    "Héparine sodique": "I",
-    "Labétalol": "I",
-    "Magnésium sulfate": "C",
-    "Midazolam": "I",
-    "Morphine": "C",
-    "Nicardipine": "I",
-    "Octréotide / somatostatine": "C",
-    "Pantoprazole": "I",
-    "Pipéracilline/tazobactam": "C",
-    "Potassium chlorure": "I",
-    "Bicarbonate de sodium": "I",
-    "Nutrition parentérale": "C"
-  },
-  "Défibrotide": {
-    "Amikacine": "I",
-    "Cotrimoxazole IV": "I",
-    "Furosémide": "I",
-    "Imipénème/cilastatine": "I",
-    "Méthylprednisolone": "I",
-    "Midazolam": "I",
-    "Nicardipine": "I"
-  },
-  "Dexaméthasone": {
-    "Aciclovir": "C",
-    "Amikacine": "C",
-    "Amoxicilline/acide clavulanique": "I",
-    "Calcium chlorure": "I",
-    "Calcium gluconate": "I",
-    "Céfépime": "C",
-    "Ceftazidime": "C",
-    "Ceftriaxone": "C",
-    "Ciclosporine": "C",
-    "Ciprofloxacine": "I",
-    "Fluconazole": "C",
-    "Furosémide": "C",
-    "Gentamicine": "I",
-    "Héparine sodique": "C",
-    "Imipénème/cilastatine": "C",
-    "Kétamine": "I",
-    "Labétalol": "I",
-    "Magnésium sulfate": "I",
-    "Méropénem": "C",
-    "Méthylprednisolone": "C",
-    "Métronidazole": "C",
-    "Midazolam": "I",
-    "Morphine": "C",
-    "Nicardipine": "I",
-    "Octréotide / somatostatine": "C",
-    "Ondansétron": "C",
-    "Pantoprazole": "I",
-    "Paracétamol": "C",
-    "Pipéracilline/tazobactam": "C",
-    "Potassium chlorure": "C",
-    "Bicarbonate de sodium": "C",
-    "Tacrolimus": "C",
-    "Vancomycine": "C/I",
-    "Adrénaline": "C"
-  },
-  "Esoméprazole": {
-    "Aciclovir": "I",
-    "Amikacine": "I",
-    "Amphotéricine B": "I",
-    "Caspofungine": "I",
-    "Ciprofloxacine": "I",
-    "Clindamycine": "I",
-    "Furosémide": "C",
-    "Labétalol": "I",
-    "Midazolam": "I",
-    "Morphine": "I",
-    "Néfopam": "I",
-    "Potassium chlorure": "C",
-    "Tacrolimus": "I",
-    "Nutrition parentérale": "I"
-  },
-  "Fluconazole": {
-    "Aciclovir": "C",
-    "Amikacine": "C",
-    "Amphotéricine B": "I",
-    "Calcium chlorure": "I",
-    "Calcium gluconate": "I",
-    "Céfépime": "C",
-    "Ceftazidime": "I",
-    "Ceftriaxone": "I",
-    "Ciclosporine": "C",
-    "Ciprofloxacine": "C",
-    "Clindamycine": "I",
-    "Cotrimoxazole IV": "I",
-    "Dexaméthasone": "C",
-    "Furosémide": "I",
-    "Gentamicine": "C/I",
-    "Héparine sodique": "C",
-    "Imipénème/cilastatine": "I",
-    "Labétalol": "C",
-    "Magnésium sulfate": "C",
-    "Méropénem": "C",
-    "Méthylprednisolone": "C",
-    "Métronidazole": "C",
-    "Midazolam": "C/I",
-    "Morphine": "C/I",
-    "Nicardipine": "C",
-    "Octréotide / somatostatine": "C",
-    "Ondansétron": "C",
-    "Pipéracilline/tazobactam": "C",
-    "Potassium chlorure": "C",
-    "Bicarbonate de sodium": "C",
-    "Tacrolimus": "C",
-    "Vancomycine": "C",
-    "Adrénaline": "C",
-    "Nutrition parentérale": "C"
-  },
-  "Folinate de calcium": {
-    "Ceftriaxone": "I",
-    "Magnésium sulfate": "I",
-    "Bicarbonate de sodium": "I"
-  },
-  "Foscarnet": {
-    "Aciclovir": "I",
-    "Amphotéricine B": "I",
-    "Calcium chlorure": "I",
-    "Calcium gluconate": "I",
-    "Cotrimoxazole IV": "I",
-    "Ganciclovir IV": "I",
-    "Midazolam": "I",
-    "Vancomycine": "I"
-  },
-  "Furosémide": {
-    "Amikacine": "C",
-    "Calcium chlorure": "C",
-    "Calcium gluconate": "C",
-    "Céfépime": "C",
-    "Ceftazidime": "C",
-    "Ceftriaxone": "C",
-    "Ciclosporine": "C",
-    "Ciprofloxacine": "I",
-    "Clarithromycine": "I",
-    "Défibrotide": "I",
-    "Dexaméthasone": "C",
-    "Esoméprazole": "C",
-    "Fluconazole": "I",
-    "Gentamicine": "I",
-    "Héparine sodique": "C",
-    "Imipénème/cilastatine": "C",
-    "Labétalol": "I",
-    "Magnésium sulfate": "C",
-    "Méropénem": "C",
-    "Méthylprednisolone": "C",
-    "Métronidazole": "C",
-    "Midazolam": "I",
-    "Morphine": "I",
-    "Nicardipine": "I",
-    "Octréotide / somatostatine": "C",
-    "Ondansétron": "I",
-    "Pantoprazole": "I",
-    "Pipéracilline/tazobactam": "C",
-    "Potassium chlorure": "C",
-    "Potassium phosphate": "I",
-    "Bicarbonate de sodium": "C",
-    "Vancomycine": "I",
-    "Adrénaline": "I",
-    "Chlorpromazine": "I",
-    "Nutrition parentérale": "C"
-  },
-  "Ganciclovir IV": {
-    "Foscarnet": "I",
-    "Pipéracilline/tazobactam": "I",
-    "Tacrolimus": "I"
-  },
-  "Gentamicine": {
-    "Aciclovir": "C/I",
-    "Amikacine": "C",
-    "Amoxicilline": "I",
-    "Amoxicilline/acide clavulanique": "I",
-    "Calcium chlorure": "C",
-    "Calcium gluconate": "C/I",
-    "Céfépime": "I",
-    "Ceftazidime": "I",
-    "Ceftriaxone": "I",
-    "Ciclosporine": "C",
-    "Ciprofloxacine": "C",
-    "Clarithromycine": "C",
-    "Cotrimoxazole IV": "I",
-    "Dexaméthasone": "I",
-    "Fluconazole": "C",
-    "Furosémide": "I",
-    "Héparine sodique": "I",
-    "Imipénème/cilastatine": "I",
-    "Labétalol": "C",
-    "Magnésium sulfate": "C",
-    "Méropénem": "C",
-    "Méthylprednisolone": "C",
-    "Métronidazole": "C",
-    "Midazolam": "C",
-    "Morphine": "C",
-    "Nicardipine": "C",
-    "Octréotide / somatostatine": "C",
-    "Ondansétron": "C",
-    "Phénytoïne": "I",
-    "Pipéracilline/tazobactam": "I",
-    "Potassium chlorure": "C",
-    "Bicarbonate de sodium": "I",
-    "Tacrolimus": "C",
-    "Teicoplanine": "I",
-    "Vancomycine": "C",
-    "Adrénaline": "C"
-  },
-  "Héparine sodique": {
-    "Amikacine": "I",
-    "Calcium chlorure": "C",
-    "Calcium gluconate": "C",
-    "Ceftazidime": "C",
-    "Ceftriaxone": "C",
-    "Ciclosporine": "C",
-    "Ciprofloxacine": "I",
-    "Clarithromycine": "I",
-    "Cotrimoxazole IV": "I",
-    "Dexaméthasone": "C",
-    "Fluconazole": "C",
-    "Furosémide": "C",
-    "Gentamicine": "I",
-    "Imipénème/cilastatine": "C",
-    "Labétalol": "I",
-    "Magnésium sulfate": "C",
-    "Méthylprednisolone": "C",
-    "Métronidazole": "C",
-    "Midazolam": "C",
-    "Morphine": "C",
-    "Nicardipine": "I",
-    "Ondansétron": "C",
-    "Phénytoïne": "I",
-    "Potassium chlorure": "C",
-    "Bicarbonate de sodium": "I",
-    "Vancomycine": "I",
-    "Adrénaline": "C",
-    "Nutrition parentérale": "C"
-  },
-  "Hydrocortisone": {
-    "Amoxicilline/acide clavulanique": "I",
-    "Ciprofloxacine": "I",
-    "Magnésium sulfate": "I",
-    "Midazolam": "I",
-    "Pantoprazole": "I",
-    "Vancomycine": "I"
-  },
-  "Imipénème/cilastatine": {
-    "Aciclovir": "C",
-    "Amikacine": "I",
-    "Amoxicilline": "I",
-    "Calcium chlorure": "I",
-    "Calcium gluconate": "I",
-    "Céfépime": "C",
-    "Ceftazidime": "C",
-    "Ceftriaxone": "I",
-    "Ciclosporine": "C",
-    "Défibrotide": "I",
-    "Dexaméthasone": "C",
-    "Fluconazole": "I",
-    "Furosémide": "C",
-    "Gentamicine": "I",
-    "Héparine sodique": "C",
-    "Labétalol": "C",
-    "Magnésium sulfate": "C",
-    "Méthylprednisolone": "C",
-    "Métronidazole": "C",
-    "Midazolam": "I",
-    "Morphine": "C",
-    "Nicardipine": "I",
-    "Octréotide / somatostatine": "C",
-    "Ondansétron": "C",
-    "Potassium chlorure": "C",
-    "Bicarbonate de sodium": "I",
-    "Tacrolimus": "C",
-    "Vancomycine": "C",
-    "Adrénaline": "C",
-    "Nutrition parentérale": "C"
-  },
-  "Kétamine": {
-    "Aciclovir": "I",
-    "Ciclosporine": "I",
-    "Dexaméthasone": "I"
-  },
-  "Labétalol": {
-    "Aciclovir": "I",
-    "Amikacine": "C",
-    "Calcium chlorure": "C",
-    "Calcium gluconate": "C",
-    "Céfépime": "I",
-    "Ceftazidime": "C",
-    "Ceftriaxone": "I",
-    "Ciclosporine": "C",
-    "Cotrimoxazole IV": "I",
-    "Dexaméthasone": "I",
-    "Esoméprazole": "I",
-    "Fluconazole": "C",
-    "Furosémide": "I",
-    "Gentamicine": "C",
-    "Héparine sodique": "I",
-    "Imipénème/cilastatine": "C",
-    "Magnésium sulfate": "C",
-    "Méthylprednisolone": "C",
-    "Métronidazole": "C",
-    "Midazolam": "C",
-    "Morphine": "C",
-    "Nicardipine": "C",
-    "Octréotide / somatostatine": "C",
-    "Ondansétron": "C",
-    "Phénytoïne": "I",
-    "Pipéracilline/tazobactam": "I",
-    "Potassium chlorure": "C",
-    "Potassium phosphate": "C",
-    "Bicarbonate de sodium": "C/I",
-    "Tacrolimus": "C",
-    "Vancomycine": "C",
-    "Adrénaline": "C",
-    "Nutrition parentérale": "I"
-  },
-  "Magnésium sulfate": {
-    "Aciclovir": "C",
-    "Amikacine": "C",
-    "Amoxicilline": "I",
-    "Amphotéricine B": "I",
-    "Calcium chlorure": "I",
-    "Calcium gluconate": "C/I",
-    "Céfépime": "I",
-    "Ceftazidime": "C",
-    "Ceftriaxone": "I",
-    "Ciclosporine": "I",
-    "Ciprofloxacine": "I",
-    "Clindamycine": "I",
-    "Cotrimoxazole IV": "C",
-    "Dexaméthasone": "I",
-    "Fluconazole": "C",
-    "Folinate de calcium": "I",
-    "Furosémide": "C",
-    "Gentamicine": "C",
-    "Héparine sodique": "C",
-    "Hydrocortisone": "I",
-    "Imipénème/cilastatine": "C",
-    "Labétalol": "C",
-    "Méropénem": "C",
-    "Méthylprednisolone": "I",
-    "Métronidazole": "C",
-    "Midazolam": "C",
-    "Morphine": "C",
-    "Nicardipine": "C",
-    "Octréotide / somatostatine": "C",
-    "Ondansétron": "C",
-    "Pipéracilline/tazobactam": "C",
-    "Potassium chlorure": "C",
-    "Bicarbonate de sodium": "I",
-    "Tacrolimus": "C",
-    "Vancomycine": "C",
-    "Nutrition parentérale": "C"
-  },
-  "Mannitol": {
-    "Amoxicilline/acide clavulanique": "I"
-  },
-  "Méropénem": {
-    "Aciclovir": "I",
-    "Amikacine": "I",
-    "Calcium gluconate": "I",
-    "Ciprofloxacine": "I",
-    "Dexaméthasone": "C",
-    "Fluconazole": "C",
-    "Furosémide": "C",
-    "Gentamicine": "C",
-    "Magnésium sulfate": "C",
-    "Métronidazole": "I",
-    "Morphine": "C",
-    "Nicardipine": "I",
-    "Octréotide / somatostatine": "C",
-    "Ondansétron": "I",
-    "Pantoprazole": "I",
-    "Potassium chlorure": "C",
-    "Tacrolimus": "C",
-    "Vancomycine": "C/I",
-    "Nutrition parentérale": "C"
-  },
-  "Méthylprednisolone": {
-    "Aciclovir": "C",
-    "Amikacine": "C",
-    "Amoxicilline/acide clavulanique": "I",
-    "Calcium chlorure": "I",
-    "Calcium gluconate": "I",
-    "Céfépime": "C",
-    "Ceftazidime": "C",
-    "Ceftriaxone": "C",
-    "Ciclosporine": "C",
-    "Ciprofloxacine": "I",
-    "Défibrotide": "I",
-    "Dexaméthasone": "C",
-    "Fluconazole": "C",
-    "Furosémide": "C",
-    "Gentamicine": "C",
-    "Héparine sodique": "C",
-    "Imipénème/cilastatine": "C",
-    "Labétalol": "C",
-    "Magnésium sulfate": "I",
-    "Métronidazole": "C",
-    "Midazolam": "C",
-    "Morphine": "C",
-    "Nicardipine": "I",
-    "Octréotide / somatostatine": "C",
-    "Ondansétron": "I",
-    "Paracétamol": "C",
-    "Pipéracilline/tazobactam": "C",
-    "Potassium chlorure": "I",
-    "Bicarbonate de sodium": "C",
-    "Tacrolimus": "C",
-    "Vancomycine": "I",
-    "Adrénaline": "C"
-  },
-  "Métronidazole": {
-    "Aciclovir": "C",
-    "Amikacine": "C",
-    "Amoxicilline/acide clavulanique": "I",
-    "Calcium chlorure": "I",
-    "Calcium gluconate": "C",
-    "Céfépime": "C/I",
-    "Ceftazidime": "C",
-    "Ceftriaxone": "I",
-    "Ciclosporine": "C",
-    "Ciprofloxacine": "C",
-    "Clarithromycine": "C",
-    "Dexaméthasone": "C",
-    "Fluconazole": "C",
-    "Furosémide": "C",
-    "Gentamicine": "C",
-    "Héparine sodique": "C",
-    "Imipénème/cilastatine": "C",
-    "Labétalol": "C",
-    "Magnésium sulfate": "C",
-    "Méropénem": "I",
-    "Méthylprednisolone": "C",
-    "Midazolam": "C",
-    "Morphine": "C",
-    "Nicardipine": "C",
-    "Octréotide / somatostatine": "C",
-    "Ondansétron": "I",
-    "Pantoprazole": "I",
-    "Pipéracilline/tazobactam": "C",
-    "Potassium chlorure": "C",
-    "Bicarbonate de sodium": "C",
-    "Tacrolimus": "C",
-    "Vancomycine": "C",
-    "Adrénaline": "C",
-    "Nutrition parentérale": "C"
-  },
-  "Midazolam": {
-    "Amikacine": "C",
-    "Amoxicilline": "I",
-    "Amoxicilline/acide clavulanique": "I",
-    "Calcium chlorure": "C",
-    "Calcium gluconate": "C",
-    "Céfépime": "I",
-    "Ceftazidime": "I",
-    "Ceftriaxone": "C",
-    "Ciclosporine": "C",
-    "Ciprofloxacine": "C",
-    "Cotrimoxazole IV": "I",
-    "Défibrotide": "I",
-    "Dexaméthasone": "I",
-    "Esoméprazole": "I",
-    "Fluconazole": "C",
-    "Foscarnet": "I",
-    "Furosémide": "I",
-    "Gentamicine": "C",
-    "Héparine sodique": "C",
-    "Hydrocortisone": "I",
-    "Imipénème/cilastatine": "I",
-    "Labétalol": "C",
-    "Magnésium sulfate": "C",
-    "Méthylprednisolone": "C",
-    "Métronidazole": "C",
-    "Morphine": "C",
-    "Nicardipine": "C",
-    "Octréotide / somatostatine": "C",
-    "Ondansétron": "C",
-    "Pantoprazole": "I",
-    "Paracétamol": "C",
-    "Potassium chlorure": "C",
-    "Bicarbonate de sodium": "I",
-    "Tacrolimus": "C",
-    "Tramadol": "I",
-    "Vancomycine": "C",
-    "Adrénaline": "C",
-    "Nutrition parentérale": "C"
-  },
-  "Morphine": {
-    "Aciclovir": "I",
-    "Amikacine": "C",
-    "Calcium chlorure": "C",
-    "Calcium gluconate": "C/I",
-    "Céfépime": "I",
-    "Ceftazidime": "C",
-    "Ceftriaxone": "C",
-    "Ciclosporine": "C",
-    "Cotrimoxazole IV": "C",
-    "Dexaméthasone": "C",
-    "Esoméprazole": "I",
-    "Fluconazole": "C",
-    "Furosémide": "I",
-    "Gentamicine": "C",
-    "Héparine sodique": "C",
-    "Imipénème/cilastatine": "C",
-    "Labétalol": "C",
-    "Magnésium sulfate": "C",
-    "Méropénem": "C",
-    "Méthylprednisolone": "C",
-    "Métronidazole": "C",
-    "Midazolam": "C",
-    "Nicardipine": "C",
-    "Octréotide / somatostatine": "C",
-    "Ondansétron": "C",
-    "Paracétamol": "C",
-    "Phénytoïne": "I",
-    "Pipéracilline/tazobactam": "C",
-    "Potassium chlorure": "C",
-    "Potassium phosphate": "C",
-    "Bicarbonate de sodium": "C",
-    "Tacrolimus": "C",
-    "Vancomycine": "C",
-    "Adrénaline": "C",
-    "Nutrition parentérale": "C"
-  },
-  "Mycophénolate mofétil": {
-    "Ciclosporine": "I"
-  },
-  "Nalbuphine": {
-    "Bicarbonate de sodium": "I"
-  },
-  "Naloxone": {
-    "Aciclovir": "I",
-    "Amphotéricine B": "I"
-  },
-  "Néfopam": {
-    "Amoxicilline": "I",
-    "Esoméprazole": "I"
-  },
-  "Nicardipine": {
-    "Aciclovir": "I",
-    "Amikacine": "C",
-    "Calcium chlorure": "C",
-    "Calcium gluconate": "C",
-    "Céfépime": "I",
-    "Ceftazidime": "I",
-    "Ceftriaxone": "C",
-    "Ciclosporine": "C",
-    "Ciprofloxacine": "C",
-    "Cotrimoxazole IV": "I",
-    "Défibrotide": "I",
-    "Dexaméthasone": "I",
-    "Fluconazole": "C",
-    "Furosémide": "I",
-    "Gentamicine": "C",
-    "Héparine sodique": "I",
-    "Imipénème/cilastatine": "I",
-    "Labétalol": "C",
-    "Magnésium sulfate": "C",
-    "Méropénem": "I",
-    "Méthylprednisolone": "I",
-    "Métronidazole": "C",
-    "Midazolam": "C",
-    "Morphine": "C",
-    "Octréotide / somatostatine": "C",
-    "Ondansétron": "C",
-    "Phénytoïne": "I",
-    "Pipéracilline/tazobactam": "I",
-    "Potassium chlorure": "C",
-    "Potassium phosphate": "I",
-    "Bicarbonate de sodium": "I",
-    "Tacrolimus": "C",
-    "Vancomycine": "C",
-    "Adrénaline": "C"
-  },
-  "Octréotide / somatostatine": {
-    "Aciclovir": "C",
-    "Amikacine": "C",
-    "Calcium chlorure": "C",
-    "Calcium gluconate": "C",
-    "Céfépime": "C",
-    "Ceftazidime": "C",
-    "Ceftriaxone": "C",
-    "Ciclosporine": "C",
-    "Ciprofloxacine": "C",
-    "Cotrimoxazole IV": "C",
-    "Dexaméthasone": "C",
-    "Fluconazole": "C",
-    "Furosémide": "C",
-    "Gentamicine": "C",
-    "Imipénème/cilastatine": "C",
-    "Labétalol": "C",
-    "Magnésium sulfate": "C",
-    "Méropénem": "C",
-    "Méthylprednisolone": "C",
-    "Métronidazole": "C",
-    "Midazolam": "C",
-    "Morphine": "C",
-    "Nicardipine": "C",
-    "Ondansétron": "C",
-    "Phénytoïne": "I",
-    "Pipéracilline/tazobactam": "C",
-    "Potassium chlorure": "C",
-    "Potassium phosphate": "C",
-    "Bicarbonate de sodium": "C",
-    "Tacrolimus": "C",
-    "Vancomycine": "C",
-    "Adrénaline": "C",
-    "Nutrition parentérale": "C"
-  },
-  "Ondansétron": {
-    "Aciclovir": "I",
-    "Amikacine": "C",
-    "Amphotéricine B": "I",
-    "Calcium chlorure": "C",
-    "Calcium gluconate": "C",
-    "Céfépime": "I",
-    "Ceftazidime": "C",
-    "Ceftriaxone": "C",
-    "Ciclosporine": "I",
-    "Dexaméthasone": "C",
-    "Fluconazole": "C",
-    "Furosémide": "I",
-    "Gentamicine": "C",
-    "Héparine sodique": "C",
-    "Imipénème/cilastatine": "C",
-    "Labétalol": "C",
-    "Magnésium sulfate": "C",
-    "Méropénem": "I",
-    "Méthylprednisolone": "I",
-    "Métronidazole": "I",
-    "Midazolam": "C",
-    "Morphine": "C",
-    "Nicardipine": "C",
-    "Octréotide / somatostatine": "C",
-    "Paracétamol": "C",
-    "Phénytoïne": "I",
-    "Pipéracilline/tazobactam": "C",
-    "Potassium chlorure": "C",
-    "Bicarbonate de sodium": "I",
-    "Tacrolimus": "C",
-    "Vancomycine": "C",
-    "Adrénaline": "C",
-    "Nutrition parentérale": "C"
-  },
-  "Pantoprazole": {
-    "Calcium chlorure": "I",
-    "Caspofungine": "I",
-    "Chlorpromazine": "I",
-    "Ciclosporine": "I",
-    "Ciprofloxacine": "I",
-    "Clindamycine": "I",
-    "Cotrimoxazole IV": "I",
-    "Dexaméthasone": "I",
-    "Furosémide": "I",
-    "Hydrocortisone": "I",
-    "Méropénem": "I",
-    "Métronidazole": "I",
-    "Midazolam": "I",
-    "Pipéracilline/tazobactam": "I",
-    "Bicarbonate de sodium": "I",
-    "Vancomycine": "I"
-  },
-  "Paracétamol": {
-    "Aciclovir": "I",
-    "Ceftriaxone": "C",
-    "Dexaméthasone": "C",
-    "Méthylprednisolone": "C",
-    "Midazolam": "C",
-    "Morphine": "C",
-    "Ondansétron": "C",
-    "Pipéracilline/tazobactam": "C",
-    "Potassium chlorure": "C",
-    "Bicarbonate de sodium": "I",
-    "Vancomycine": "C",
-    "Nutrition parentérale": "C"
-  },
-  "Phénytoïne": {
-    "Amikacine": "I",
-    "Céfépime": "I",
-    "Ceftazidime": "I",
-    "Ciprofloxacine": "I",
-    "Clarithromycine": "I",
-    "Gentamicine": "I",
-    "Héparine sodique": "I",
-    "Labétalol": "I",
-    "Morphine": "I",
-    "Nicardipine": "I",
-    "Octréotide / somatostatine": "I",
-    "Ondansétron": "I",
-    "Potassium chlorure": "I",
-    "Potassium phosphate": "I",
-    "Bicarbonate de sodium": "I",
-    "Tacrolimus": "I",
-    "Vancomycine": "I",
-    "Nutrition parentérale": "I"
-  },
-  "Phloroglucinol": {
-    "Aciclovir": "I",
-    "Amoxicilline/acide clavulanique": "I"
-  },
-  "Pipéracilline/tazobactam": {
-    "Aciclovir": "I",
-    "Amikacine": "I",
-    "Amphotéricine B": "I",
-    "Calcium gluconate": "C",
-    "Caspofungine": "I",
-    "Céfépime": "C",
-    "Ciprofloxacine": "I",
-    "Cotrimoxazole IV": "C",
-    "Dexaméthasone": "C",
-    "Fluconazole": "C",
-    "Furosémide": "C",
-    "Ganciclovir IV": "I",
-    "Gentamicine": "I",
-    "Labétalol": "I",
-    "Magnésium sulfate": "C",
-    "Méthylprednisolone": "C",
-    "Métronidazole": "C",
-    "Morphine": "C",
-    "Nicardipine": "I",
-    "Octréotide / somatostatine": "C",
-    "Ondansétron": "C",
-    "Pantoprazole": "I",
-    "Paracétamol": "C",
-    "Potassium chlorure": "C",
-    "Bicarbonate de sodium": "C/I",
-    "Tacrolimus": "C",
-    "Vancomycine": "I",
-    "Chlorpromazine": "I",
-    "Nutrition parentérale": "C"
-  },
-  "Potassium chlorure": {
-    "Aciclovir": "C",
-    "Amikacine": "C",
-    "Amphotéricine B": "I",
-    "Calcium chlorure": "C",
-    "Calcium gluconate": "C",
-    "Caspofungine": "I",
-    "Céfépime": "C",
-    "Ceftazidime": "C",
-    "Ceftriaxone": "C",
-    "Ciclosporine": "C",
-    "Ciprofloxacine": "C",
-    "Clarithromycine": "C",
-    "Cotrimoxazole IV": "I",
-    "Dexaméthasone": "C",
-    "Esoméprazole": "C",
-    "Fluconazole": "C",
-    "Furosémide": "C",
-    "Gentamicine": "C",
-    "Héparine sodique": "C",
-    "Imipénème/cilastatine": "C",
-    "Labétalol": "C",
-    "Magnésium sulfate": "C",
-    "Méropénem": "C",
-    "Méthylprednisolone": "I",
-    "Métronidazole": "C",
-    "Midazolam": "C",
-    "Morphine": "C",
-    "Nicardipine": "C",
-    "Octréotide / somatostatine": "C",
-    "Ondansétron": "C",
-    "Paracétamol": "C",
-    "Phénytoïne": "I",
-    "Pipéracilline/tazobactam": "C",
-    "Potassium phosphate": "C",
-    "Bicarbonate de sodium": "C",
-    "Tacrolimus": "C",
-    "Vancomycine": "C",
-    "Adrénaline": "C",
-    "Nutrition parentérale": "C"
-  },
-  "Potassium phosphate": {
-    "Calcium chlorure": "I",
-    "Calcium gluconate": "I",
-    "Ciprofloxacine": "I",
-    "Furosémide": "I",
-    "Labétalol": "C",
-    "Morphine": "C",
-    "Nicardipine": "I",
-    "Octréotide / somatostatine": "C",
-    "Phénytoïne": "I",
-    "Potassium chlorure": "C",
-    "Tacrolimus": "C",
-    "Nutrition parentérale": "C"
-  },
-  "Bicarbonate de sodium": {
-    "Aciclovir": "C",
-    "Amikacine": "C",
-    "Amoxicilline": "I",
-    "Amoxicilline/acide clavulanique": "I",
-    "Calcium chlorure": "I",
-    "Calcium gluconate": "I",
-    "Céfépime": "C",
-    "Ceftazidime": "I",
-    "Ceftriaxone": "C",
-    "Ciclosporine": "C",
-    "Ciprofloxacine": "I",
-    "Clindamycine": "I",
-    "Cotrimoxazole IV": "I",
-    "Dexaméthasone": "C",
-    "Fluconazole": "C",
-    "Folinate de calcium": "I",
-    "Furosémide": "C",
-    "Gentamicine": "I",
-    "Héparine sodique": "I",
-    "Imipénème/cilastatine": "I",
-    "Labétalol": "C/I",
-    "Magnésium sulfate": "I",
-    "Méthylprednisolone": "C",
-    "Métronidazole": "C",
-    "Midazolam": "I",
-    "Morphine": "C",
-    "Nalbuphine": "I",
-    "Nicardipine": "I",
-    "Octréotide / somatostatine": "C",
-    "Ondansétron": "I",
-    "Pantoprazole": "I",
-    "Paracétamol": "I",
-    "Phénytoïne": "I",
-    "Pipéracilline/tazobactam": "C/I",
-    "Potassium chlorure": "C",
-    "Tacrolimus": "C/I",
-    "Vancomycine": "I",
-    "Voriconazole IV": "I",
-    "Adrénaline": "I",
-    "Nutrition parentérale": "I"
-  },
-  "Tacrolimus": {
-    "Aciclovir": "I",
-    "Amikacine": "C",
-    "Calcium chlorure": "C",
-    "Calcium gluconate": "C",
-    "Céfépime": "I",
-    "Ceftazidime": "C",
-    "Ceftriaxone": "C",
-    "Ciclosporine": "C",
-    "Ciprofloxacine": "C",
-    "Dexaméthasone": "C",
-    "Esoméprazole": "I",
-    "Fluconazole": "C",
-    "Ganciclovir IV": "I",
-    "Gentamicine": "C",
-    "Imipénème/cilastatine": "C",
-    "Labétalol": "C",
-    "Magnésium sulfate": "C",
-    "Méropénem": "C",
-    "Méthylprednisolone": "C",
-    "Métronidazole": "C",
-    "Midazolam": "C",
-    "Morphine": "C",
-    "Nicardipine": "C",
-    "Octréotide / somatostatine": "C",
-    "Ondansétron": "C",
-    "Phénytoïne": "I",
-    "Pipéracilline/tazobactam": "C",
-    "Potassium chlorure": "C",
-    "Potassium phosphate": "C",
-    "Bicarbonate de sodium": "C/I",
-    "Vancomycine": "C",
-    "Adrénaline": "C",
-    "Nutrition parentérale": "C"
-  },
-  "Teicoplanine": {
-    "Amikacine": "I",
-    "Gentamicine": "I"
-  },
-  "Tramadol": {
-    "Midazolam": "I"
-  },
-  "Vancomycine": {
-    "Aciclovir": "C",
-    "Amikacine": "C",
-    "Calcium chlorure": "C",
-    "Calcium gluconate": "C",
-    "Céfépime": "I",
-    "Ceftazidime": "I",
-    "Ceftriaxone": "I",
-    "Ciclosporine": "C",
-    "Clarithromycine": "C",
-    "Dexaméthasone": "C/I",
-    "Fluconazole": "C",
-    "Foscarnet": "I",
-    "Furosémide": "I",
-    "Gentamicine": "C",
-    "Héparine sodique": "I",
-    "Hydrocortisone": "I",
-    "Imipénème/cilastatine": "C",
-    "Labétalol": "C",
-    "Magnésium sulfate": "C",
-    "Méropénem": "C/I",
-    "Méthylprednisolone": "I",
-    "Métronidazole": "C",
-    "Midazolam": "C",
-    "Morphine": "C",
-    "Nicardipine": "C",
-    "Octréotide / somatostatine": "C",
-    "Ondansétron": "C",
-    "Pantoprazole": "I",
-    "Paracétamol": "C",
-    "Phénytoïne": "I",
-    "Pipéracilline/tazobactam": "I",
-    "Potassium chlorure": "C",
-    "Bicarbonate de sodium": "I",
-    "Tacrolimus": "C",
-    "Adrénaline": "C",
-    "Nutrition parentérale": "C"
-  },
-  "Voriconazole IV": {
-    "Bicarbonate de sodium": "I"
-  },
-  "Nutrition parentérale": {
-    "Amikacine": "C",
-    "Amoxicilline/acide clavulanique": "C",
-    "Ceftriaxone": "I",
-    "Ciclosporine": "C",
-    "Cotrimoxazole IV": "C",
-    "Esoméprazole": "I",
-    "Fluconazole": "C",
-    "Furosémide": "C",
-    "Héparine sodique": "C",
-    "Imipénème/cilastatine": "C",
-    "Labétalol": "I",
-    "Magnésium sulfate": "C",
-    "Méropénem": "C",
-    "Métronidazole": "C",
-    "Midazolam": "C",
-    "Morphine": "C",
-    "Octréotide / somatostatine": "C",
-    "Ondansétron": "C",
-    "Paracétamol": "C",
-    "Phénytoïne": "I",
-    "Pipéracilline/tazobactam": "C",
-    "Potassium chlorure": "C",
-    "Potassium phosphate": "C",
-    "Bicarbonate de sodium": "I",
-    "Tacrolimus": "C",
-    "Vancomycine": "C"
-  },
-  "Adrénaline": {
-    "Amikacine": "C",
-    "Calcium chlorure": "C",
-    "Calcium gluconate": "C",
-    "Ceftazidime": "C",
-    "Ceftriaxone": "C",
-    "Ciclosporine": "C",
-    "Dexaméthasone": "C",
-    "Fluconazole": "C",
-    "Furosémide": "I",
-    "Gentamicine": "C",
-    "Héparine sodique": "C",
-    "Imipénème/cilastatine": "C",
-    "Labétalol": "C",
-    "Méthylprednisolone": "C",
-    "Métronidazole": "C",
-    "Midazolam": "C",
-    "Morphine": "C",
-    "Nicardipine": "C",
-    "Octréotide / somatostatine": "C",
-    "Ondansétron": "C",
-    "Potassium chlorure": "C",
-    "Bicarbonate de sodium": "I",
-    "Tacrolimus": "C",
-    "Vancomycine": "C"
-  }
-};
+    function normalizeExcelBoolean(value) {
+      if (value === true || value === false) return value;
+      const s = String(value ?? "").trim().toLowerCase();
+      if (["false", "faux", "0", "non", "no"].includes(s)) return false;
+      return true;
+    }
+
+    function cleanExcelText(value) {
+      const s = String(value ?? "").trim();
+      return s === "" ? "--" : s;
+    }
+
+    function parseStabilitySheet(workbook) {
+      const sheet = workbook.Sheets["STABILITE"];
+      if (!sheet) throw new Error("Onglet STABILITE introuvable dans la base Excel.");
+      return XLSX.utils.sheet_to_json(sheet, { defval: "" })
+        .filter(row => normalizeExcelBoolean(row.actif) && String(row.molecule || "").trim())
+        .map(row => ({
+          molecule: String(row.molecule || "").trim(),
+          source: String(row.source || row.source_originale || "").trim(),
+          mode: cleanExcelText(row.mode),
+          poche: cleanExcelText(row.poche),
+          pse: cleanExcelText(row.pse),
+          elastomere: cleanExcelText(row.elastomere),
+          anapa: cleanExcelText(row.anapa),
+          micrel: cleanExcelText(row.micrel),
+          reco: cleanExcelText(row.reco),
+          note: cleanExcelText(row.note),
+          pubmed: String(row.pubmed || "").trim()
+        }));
+    }
+
+    function parseYSiteSheet(workbook) {
+      const sheet = workbook.Sheets["Y_SITE"];
+      if (!sheet) return {};
+      const out = {};
+      XLSX.utils.sheet_to_json(sheet, { defval: "" })
+        .filter(row => normalizeExcelBoolean(row.actif) && String(row.molecule || "").trim() && String(row.coadministre || "").trim())
+        .forEach(row => {
+          const a = String(row.molecule || "").trim();
+          const b = String(row.coadministre || "").trim();
+          const s = String(row.statut || "?").trim().toUpperCase() || "?";
+          if (!out[a]) out[a] = {};
+          out[a][b] = s;
+        });
+      return out;
+    }
+
+    async function loadExcelDatabase() {
+      if (typeof XLSX === "undefined") {
+        throw new Error("Librairie XLSX non chargée : vérifier la connexion ou intégrer xlsx.full.min.js localement.");
+      }
+      const response = await fetch(BREAKING_STAB_DB_FILE, { cache: "no-store" });
+      if (!response.ok) throw new Error(`Base Excel introuvable : ${BREAKING_STAB_DB_FILE}`);
+      const buffer = await response.arrayBuffer();
+      const workbook = XLSX.read(buffer, { type: "array" });
+      data = parseStabilitySheet(workbook);
+      yCompat = parseYSiteSheet(workbook);
+      console.info(`Breaking Stab : ${data.length} lignes stabilité et ${Object.keys(yCompat).length} molécules Y-site chargées depuis Excel.`);
+    }
 
     const resultsEl = document.getElementById("results");
     const searchEl = document.getElementById("search");
@@ -3636,6 +1273,7 @@ const data = [
     const reverseRunEl = document.getElementById("reverseRun");
     const reverseResultsEl = document.getElementById("reverseResults");
     const reverseCountPill = document.getElementById("reverseCountPill");
+    const reverseSourceFilterEl = document.getElementById("reverseSourceFilter");
 
     function normalize(text) {
       return (text || "")
@@ -4257,6 +1895,63 @@ const data = [
 
 
 
+
+
+    const reverseSourceCatalog = [
+      { key: "chicas", label: "Doc interne CHICAS", patterns: ["doc interne", "chicas"] },
+      { key: "lyon_berard", label: "Recommandations Centre Léon Bérard / Lyon Bérard", patterns: ["centre leon berard", "centre léon bérard", "lyon berard", "lyon bérard", "had"] },
+      { key: "tourcoing", label: "Référentiel ATB Tourcoing", patterns: ["tourcoing"] },
+      { key: "spilf_sfpc", label: "Référentiel SPILF/SFPC", patterns: ["spilf", "sfpc", "splif"] },
+      { key: "anapa", label: "ANAPA – données laboratoire", patterns: ["anapa"] },
+      { key: "micrel", label: "Micrel/Rythmic – données laboratoire", patterns: ["micrel", "rythmic"] },
+      { key: "neopump", label: "NEOPUMP – données fabricant élastomère", patterns: ["neopump", "easyflow"] },
+      { key: "pubmed", label: "PubMed / littérature sélectionnée", patterns: ["pubmed", "litterature", "littérature"] },
+      { key: "interjurassienne", label: "Protocole Pharmacie Interjurassienne", patterns: ["interjurassienne"] }
+    ];
+
+    function sourceKeysForText(sourceText) {
+      const src = normalize(sourceText || "");
+      return reverseSourceCatalog
+        .filter(item => item.patterns.some(pattern => src.includes(normalize(pattern))))
+        .map(item => item.key);
+    }
+
+    function sourceLabelsForText(sourceText) {
+      const keys = sourceKeysForText(sourceText);
+      if (!keys.length) return [sourceText || "Source non précisée"];
+      return keys.map(key => reverseSourceCatalog.find(item => item.key === key).label);
+    }
+
+    function selectedReverseSourceKeys() {
+      if (!reverseSourceFilterEl) return [];
+      return Array.from(reverseSourceFilterEl.selectedOptions || [])
+        .map(option => option.value)
+        .filter(Boolean);
+    }
+
+    function reverseSourceMatchesSelection(sourceText) {
+      const selected = selectedReverseSourceKeys();
+      if (!selected.length) return true;
+      const keys = sourceKeysForText(sourceText);
+      return selected.some(key => keys.includes(key));
+    }
+
+    function reverseDisplaySource(sourceText) {
+      const selected = selectedReverseSourceKeys();
+      const labels = sourceLabelsForText(sourceText);
+      if (!selected.length) return labels.join("<br>");
+      const allowed = new Set(selected.map(key => (reverseSourceCatalog.find(item => item.key === key) || {}).label));
+      const filtered = labels.filter(label => allowed.has(label));
+      return (filtered.length ? filtered : labels).join("<br>");
+    }
+
+    function initReverseSourceFilter() {
+      if (!reverseSourceFilterEl) return;
+      reverseSourceFilterEl.innerHTML = reverseSourceCatalog
+        .map(item => `<option value="${escapeHtml(item.key)}">${escapeHtml(item.label)}</option>`)
+        .join("");
+    }
+
     const rcpFractionation = {
       "Aciclovir": { freq: 3, label: "RCP usuel : q8h, soit 3 administrations/jour", source: "RCP/SmPC – fractionnement indicatif à vérifier selon indication, fonction rénale et dose." },
       "Amikacine": { freq: 1, label: "RCP usuel : dose unique quotidienne privilégiée", source: "RCP/SmPC – adaptation au poids, à la fonction rénale et au suivi pharmacologique." },
@@ -4312,11 +2007,15 @@ const data = [
 
     const reverseDevices = [
       ...[50, 100, 250, 500].flatMap(volume => [
-        { key: "poche", label: `Poche NaCl 0,9 % ${volume} mL`, volume, solvent: "nacl", sourceFilter: null, forcedTime: "Discontinu prioritaire", modes: ["discontinuous"] },
-        { key: "poche", label: `Poche G5 ${volume} mL`, volume, solvent: "g5", sourceFilter: null, forcedTime: "Discontinu prioritaire", modes: ["discontinuous"] }
+        { key: "poche", label: `Poche / pompe volumétrique NaCl 0,9 % ${volume} mL`, volume, solvent: "nacl", sourceFilter: null, forcedTime: "Continu/discontinu selon stabilité", modes: ["continuous", "discontinuous"] },
+        { key: "poche", label: `Poche / pompe volumétrique G5 ${volume} mL`, volume, solvent: "g5", sourceFilter: null, forcedTime: "Continu/discontinu selon stabilité", modes: ["continuous", "discontinuous"] }
       ]),
       { key: "pse", label: "PSE seringue PP 48 mL · NaCl 0,9 %", volume: 48, solvent: "nacl", sourceFilter: null, forcedTime: "Continu fractionnable selon stabilité", modes: ["continuous", "discontinuous"] },
       { key: "pse", label: "PSE seringue PP 48 mL · G5", volume: 48, solvent: "g5", sourceFilter: null, forcedTime: "Continu fractionnable selon stabilité", modes: ["continuous", "discontinuous"] },
+      ...[100, 150, 250, 500].flatMap(volume => [
+        { key: "elastomere", label: `Diffuseur élastomère générique ${volume} mL · NaCl 0,9 %`, volume, solvent: "nacl", sourceFilter: null, forcedTime: "Continu fractionnable selon stabilité", modes: ["continuous"] },
+        { key: "elastomere", label: `Diffuseur élastomère générique ${volume} mL · G5`, volume, solvent: "g5", sourceFilter: null, forcedTime: "Continu fractionnable selon stabilité", modes: ["continuous"] }
+      ]),
       { key: "micrel", label: "Pompe Rythmic / Micrel 100 mL · NaCl 0,9 %", volume: 100, solvent: "nacl", sourceFilter: "micrel", forcedTime: "Continu fractionnable selon stabilité", modes: ["continuous"] },
       { key: "micrel", label: "Pompe Rythmic / Micrel 100 mL · G5", volume: 100, solvent: "g5", sourceFilter: "micrel", forcedTime: "Continu fractionnable selon stabilité", modes: ["continuous"] },
       { key: "micrel", label: "Pompe Rythmic / Micrel 200 mL · NaCl 0,9 %", volume: 200, solvent: "nacl", sourceFilter: "micrel", forcedTime: "Continu fractionnable selon stabilité", modes: ["continuous"] },
@@ -4503,11 +2202,31 @@ const data = [
       return { ok: true, status: "ok", label: "Solvant non contraint" };
     }
 
+
+    function sourceMatchesDailyDose(value, dailyDoseMg) {
+      const raw = String(value || "");
+      const m = raw.match(/dose journali[eè]re\s+([^;]+?)\/24\s*h/i);
+      if (!m) return true;
+      const expr = m[1].replace(",", ".").trim();
+      if (/mg\s*\/\s*kg/i.test(expr)) return true;
+      const usesMui = /m\s*iu|mui|mUI/i.test(expr);
+      const doseValue = usesMui ? dailyDoseMg : dailyDoseMg / 1000;
+      let r = expr.match(/[≤<=]+\s*(\d+(?:\.\d+)?)/);
+      if (r) return doseValue <= Number(r[1]) + 0.001;
+      r = expr.match(/>\s*(\d+(?:\.\d+)?)/);
+      if (r) return doseValue > Number(r[1]) - 0.001;
+      r = expr.match(/(\d+(?:\.\d+)?)\s*(?:to|à|-|–)\s*(\d+(?:\.\d+)?)/i);
+      if (r) return doseValue > Number(r[1]) - 0.001 && doseValue <= Number(r[2]) + 0.001;
+      r = expr.match(/(\d+(?:\.\d+)?)/);
+      if (!r) return true;
+      return Math.abs(doseValue - Number(r[1])) <= Math.max(0.01, Number(r[1]) * 0.02);
+    }
+
     function reverseRowsForDevice(moleculeSources, device, dailyDoseMg, adminMode, discontinuousFreq) {
       return moleculeSources
         .filter(s => sourceMatchesDevice(s, device))
         .map(s => ({ source: s, value: s[device.key] || "--", conf: confidenceLevel(s) }))
-        .filter(x => x.value && x.value !== "--")
+        .filter(x => x.value && x.value !== "--" && sourceMatchesDailyDose(x.value, dailyDoseMg))
         .map(x => {
           const plan = renewalPlan(device, x.value, adminMode, discontinuousFreq);
           const doseForContainer = dailyDoseMg * plan.doseFraction;
@@ -4543,7 +2262,7 @@ const data = [
         return;
       }
 
-      const sources = data.filter(d => d.molecule === molecule);
+      const sources = data.filter(d => d.molecule === molecule && reverseSourceMatchesSelection(d.source));
       const devices = reverseDevices.filter(device => !device.modes || device.modes.includes(adminMode));
       const cards = devices.map(device => {
         const rows = reverseRowsForDevice(sources, device, dailyDoseMg, adminMode, discontinuousFreq);
@@ -4557,7 +2276,7 @@ const data = [
             <td>${formatNumber(r.doseForContainer)} mg / ${device.volume} mL<br><span class="reverse-source">${formatNumber(r.conc)} mg/mL · ${escapeHtml(solventLabel(device.solvent))}</span></td>
             <td>${escapeHtml(r.plan.label)}<br><span class="reverse-source">${escapeHtml(r.assessment.detail)}</span></td>
             <td>${escapeHtml(stabilityExcerpt(r.value))}</td>
-            <td>${escapeHtml(r.source.source)}<br><span class="reverse-source">${escapeHtml(r.conf.label)} · ${escapeHtml(device.forcedTime)}</span></td>
+            <td>${reverseDisplaySource(r.source.source)}<br><span class="reverse-source">${escapeHtml(r.conf.label)} · ${escapeHtml(device.forcedTime)}</span></td>
           </tr>
         `).join("") : `<tr><td colspan="5" class="empty">Aucune donnée intégrée pour ce dispositif/source.</td></tr>`;
         const rcpLine = rcpRec
@@ -4651,7 +2370,7 @@ const data = [
 
 
     tabButtons.forEach(btn => btn.addEventListener("click", () => switchTab(btn.dataset.tab)));
-    [reverseMoleculeEl, reverseDoseEl, reverseUnitEl, reverseAdminModeEl, reverseFreqEl, reverseRcpEl].forEach(el => el.addEventListener("input", () => {
+    [reverseMoleculeEl, reverseDoseEl, reverseUnitEl, reverseAdminModeEl, reverseFreqEl, reverseRcpEl, reverseSourceFilterEl].filter(Boolean).forEach(el => el.addEventListener("input", () => {
       updateReverseModeUI();
       renderReverse();
     }));
@@ -4672,10 +2391,375 @@ const data = [
       render();
     });
 
-    initReverseMoleculeList();
-    updateReverseModeUI();
-    renderReverse();
-    render();
+    function bootBreakingStab() {
+      initReverseMoleculeList();
+      initReverseSourceFilter();
+      updateReverseModeUI();
+      renderReverse();
+      render();
+      if (window.initReverseSafe) window.initReverseSafe();
+    }
+
+    loadExcelDatabase()
+      .then(bootBreakingStab)
+      .catch(error => {
+        console.error(error);
+        countPill.textContent = "Base Excel non chargée";
+        resultsEl.innerHTML = `<div class="no-result">Impossible de charger la base Excel <strong>${escapeHtml(BREAKING_STAB_DB_FILE)}</strong>. Dépose le fichier dans le même dossier que index.html sur GitHub Pages, puis recharge la page.<br><br>${escapeHtml(error.message)}</div>`;
+        reverseCountPill.textContent = "Base Excel non chargée";
+        reverseResultsEl.innerHTML = `<div class="no-result">Base Excel non chargée.</div>`;
+      });
   </script>
+
+
+  <script>
+  /* Correctif robuste moteur inversé – affichage/rendu */
+  (function () {
+    function norm(text) {
+      return String(text || "")
+        .toLowerCase()
+        .normalize("NFD")
+        .replace(/[\u0300-\u036f]/g, "")
+        .replace(/[^a-z0-9]/g, "");
+    }
+    function esc(str) {
+      return String(str ?? "")
+        .replaceAll("&", "&amp;")
+        .replaceAll("<", "&lt;")
+        .replaceAll(">", "&gt;")
+        .replaceAll('"', "&quot;")
+        .replaceAll("'", "&#039;");
+    }
+    function fr(n) {
+      return Number(n || 0).toLocaleString("fr-FR", { maximumFractionDigits: 2 });
+    }
+    function getRows() {
+      try {
+        if (typeof data !== "undefined" && Array.isArray(data)) return data;
+      } catch (e) {}
+      return [];
+    }
+    function findMolecule(value) {
+      const rows = getRows();
+      const names = [...new Set(rows.map(x => x.molecule).filter(Boolean))];
+      const target = norm(value);
+      if (!target) return null;
+      const aliases = {
+        bactrim: "Cotrimoxazole IV / Bactrim®",
+        cotrimoxazole: "Cotrimoxazole IV / Bactrim®",
+        cotrimoxazoleiv: "Cotrimoxazole IV / Bactrim®",
+        piptazo: "Pipéracilline/tazobactam",
+        pipetazo: "Pipéracilline/tazobactam",
+        tazocilline: "Pipéracilline/tazobactam",
+        piperacillinetazobactam: "Pipéracilline/tazobactam",
+        ceftaz: "Ceftazidime",
+        cefepime: "Céfépime",
+        cefazoline: "Céfazoline",
+        cefotaxime: "Céfotaxime",
+        ceftriaxone: "Ceftriaxone",
+        meropenem: "Méropénem",
+        temocilline: "Témocilline",
+        fosfomycine: "Fosfomycine IV",
+        rifampicine: "Rifampicine IV",
+        voriconazole: "Voriconazole IV",
+        benzylpenicilline: "Benzylpénicilline",
+        penicillineg: "Benzylpénicilline",
+        cefoxitine: "Céfoxitine",
+        ceftolozane: "Ceftolozane/tazobactam",
+        zerbaxa: "Ceftolozane/tazobactam",
+        imipenem: "Imipénème/cilastatine",
+        tienam: "Imipénème/cilastatine",
+        cloxacilline: "Cloxacilline",
+        oxacilline: "Oxacilline",
+        erythromycine: "Érythromycine"
+      };
+      if (aliases[target] && names.includes(aliases[target])) return aliases[target];
+      return names.find(n => norm(n) === target)
+        || names.find(n => norm(n).includes(target))
+        || names.find(n => target.includes(norm(n)))
+        || null;
+    }
+    function doseMg(value, unit) {
+      const n = Number(value);
+      if (!Number.isFinite(n) || n <= 0) return null;
+      if (unit === "g") return n * 1000;
+      return n;
+    }
+    const devices = [
+      ...[50,100,250,500].flatMap(v => [
+        {key:"poche", label:`Poche / pompe volumétrique NaCl 0,9 % ${v} mL`, volume:v, solvent:"nacl", modes:["continuous","discontinuous"]},
+        {key:"poche", label:`Poche / pompe volumétrique G5 ${v} mL`, volume:v, solvent:"g5", modes:["continuous","discontinuous"]}
+      ]),
+      {key:"pse", label:"PSE seringue PP 48 mL · NaCl 0,9 %", volume:48, solvent:"nacl", modes:["continuous","discontinuous"]},
+      {key:"pse", label:"PSE seringue PP 48 mL · G5", volume:48, solvent:"g5", modes:["continuous","discontinuous"]},
+      ...[100,150,250,500].flatMap(v => [
+        {key:"elastomere", label:`Diffuseur élastomère générique ${v} mL · NaCl 0,9 %`, volume:v, solvent:"nacl", modes:["continuous"]},
+        {key:"elastomere", label:`Diffuseur élastomère générique ${v} mL · G5`, volume:v, solvent:"g5", modes:["continuous"]}
+      ]),
+      {key:"micrel", label:"Pompe Rythmic / Micrel 100 mL · NaCl 0,9 %", volume:100, solvent:"nacl", source:"micrel", modes:["continuous"]},
+      {key:"micrel", label:"Pompe Rythmic / Micrel 100 mL · G5", volume:100, solvent:"g5", source:"micrel", modes:["continuous"]},
+      {key:"micrel", label:"Pompe Rythmic / Micrel 200 mL · NaCl 0,9 %", volume:200, solvent:"nacl", source:"micrel", modes:["continuous"]},
+      {key:"micrel", label:"Pompe Rythmic / Micrel 200 mL · G5", volume:200, solvent:"g5", source:"micrel", modes:["continuous"]},
+      {key:"elastomere", label:"NEOPUMP diffuseur 500 mL · NaCl 0,9 %", volume:500, solvent:"nacl", source:"neopump", forcedHours:12, modes:["continuous"]},
+      {key:"elastomere", label:"NEOPUMP diffuseur 500 mL · G5", volume:500, solvent:"g5", source:"neopump", forcedHours:12, modes:["continuous"]},
+      {key:"anapa", label:"ANAPA 250 mL · NaCl 0,9 %", volume:250, solvent:"nacl", source:"anapa", forcedHours:12, modes:["continuous"]},
+      {key:"anapa", label:"ANAPA 250 mL · G5", volume:250, solvent:"g5", source:"anapa", forcedHours:12, modes:["continuous"]}
+    ];
+
+    const sourceCatalog = [
+      { key: "chicas", label: "Doc interne CHICAS", patterns: ["doc interne", "chicas"] },
+      { key: "lyon_berard", label: "Recommandations Centre Léon Bérard / Lyon Bérard", patterns: ["centre leon berard", "centre léon bérard", "lyon berard", "lyon bérard", "had"] },
+      { key: "tourcoing", label: "Référentiel ATB Tourcoing", patterns: ["tourcoing"] },
+      { key: "spilf_sfpc", label: "Référentiel SPILF/SFPC", patterns: ["spilf", "sfpc", "splif"] },
+      { key: "anapa", label: "ANAPA – données laboratoire", patterns: ["anapa"] },
+      { key: "micrel", label: "Micrel/Rythmic – données laboratoire", patterns: ["micrel", "rythmic"] },
+      { key: "neopump", label: "NEOPUMP – données fabricant élastomère", patterns: ["neopump", "easyflow"] },
+      { key: "pubmed", label: "PubMed / littérature sélectionnée", patterns: ["pubmed", "litterature", "littérature"] },
+      { key: "interjurassienne", label: "Protocole Pharmacie Interjurassienne", patterns: ["interjurassienne"] }
+    ];
+    function sourceKeys(text) {
+      const t = norm(text || "");
+      return sourceCatalog.filter(item => item.patterns.some(p => t.includes(norm(p)))).map(item => item.key);
+    }
+    function selectedSources() {
+      const chipBox = document.getElementById("reverseSourceChips");
+      if (chipBox) {
+        const active = Array.from(chipBox.querySelectorAll(".source-chip-btn.active"))
+          .map(btn => btn.dataset.sourceKey)
+          .filter(Boolean);
+        if (active.length) return active;
+      }
+      const el = document.getElementById("reverseSourceFilter");
+      if (!el) return [];
+      return Array.from(el.selectedOptions || []).map(o => o.value).filter(Boolean);
+    }
+    function syncHiddenSourceSelect(keys) {
+      const el = document.getElementById("reverseSourceFilter");
+      if (!el) return;
+      const set = new Set(keys || []);
+      Array.from(el.options || []).forEach(opt => { opt.selected = set.has(opt.value); });
+      el.dispatchEvent(new Event("change", { bubbles: true }));
+    }
+    function matchSelectedSource(text) {
+      const selected = selectedSources();
+      if (!selected.length) return true;
+      const keys = sourceKeys(text);
+      return selected.some(key => keys.includes(key));
+    }
+    function displaySource(text) {
+      const keys = sourceKeys(text);
+      let labels = keys.length ? keys.map(k => (sourceCatalog.find(item => item.key === k) || {}).label || k) : [text || "Source non précisée"];
+      const selected = selectedSources();
+      if (selected.length) {
+        const selectedLabels = new Set(selected.map(k => (sourceCatalog.find(item => item.key === k) || {}).label || k));
+        labels = labels.filter(label => selectedLabels.has(label));
+        if (!labels.length) labels = keys.map(k => (sourceCatalog.find(item => item.key === k) || {}).label || k);
+      }
+      return labels.map(esc).join("<br>");
+    }
+    function initSourceFilter() {
+      const el = document.getElementById("reverseSourceFilter");
+      const chips = document.getElementById("reverseSourceChips");
+      if (el) {
+        el.innerHTML = sourceCatalog.map(item => `<option value="${esc(item.key)}">${esc(item.label)}</option>`).join("");
+      }
+      if (!chips) return;
+      chips.innerHTML = sourceCatalog.map(item => `<button type="button" class="source-chip-btn" data-source-key="${esc(item.key)}">${esc(item.label)}</button>`).join("");
+      const refresh = () => {
+        const keys = Array.from(chips.querySelectorAll(".source-chip-btn.active"))
+          .map(btn => btn.dataset.sourceKey)
+          .filter(Boolean);
+        syncHiddenSourceSelect(keys);
+        if (typeof renderReverseSafe === "function") renderReverseSafe();
+      };
+      chips.querySelectorAll(".source-chip-btn").forEach(btn => {
+        btn.addEventListener("click", () => {
+          btn.classList.toggle("active");
+          refresh();
+        });
+      });
+      const all = document.getElementById("reverseSourceAll");
+      const none = document.getElementById("reverseSourceNone");
+      if (all) all.addEventListener("click", () => {
+        chips.querySelectorAll(".source-chip-btn").forEach(btn => btn.classList.add("active"));
+        refresh();
+      });
+      if (none) none.addEventListener("click", () => {
+        chips.querySelectorAll(".source-chip-btn").forEach(btn => btn.classList.remove("active"));
+        refresh();
+      });
+    }
+    function solventLabel(s) { return s === "g5" ? "G5" : "NaCl 0,9 %"; }
+    function solventOK(text, solvent) {
+      const t = String(text || "").toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "");
+      const g5Bad = /(g5|glucose|dextrose).*?(incompatible|contre-indique|deconseille|non compatible)|(?:incompatible|contre-indique|deconseille|non compatible).*?(g5|glucose|dextrose)|only in nacl|uniquement en nacl|nacl uniquement en diffuseur/.test(t);
+      const naclBad = /(nacl|chlorure de sodium|sodium chloride).*?(incompatible|contre-indique|deconseille|non compatible)|(?:incompatible|contre-indique|deconseille|non compatible).*?(nacl|chlorure de sodium|sodium chloride)/.test(t);
+      if (solvent === "g5") return !g5Bad && (/\bg5\b|glucose|dextrose|d5w/.test(t));
+      if (solvent === "nacl") return !naclBad && (/nacl|chlorure de sodium|sodium chloride|0,9|0\.9/.test(t));
+      return true;
+    }
+    function concRules(text) {
+      const s = String(text || "").replace(/,/g,".");
+      const out = [];
+      let m;
+      const range = /(\d+(?:\.\d+)?)\s*[–-]\s*(\d+(?:\.\d+)?)\s*mg\s*\/\s*mL/gi;
+      while ((m = range.exec(s))) out.push({min:+m[1], max:+m[2], kind:"range"});
+      const max = /(?:max(?:imum)?|≤|<=|jusqu(?:’|'|’)à)\s*(\d+(?:\.\d+)?)\s*mg\s*\/\s*mL/gi;
+      while ((m = max.exec(s))) out.push({min:0, max:+m[1], kind:"max"});
+      const point = /(?:conc(?:entration)?(?:\s*(?:finale|pipéracilline|commerciale))?\s*)?(\d+(?:\.\d+)?)\s*mg\s*\/\s*mL/gi;
+      while ((m = point.exec(s))) {
+        const n = +m[1];
+        if (!out.some(r => Math.abs(r.min-n)<0.001 || Math.abs(r.max-n)<0.001)) out.push({min:n,max:n,kind:"point"});
+      }
+      return out;
+    }
+    function stabilityHours(text) {
+      const s = String(text || "").replace(/,/g,".");
+      const h = [];
+      let m;
+      const dayRange = /(\d+(?:\.\d+)?)\s*[–-]\s*(\d+(?:\.\d+)?)\s*j(?:our|ours)?\b/gi;
+      while ((m = dayRange.exec(s))) h.push(+m[2]*24);
+      const day = /(\d+(?:\.\d+)?)\s*j(?:our|ours)?\b/gi;
+      while ((m = day.exec(s))) h.push(+m[1]*24);
+      const hourRange = /(\d+(?:\.\d+)?)\s*[–-]\s*(\d+(?:\.\d+)?)\s*h\b/gi;
+      while ((m = hourRange.exec(s))) h.push(+m[2]);
+      const hour = /(\d+(?:\.\d+)?)\s*h\b/gi;
+      while ((m = hour.exec(s))) h.push(+m[1]);
+      return h.length ? Math.max(...h.filter(Number.isFinite)) : null;
+    }
+    function planFor(device, text, mode, freq) {
+      if (mode === "discontinuous") return {fraction:1/freq, label:`${freq} administration${freq>1?"s":""}/jour`, ok:true};
+      const stable = stabilityHours(text);
+      const forced = device.forcedHours || null;
+      if (forced) return {fraction:forced/24, label:`q${forced}h · ${Math.ceil(24/forced)} changements/jour`, ok:!stable || stable>=forced};
+      const interval = stable ? [24,12,8,6,4].find(x => stable >= x) : 24;
+      if (!interval) return {fraction:Math.max(stable || 0, 0)/24, label:`stabilité ${fr(stable)} h insuffisante`, ok:false};
+      return {fraction:interval/24, label:interval===24 ? "q24h · 1 changement/jour" : `q${interval}h · ${Math.ceil(24/interval)} changements/jour`, ok:true};
+    }
+    function assess(text, conc, planOk, solventOk) {
+      const t = String(text || "");
+      if (!t || t === "--") return {cls:"stop", label:"Aucune donnée", detail:"Aucune donnée pour ce contenant."};
+      if (!solventOk) return {cls:"stop", label:"Solvant non documenté", detail:"Le solvant demandé n’est pas documenté ou est déconseillé/incompatible."};
+      const rules = concRules(t);
+      if (!rules.length) return {cls:"warn", label:"À vérifier", detail:"Concentration non extractible automatiquement."};
+      let ok = rules.some(r => r.kind !== "point" && conc >= r.min-0.001 && conc <= r.max+0.001)
+        || rules.some(r => r.kind === "point" && Math.abs(conc-r.max) <= Math.max(0.5, r.max*0.05));
+      if (ok && planOk) return {cls:"ok", label:"Possible", detail:`${fr(conc)} mg/mL dans la plage extraite.`};
+      if (ok && !planOk) return {cls:"warn", label:"Stabilité insuffisante", detail:`${fr(conc)} mg/mL compatible, mais durée insuffisante.`};
+      return {cls:"stop", label:"Hors concentration", detail:`${fr(conc)} mg/mL hors concentrations extraites.`};
+    }
+    function excerpt(text) {
+      return String(text || "--").split(";").map(x=>x.trim()).filter(Boolean).slice(0,4).join(" ; ") || "--";
+    }
+
+    function doseLineMatches(text, dailyMg) {
+      const raw = String(text || "");
+      const m = raw.match(/dose journali[eè]re\s+([^;]+?)\/24\s*h/i);
+      if (!m) return true;
+      const expr = m[1].replace(",", ".").trim();
+      if (/mg\s*\/\s*kg/i.test(expr)) return true;
+      const usesMui = /m\s*iu|mui|mUI/i.test(expr);
+      const doseValue = usesMui ? dailyMg : dailyMg / 1000;
+      let r = expr.match(/[≤<=]+\s*(\d+(?:\.\d+)?)/);
+      if (r) return doseValue <= Number(r[1]) + 0.001;
+      r = expr.match(/>\s*(\d+(?:\.\d+)?)/);
+      if (r) return doseValue > Number(r[1]) - 0.001;
+      r = expr.match(/(\d+(?:\.\d+)?)\s*(?:to|à|-|–)\s*(\d+(?:\.\d+)?)/i);
+      if (r) return doseValue > Number(r[1]) - 0.001 && doseValue <= Number(r[2]) + 0.001;
+      r = expr.match(/(\d+(?:\.\d+)?)/);
+      if (!r) return true;
+      return Math.abs(doseValue - Number(r[1])) <= Math.max(0.01, Number(r[1]) * 0.02);
+    }
+
+    function renderReverseSafe() {
+      const rows = getRows();
+      const out = document.getElementById("reverseResults");
+      const pill = document.getElementById("reverseCountPill");
+      const molEl = document.getElementById("reverseMolecule");
+      const doseEl = document.getElementById("reverseDose");
+      const unitEl = document.getElementById("reverseUnit");
+      const modeEl = document.getElementById("reverseAdminMode");
+      const freqEl = document.getElementById("reverseFreq");
+      if (!out || !pill || !molEl || !doseEl || !unitEl || !modeEl || !freqEl) return;
+      const molecule = findMolecule(molEl.value);
+      const daily = doseMg(doseEl.value, unitEl.value);
+      const mode = modeEl.value || "continuous";
+      const freq = Math.max(1, Number(freqEl.value) || 1);
+      if (!molecule || !daily) {
+        pill.textContent = "0 option";
+        out.innerHTML = '<div class="no-result">Renseigner une molécule de la base et une dose journalière pour lancer le moteur inversé.</div>';
+        return;
+      }
+      const sources = rows.filter(x => norm(x.molecule) === norm(molecule) && matchSelectedSource(x.source));
+      const statusRank = cls => cls === "ok" ? 0 : (cls === "warn" || cls === "stop") ? 1 : 2;
+      const statusLabel = a => a.cls === "ok" ? "Conforme" : (a.cls === "warn" ? "Non conforme / à vérifier" : "Non conforme");
+      let possible = 0;
+      const cardObjects = devices.filter(d => !d.modes || d.modes.includes(mode)).map(d => {
+        const sourceRows = sources.filter(s => !d.source || norm(s.source || "").includes(d.source));
+        const lineObjects = sourceRows.map(s => ({s, value:s[d.key]}))
+          .filter(x => x.value && x.value !== "--" && doseLineMatches(x.value, daily))
+          .map(x => {
+            const p = planFor(d, x.value, mode, freq);
+            const dose = daily * p.fraction;
+            const conc = dose / d.volume;
+            const a = assess(x.value, conc, p.ok, solventOK(x.value, d.solvent));
+            if (a.cls === "ok") possible++;
+            return {
+              rank: statusRank(a.cls),
+              cls: a.cls,
+              html: `<tr><td class="reverse-${a.cls}">${esc(statusLabel(a))}<br><span class="reverse-source">${esc(a.label)}</span></td><td>${fr(dose)} mg / ${d.volume} mL<br><span class="reverse-source">${fr(conc)} mg/mL · ${esc(solventLabel(d.solvent))}</span></td><td>${esc(p.label)}<br><span class="reverse-source">${esc(a.detail)}</span></td><td>${esc(excerpt(x.value))}</td><td>${displaySource(x.s.source || "")}</td></tr>`
+            };
+          })
+          .sort((a,b) => a.rank - b.rank);
+        const cardRank = lineObjects.length ? Math.min(...lineObjects.map(x => x.rank)) : 2;
+        const badge = cardRank === 0 ? '<span class="badge ok">Conforme</span>' : cardRank === 1 ? '<span class="badge warn">Non conforme / à vérifier</span>' : '<span class="badge stop">NA</span>';
+        const doseLine = mode === "discontinuous" ? `dose par administration ${fr(daily/freq)} mg · ${freq} fois/jour` : `dose journalière ${fr(daily)} mg · calcul par contenant selon renouvellement`;
+        const bodyRows = lineObjects.length ? lineObjects.map(x => x.html).join("") : '<tr><td colspan="5" class="empty">NA — aucune donnée intégrée pour ce dispositif/source.</td></tr>';
+        return {
+          rank: cardRank,
+          html: `<article class="reverse-card"><div class="reverse-card-head"><div><h3>${esc(d.label)}</h3><div class="source">Volume ${d.volume} mL · solvant ${esc(solventLabel(d.solvent))} · ${doseLine}</div></div><div>${badge}</div></div><div class="reverse-card-body"><table class="reverse-table"><thead><tr><th>Conclusion</th><th>Dose / concentration</th><th>Schéma proposé</th><th>Stabilité / condition</th><th>Source</th></tr></thead><tbody>${bodyRows}</tbody></table></div></article>`
+        };
+      }).sort((a,b) => a.rank - b.rank);
+      const cards = cardObjects.map(c => c.html).join("");
+      pill.textContent = `${possible} option${possible>1?"s":""} conforme${possible>1?"s":""}`;
+      out.innerHTML = cards || '<div class="no-result">Aucun dispositif applicable à ce mode.</div>';
+    }
+    function initReverseSafe() {
+      const list = document.getElementById("reverseMoleculeList");
+      initSourceFilter();
+      if (list) {
+        const names = [...new Set(getRows().map(d => d.molecule).filter(Boolean))].sort((a,b)=>a.localeCompare(b,"fr"));
+        list.innerHTML = names.map(n => `<option value="${esc(n)}"></option>`).join("");
+      }
+      const modeEl = document.getElementById("reverseAdminMode");
+      const freqWrap = document.getElementById("reverseFreqWrap");
+      function syncFreq() {
+        if (modeEl && freqWrap) freqWrap.classList.toggle("reverse-hidden", modeEl.value !== "discontinuous");
+      }
+      ["reverseMolecule","reverseDose","reverseUnit","reverseAdminMode","reverseFreq","reverseRcp","reverseSourceFilter"].forEach(id => {
+        const el = document.getElementById(id);
+        if (!el) return;
+        ["input","change","keyup"].forEach(evt => el.addEventListener(evt, () => { syncFreq(); renderReverseSafe(); }));
+      });
+      const run = document.getElementById("reverseRun");
+      if (run) run.addEventListener("click", renderReverseSafe);
+      document.querySelectorAll(".tab-button").forEach(btn => {
+        btn.addEventListener("click", () => {
+          const tabId = btn.dataset.tab;
+          document.querySelectorAll(".tab-button").forEach(b => b.classList.toggle("active", b.dataset.tab === tabId));
+          document.querySelectorAll(".tab-panel").forEach(p => p.classList.toggle("active", p.id === tabId));
+          if (tabId === "reverseTab") renderReverseSafe();
+        });
+      });
+      syncFreq();
+      renderReverseSafe();
+      window.renderReverseSafe = renderReverseSafe;
+      window.initReverseSafe = initReverseSafe;
+    }
+    if (document.readyState === "loading") document.addEventListener("DOMContentLoaded", initReverseSafe);
+    else initReverseSafe();
+  })();
+  </script>
+
 </body>
 </html>
