@@ -1120,7 +1120,7 @@
     <section id="reverseTab" class="tab-panel">
       <section class="panel">
         <p class="reverse-intro">
-          Moteur inversé : sélectionner un anti-infectieux, une dose journalière et le mode d’administration, puis vérifier les dilutions théoriquement possibles selon les données de stabilité intégrées. Les volumes imposés sont préparamétrés avec solvant séparé : poches NaCl 0,9 % ou G5 50/100/250/500 mL, poches sur pompe volumétrique NaCl 0,9 % ou G5 50/100/250/500 mL en continu, PSE 48 mL NaCl 0,9 % ou G5 en continu uniquement avec changement q24h/q12h/q8h/q6h, pompe Rythmic/Micrel 100/200 mL NaCl 0,9 % ou G5 en continu uniquement, NEOPUMP 500 mL sur 12 h NaCl 0,9 % ou G5 et ANAPA 250 mL sur 12 h NaCl 0,9 % ou G5. En mode discontinu, seules les poches simples sont proposées.
+          Moteur inversé : sélectionner un anti-infectieux, une dose journalière et le mode d’administration, puis vérifier les dilutions théoriquement possibles selon les données de stabilité intégrées. Les volumes imposés sont préparamétrés avec solvant séparé : poches NaCl 0,9 % ou G5 50/100/250/500 mL, poches sur pompe volumétrique NaCl 0,9 % ou G5 50/100/250/500 mL en continu, PSE 48 mL NaCl 0,9 % ou G5 en continu uniquement avec changement q24h/q12h/q8h/q6h, pompe Rythmic/Micrel 100/200 mL NaCl 0,9 % ou G5 en continu uniquement, NEOPUMP 500 mL sur 12 h NaCl 0,9 % ou G5 et ANAPA 250 mL sur 12 h NaCl 0,9 % ou G5. En mode continu, les PSE 48 mL et le PSE HAD 24 mL sont proposés avec changement q24h/q12h/q8h/q6h ; le PSE HAD 24 mL réutilise les données de stabilité PSE 48 mL mais calcule la concentration sur 24 mL. En mode discontinu, seules les poches simples sont proposées.
         </p>
         <div class="reverse-grid">
           <div>
@@ -2030,8 +2030,10 @@ let data = [];
         { key: "poche", label: `Poche G5 ${volume} mL`, labelContinuous: `Poche sur pompe volumétrique · G5 ${volume} mL`, labelDiscontinuous: `Poche G5 ${volume} mL`, volume, solvent: "g5", sourceFilter: null, forcedTime: "Continu en pompe volumétrique / discontinu en poche", modes: ["continuous", "discontinuous"] }
       ]),
       ...[24, 12, 8, 6].flatMap(hours => [
-        { key: "pse", label: `PSE seringue PP 48 mL · NaCl 0,9 % · q${hours}h`, volume: 48, solvent: "nacl", sourceFilter: null, forcedTime: `${hours} h par PSE`, forcedHours: hours, modes: ["continuous"] },
-        { key: "pse", label: `PSE seringue PP 48 mL · G5 · q${hours}h`, volume: 48, solvent: "g5", sourceFilter: null, forcedTime: `${hours} h par PSE`, forcedHours: hours, modes: ["continuous"] }
+        { key: "pse", label: `PSE seringue PP 48 mL · NaCl 0,9 % · q${hours}h`, volume: 48, solvent: "nacl", sourceFilter: null, forcedTime: `${hours} h par PSE 48 mL`, forcedHours: hours, modes: ["continuous"] },
+        { key: "pse", label: `PSE seringue PP 48 mL · G5 · q${hours}h`, volume: 48, solvent: "g5", sourceFilter: null, forcedTime: `${hours} h par PSE 48 mL`, forcedHours: hours, modes: ["continuous"] },
+        { key: "pse", label: `PSE HAD seringue PP 24 mL · NaCl 0,9 % · q${hours}h`, volume: 24, solvent: "nacl", sourceFilter: null, forcedTime: `${hours} h par PSE HAD 24 mL · stabilité PSE appliquée, concentration calculée sur 24 mL`, forcedHours: hours, modes: ["continuous"] },
+        { key: "pse", label: `PSE HAD seringue PP 24 mL · G5 · q${hours}h`, volume: 24, solvent: "g5", sourceFilter: null, forcedTime: `${hours} h par PSE HAD 24 mL · stabilité PSE appliquée, concentration calculée sur 24 mL`, forcedHours: hours, modes: ["continuous"] }
       ]),
       ...[100, 150, 250, 500].flatMap(volume => [
         { key: "elastomere", label: `Diffuseur élastomère générique ${volume} mL · NaCl 0,9 %`, volume, solvent: "nacl", sourceFilter: null, forcedTime: "Continu fractionnable selon stabilité", modes: ["continuous"] },
@@ -2328,18 +2330,40 @@ let data = [];
         ? `Dose par administration ${formatNumber(calculatedDose)} mg · ${discontinuousFreq} fois/jour${rcpLine}`
         : `Dose journalière ${formatNumber(dailyDoseMg)} mg · calcul par contenant selon renouvellement${rcpLine}`;
 
-      const cardObjects = devices.map(device => {
+      function reverseDisplayGroup(device) {
+        const label = reverseDeviceLabel(device, adminMode).toLowerCase();
+        if (device.key === "poche") return `poche-${adminMode}-${device.solvent}`;
+        if (device.key === "pse" && device.volume === 48) return `pse48-${device.solvent}`;
+        if (device.key === "pse" && device.volume === 24) return `pse24had-${device.solvent}`;
+        if (device.key === "micrel") return `micrel-${device.solvent}`;
+        if (label.includes("neopump")) return `neopump-${device.solvent}`;
+        if (device.key === "anapa") return `anapa-${device.solvent}`;
+        if (device.key === "elastomere") return `elastomere-${device.volume}-${device.solvent}`;
+        return `${device.key}-${device.volume}-${device.solvent}`;
+      }
+
+      function reverseDisplayPriority(device) {
+        // Poche : proposer en premier le plus petit volume compatible par solvant.
+        if (device.key === "poche") return device.volume;
+        // PSE continu : proposer en premier celui qui nécessite le moins de changements.
+        if (device.key === "pse" && device.volume === 48) return -(device.forcedHours || 0);
+        // PSE HAD 24 mL continu : proposer en premier celui qui nécessite le moins de changements.
+        if (device.key === "pse" && device.volume === 24) return -(device.forcedHours || 0);
+        return 0;
+      }
+
+      const cardObjects = devices.map((device, index) => {
         const rows = reverseRowsForDevice(sources, device, dailyDoseMg, adminMode, discontinuousFreq);
         const positiveRows = rows.filter(r => r.assessment.status === "ok");
         const hiddenRows = rows.filter(r => r.assessment.status !== "ok");
         const status = reverseCardStatus(rows);
         const bestBadge = status === "ok" ? '<span class="badge ok">Possible</span>' : status === "warn" ? '<span class="badge warn">À vérifier</span>' : '<span class="badge stop">Non documenté</span>';
         const displayLabel = reverseDeviceLabel(device, adminMode);
-        const renderCard = (rowsToRender, forceHiddenBadge = false) => `
+        const renderCard = (rowsToRender, forceHiddenBadge = false, extraBadge = "") => `
           <article class="reverse-card">
             <div class="reverse-card-head">
               <div><h3>${escapeHtml(displayLabel)}</h3><div class="source">Volume ${device.volume} mL · solvant ${escapeHtml(solventLabel(device.solvent))} · ${doseLine}</div></div>
-              <div>${forceHiddenBadge ? bestBadge : '<span class="badge ok">Possible</span>'}</div>
+              <div>${extraBadge}${forceHiddenBadge ? bestBadge : '<span class="badge ok">Possible</span>'}</div>
             </div>
             <div class="reverse-card-body">
               <table class="reverse-table">
@@ -2350,24 +2374,47 @@ let data = [];
           </article>
         `;
         return {
+          index,
+          device,
+          group: reverseDisplayGroup(device),
+          priority: reverseDisplayPriority(device),
           status,
           positiveCount: positiveRows.length,
           hiddenCount: hiddenRows.length,
           positiveHtml: positiveRows.length ? renderCard(positiveRows, false) : "",
+          otherPositiveHtml: positiveRows.length ? renderCard(positiveRows, false, '<span class="badge lab">Autre possibilité</span> ') : "",
           hiddenHtml: hiddenRows.length || !positiveRows.length ? renderCard(hiddenRows, true) : ""
         };
       });
 
-      const possible = cardObjects.reduce((sum, card) => sum + card.positiveCount, 0);
-      const hiddenCount = cardObjects.reduce((sum, card) => sum + card.hiddenCount + (card.positiveCount ? 0 : 1), 0);
-      const positiveHtml = cardObjects.map(card => card.positiveHtml).filter(Boolean).join("");
-      const hiddenHtml = cardObjects.map(card => card.hiddenHtml).filter(Boolean).join("");
+      const chosenByGroup = new Map();
+      cardObjects
+        .filter(card => card.positiveCount > 0)
+        .forEach(card => {
+          const previous = chosenByGroup.get(card.group);
+          if (!previous || card.priority < previous.priority || (card.priority === previous.priority && card.index < previous.index)) {
+            chosenByGroup.set(card.group, card);
+          }
+        });
 
-      reverseCountPill.textContent = `${possible} option${possible > 1 ? "s" : ""} possible${possible > 1 ? "s" : ""}`;
+      const selectedCards = [...chosenByGroup.values()].sort((a, b) => a.index - b.index);
+      const selectedIndexes = new Set(selectedCards.map(card => card.index));
+      const otherPositiveCards = cardObjects.filter(card => card.positiveCount > 0 && !selectedIndexes.has(card.index));
+      const nonPositiveCards = cardObjects.filter(card => card.hiddenHtml);
+
+      const possible = cardObjects.reduce((sum, card) => sum + card.positiveCount, 0);
+      const shownPossible = selectedCards.reduce((sum, card) => sum + card.positiveCount, 0);
+      const hiddenPositive = otherPositiveCards.reduce((sum, card) => sum + card.positiveCount, 0);
+      const positiveHtml = selectedCards.map(card => card.positiveHtml).filter(Boolean).join("");
+      const otherPositiveHtml = otherPositiveCards.map(card => card.otherPositiveHtml).filter(Boolean).join("");
+      const hiddenHtml = nonPositiveCards.map(card => card.hiddenHtml).filter(Boolean).join("");
+      const auditHtml = [otherPositiveHtml, hiddenHtml].filter(Boolean).join("");
+
+      reverseCountPill.textContent = `${shownPossible} option${shownPossible > 1 ? "s" : ""} simple${shownPossible > 1 ? "s" : ""} affichée${shownPossible > 1 ? "s" : ""} · ${possible} possible${possible > 1 ? "s" : ""} au total`;
       const intro = positiveHtml || `<div class="no-result">Aucune option conforme retrouvée avec les paramètres saisis. Les options non retenues peuvent être affichées pour audit.</div>`;
-      const hiddenBlock = hiddenHtml
-        ? `<button id="reverseHiddenToggle" type="button" class="reverse-hidden-toggle">Afficher les options non retenues / à vérifier</button>
-           <div id="reverseHiddenOptions" class="reverse-hidden-options reverse-hidden">${hiddenHtml}</div>`
+      const hiddenBlock = auditHtml
+        ? `<button id="reverseHiddenToggle" type="button" class="reverse-hidden-toggle">Afficher les autres possibilités / options non retenues</button>
+           <div id="reverseHiddenOptions" class="reverse-hidden-options reverse-hidden">${auditHtml}</div>`
         : "";
       reverseResultsEl.innerHTML = intro + hiddenBlock;
       bindReverseHiddenToggle();
