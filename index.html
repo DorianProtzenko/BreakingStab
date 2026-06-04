@@ -1120,7 +1120,7 @@
     <section id="reverseTab" class="tab-panel">
       <section class="panel">
         <p class="reverse-intro">
-          Moteur inversé : sélectionner un anti-infectieux, une dose journalière et le mode d’administration, puis vérifier les dilutions théoriquement possibles selon les données de stabilité intégrées. Les volumes imposés sont préparamétrés avec solvant séparé : poches NaCl 0,9 % ou G5 50/100/250/500 mL, PSE 48 mL NaCl 0,9 % ou G5, pompe Rythmic/Micrel 100/200 mL NaCl 0,9 % ou G5, NEOPUMP 500 mL sur 12 h NaCl 0,9 % ou G5 et ANAPA 250 mL sur 12 h NaCl 0,9 % ou G5.
+          Moteur inversé : sélectionner un anti-infectieux, une dose journalière et le mode d’administration, puis vérifier les dilutions théoriquement possibles selon les données de stabilité intégrées. Les volumes imposés sont préparamétrés avec solvant séparé : poches NaCl 0,9 % ou G5 50/100/250/500 mL, poches sur pompe volumétrique NaCl 0,9 % ou G5 50/100/250/500 mL en continu, PSE 48 mL NaCl 0,9 % ou G5 en continu uniquement avec changement q24h/q12h/q8h/q6h, pompe Rythmic/Micrel 100/200 mL NaCl 0,9 % ou G5 en continu uniquement, NEOPUMP 500 mL sur 12 h NaCl 0,9 % ou G5 et ANAPA 250 mL sur 12 h NaCl 0,9 % ou G5. En mode discontinu, seules les poches simples sont proposées.
         </p>
         <div class="reverse-grid">
           <div>
@@ -2026,15 +2026,13 @@ let data = [];
 
     const reverseDevices = [
       ...[50, 100, 250, 500].flatMap(volume => [
-        { key: "poche", label: `Poche / pompe volumétrique NaCl 0,9 % ${volume} mL`, volume, solvent: "nacl", sourceFilter: null, forcedTime: "Continu/discontinu selon stabilité", modes: ["continuous", "discontinuous"] },
-        { key: "poche", label: `Poche / pompe volumétrique G5 ${volume} mL`, volume, solvent: "g5", sourceFilter: null, forcedTime: "Continu/discontinu selon stabilité", modes: ["continuous", "discontinuous"] }
+        { key: "poche", label: `Poche NaCl 0,9 % ${volume} mL`, labelContinuous: `Poche sur pompe volumétrique · NaCl 0,9 % ${volume} mL`, labelDiscontinuous: `Poche NaCl 0,9 % ${volume} mL`, volume, solvent: "nacl", sourceFilter: null, forcedTime: "Continu en pompe volumétrique / discontinu en poche", modes: ["continuous", "discontinuous"] },
+        { key: "poche", label: `Poche G5 ${volume} mL`, labelContinuous: `Poche sur pompe volumétrique · G5 ${volume} mL`, labelDiscontinuous: `Poche G5 ${volume} mL`, volume, solvent: "g5", sourceFilter: null, forcedTime: "Continu en pompe volumétrique / discontinu en poche", modes: ["continuous", "discontinuous"] }
       ]),
       ...[24, 12, 8, 6].flatMap(hours => [
         { key: "pse", label: `PSE seringue PP 48 mL · NaCl 0,9 % · q${hours}h`, volume: 48, solvent: "nacl", sourceFilter: null, forcedTime: `${hours} h par PSE`, forcedHours: hours, modes: ["continuous"] },
         { key: "pse", label: `PSE seringue PP 48 mL · G5 · q${hours}h`, volume: 48, solvent: "g5", sourceFilter: null, forcedTime: `${hours} h par PSE`, forcedHours: hours, modes: ["continuous"] }
       ]),
-      { key: "pse", label: "PSE seringue PP 48 mL · NaCl 0,9 %", volume: 48, solvent: "nacl", sourceFilter: null, forcedTime: "Discontinu selon fréquence", modes: ["discontinuous"] },
-      { key: "pse", label: "PSE seringue PP 48 mL · G5", volume: 48, solvent: "g5", sourceFilter: null, forcedTime: "Discontinu selon fréquence", modes: ["discontinuous"] },
       ...[100, 150, 250, 500].flatMap(volume => [
         { key: "elastomere", label: `Diffuseur élastomère générique ${volume} mL · NaCl 0,9 %`, volume, solvent: "nacl", sourceFilter: null, forcedTime: "Continu fractionnable selon stabilité", modes: ["continuous"] },
         { key: "elastomere", label: `Diffuseur élastomère générique ${volume} mL · G5`, volume, solvent: "g5", sourceFilter: null, forcedTime: "Continu fractionnable selon stabilité", modes: ["continuous"] }
@@ -2272,6 +2270,41 @@ let data = [];
         });
     }
 
+    function reverseDeviceLabel(device, adminMode) {
+      if (adminMode === "continuous" && device.labelContinuous) return device.labelContinuous;
+      if (adminMode === "discontinuous" && device.labelDiscontinuous) return device.labelDiscontinuous;
+      return device.label;
+    }
+
+    function reverseCardStatus(rows) {
+      const okCount = rows.filter(r => r.assessment.status === "ok").length;
+      const warnCount = rows.filter(r => r.assessment.status === "warn").length;
+      return okCount ? "ok" : warnCount ? "warn" : "stop";
+    }
+
+    function reverseRowsHtml(rows, device, adminMode) {
+      if (!rows.length) return `<tr><td colspan="5" class="empty">Aucune donnée intégrée pour ce dispositif/source.</td></tr>`;
+      return rows.map(r => `
+          <tr>
+            <td class="reverse-${r.assessment.status}">${escapeHtml(r.assessment.label)}</td>
+            <td>${formatNumber(r.doseForContainer)} mg / ${device.volume} mL<br><span class="reverse-source">${formatNumber(r.conc)} mg/mL · ${escapeHtml(solventLabel(device.solvent))}</span></td>
+            <td>${escapeHtml(r.plan.label)}<br><span class="reverse-source">${escapeHtml(r.assessment.detail)}</span></td>
+            <td>${escapeHtml(stabilityExcerpt(r.value))}</td>
+            <td>${reverseDisplaySource(r.source.source)}<br><span class="reverse-source">${escapeHtml(r.conf.label)} · ${escapeHtml(device.forcedTime)}</span></td>
+          </tr>
+        `).join("");
+    }
+
+    function bindReverseHiddenToggle() {
+      const btn = document.getElementById("reverseHiddenToggle");
+      const hidden = document.getElementById("reverseHiddenOptions");
+      if (!btn || !hidden) return;
+      btn.addEventListener("click", () => {
+        const isHidden = hidden.classList.toggle("reverse-hidden");
+        btn.textContent = isHidden ? "Afficher les options non retenues / à vérifier" : "Masquer les options non retenues / à vérifier";
+      });
+    }
+
     function renderReverse() {
       const molecule = findReverseMolecule(reverseMoleculeEl.value);
       const dailyDoseMg = doseToMg(reverseDoseEl.value, reverseUnitEl.value);
@@ -2287,45 +2320,57 @@ let data = [];
 
       const sources = data.filter(d => d.molecule === molecule && reverseSourceMatchesSelection(d.source));
       const devices = reverseDevices.filter(device => !device.modes || device.modes.includes(adminMode));
-      const cards = devices.map(device => {
+      const calculatedDose = adminMode === "discontinuous" ? dailyDoseMg / discontinuousFreq : null;
+      const rcpLine = rcpRec
+        ? `<br><span class="reverse-source">Fractionnement RCP indicatif : ${escapeHtml(rcpRec.label)} · ${escapeHtml(rcpRec.source)}</span>`
+        : (reverseRcpEl && reverseRcpEl.checked ? `<br><span class="reverse-source">Fractionnement RCP : aucune recommandation intégrée pour cette molécule.</span>` : "");
+      const doseLine = adminMode === "discontinuous"
+        ? `Dose par administration ${formatNumber(calculatedDose)} mg · ${discontinuousFreq} fois/jour${rcpLine}`
+        : `Dose journalière ${formatNumber(dailyDoseMg)} mg · calcul par contenant selon renouvellement${rcpLine}`;
+
+      const cardObjects = devices.map(device => {
         const rows = reverseRowsForDevice(sources, device, dailyDoseMg, adminMode, discontinuousFreq);
-        const okCount = rows.filter(r => r.assessment.status === "ok").length;
-        const warnCount = rows.filter(r => r.assessment.status === "warn").length;
-        const bestBadge = okCount ? '<span class="badge ok">Possible</span>' : warnCount ? '<span class="badge warn">À vérifier</span>' : '<span class="badge stop">Non documenté</span>';
-        const calculatedDose = adminMode === "discontinuous" ? dailyDoseMg / discontinuousFreq : null;
-        const rowHtml = rows.length ? rows.map(r => `
-          <tr>
-            <td class="reverse-${r.assessment.status}">${escapeHtml(r.assessment.label)}</td>
-            <td>${formatNumber(r.doseForContainer)} mg / ${device.volume} mL<br><span class="reverse-source">${formatNumber(r.conc)} mg/mL · ${escapeHtml(solventLabel(device.solvent))}</span></td>
-            <td>${escapeHtml(r.plan.label)}<br><span class="reverse-source">${escapeHtml(r.assessment.detail)}</span></td>
-            <td>${escapeHtml(stabilityExcerpt(r.value))}</td>
-            <td>${reverseDisplaySource(r.source.source)}<br><span class="reverse-source">${escapeHtml(r.conf.label)} · ${escapeHtml(device.forcedTime)}</span></td>
-          </tr>
-        `).join("") : `<tr><td colspan="5" class="empty">Aucune donnée intégrée pour ce dispositif/source.</td></tr>`;
-        const rcpLine = rcpRec
-          ? `<br><span class="reverse-source">Fractionnement RCP indicatif : ${escapeHtml(rcpRec.label)} · ${escapeHtml(rcpRec.source)}</span>`
-          : (reverseRcpEl && reverseRcpEl.checked ? `<br><span class="reverse-source">Fractionnement RCP : aucune recommandation intégrée pour cette molécule.</span>` : "");
-        const doseLine = adminMode === "discontinuous"
-          ? `Dose par administration ${formatNumber(calculatedDose)} mg · ${discontinuousFreq} fois/jour${rcpLine}`
-          : `Dose journalière ${formatNumber(dailyDoseMg)} mg · calcul par contenant selon renouvellement${rcpLine}`;
-        return `
+        const positiveRows = rows.filter(r => r.assessment.status === "ok");
+        const hiddenRows = rows.filter(r => r.assessment.status !== "ok");
+        const status = reverseCardStatus(rows);
+        const bestBadge = status === "ok" ? '<span class="badge ok">Possible</span>' : status === "warn" ? '<span class="badge warn">À vérifier</span>' : '<span class="badge stop">Non documenté</span>';
+        const displayLabel = reverseDeviceLabel(device, adminMode);
+        const renderCard = (rowsToRender, forceHiddenBadge = false) => `
           <article class="reverse-card">
             <div class="reverse-card-head">
-              <div><h3>${escapeHtml(device.label)}</h3><div class="source">Volume ${device.volume} mL · solvant ${escapeHtml(solventLabel(device.solvent))} · ${doseLine}</div></div>
-              <div>${bestBadge}</div>
+              <div><h3>${escapeHtml(displayLabel)}</h3><div class="source">Volume ${device.volume} mL · solvant ${escapeHtml(solventLabel(device.solvent))} · ${doseLine}</div></div>
+              <div>${forceHiddenBadge ? bestBadge : '<span class="badge ok">Possible</span>'}</div>
             </div>
             <div class="reverse-card-body">
               <table class="reverse-table">
                 <thead><tr><th>Conclusion</th><th>Dose / concentration</th><th>Schéma proposé</th><th>Stabilité / condition</th><th>Source / preuve</th></tr></thead>
-                <tbody>${rowHtml}</tbody>
+                <tbody>${reverseRowsHtml(rowsToRender, device, adminMode)}</tbody>
               </table>
             </div>
           </article>
         `;
-      }).join("");
-      const possible = (cards.match(/badge ok/g) || []).length;
+        return {
+          status,
+          positiveCount: positiveRows.length,
+          hiddenCount: hiddenRows.length,
+          positiveHtml: positiveRows.length ? renderCard(positiveRows, false) : "",
+          hiddenHtml: hiddenRows.length || !positiveRows.length ? renderCard(hiddenRows, true) : ""
+        };
+      });
+
+      const possible = cardObjects.reduce((sum, card) => sum + card.positiveCount, 0);
+      const hiddenCount = cardObjects.reduce((sum, card) => sum + card.hiddenCount + (card.positiveCount ? 0 : 1), 0);
+      const positiveHtml = cardObjects.map(card => card.positiveHtml).filter(Boolean).join("");
+      const hiddenHtml = cardObjects.map(card => card.hiddenHtml).filter(Boolean).join("");
+
       reverseCountPill.textContent = `${possible} option${possible > 1 ? "s" : ""} possible${possible > 1 ? "s" : ""}`;
-      reverseResultsEl.innerHTML = cards;
+      const intro = positiveHtml || `<div class="no-result">Aucune option conforme retrouvée avec les paramètres saisis. Les options non retenues peuvent être affichées pour audit.</div>`;
+      const hiddenBlock = hiddenHtml
+        ? `<button id="reverseHiddenToggle" type="button" class="reverse-hidden-toggle">Afficher les options non retenues / à vérifier</button>
+           <div id="reverseHiddenOptions" class="reverse-hidden-options reverse-hidden">${hiddenHtml}</div>`
+        : "";
+      reverseResultsEl.innerHTML = intro + hiddenBlock;
+      bindReverseHiddenToggle();
     }
 
     function updateReverseModeUI() {
@@ -2510,15 +2555,13 @@ let data = [];
     }
     const devices = [
       ...[50,100,250,500].flatMap(v => [
-        {key:"poche", label:`Poche / pompe volumétrique NaCl 0,9 % ${v} mL`, volume:v, solvent:"nacl", modes:["continuous","discontinuous"]},
-        {key:"poche", label:`Poche / pompe volumétrique G5 ${v} mL`, volume:v, solvent:"g5", modes:["continuous","discontinuous"]}
+        {key:"poche", label:`Poche NaCl 0,9 % ${v} mL`, volume:v, solvent:"nacl", modes:["continuous","discontinuous"]},
+        {key:"poche", label:`Poche G5 ${v} mL`, volume:v, solvent:"g5", modes:["continuous","discontinuous"]}
       ]),
       ...[24,12,8,6].flatMap(h => [
         {key:"pse", label:`PSE seringue PP 48 mL · NaCl 0,9 % · q${h}h`, volume:48, solvent:"nacl", forcedHours:h, modes:["continuous"]},
         {key:"pse", label:`PSE seringue PP 48 mL · G5 · q${h}h`, volume:48, solvent:"g5", forcedHours:h, modes:["continuous"]}
       ]),
-      {key:"pse", label:"PSE seringue PP 48 mL · NaCl 0,9 %", volume:48, solvent:"nacl", modes:["discontinuous"]},
-      {key:"pse", label:"PSE seringue PP 48 mL · G5", volume:48, solvent:"g5", modes:["discontinuous"]},
       ...[100,150,250,500].flatMap(v => [
         {key:"elastomere", label:`Diffuseur élastomère générique ${v} mL · NaCl 0,9 %`, volume:v, solvent:"nacl", modes:["continuous"]},
         {key:"elastomere", label:`Diffuseur élastomère générique ${v} mL · G5`, volume:v, solvent:"g5", modes:["continuous"]}
