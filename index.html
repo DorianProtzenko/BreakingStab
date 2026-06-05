@@ -1302,6 +1302,9 @@ let data = [];
     const reverseResultsEl = document.getElementById("reverseResults");
     const reverseCountPill = document.getElementById("reverseCountPill");
     const reverseSourceFilterEl = document.getElementById("reverseSourceFilter");
+    const reverseSourceChipsEl = document.getElementById("reverseSourceChips");
+    const reverseSourceAllEl = document.getElementById("reverseSourceAll");
+    const reverseSourceNoneEl = document.getElementById("reverseSourceNone");
 
     function normalize(text) {
       return (text || "")
@@ -1973,11 +1976,38 @@ let data = [];
       return (filtered.length ? filtered : labels).join("<br>");
     }
 
+    function refreshReverseSourceChips() {
+      if (!reverseSourceChipsEl || !reverseSourceFilterEl) return;
+      const selected = new Set(selectedReverseSourceKeys());
+      reverseSourceChipsEl.querySelectorAll(".source-chip-btn").forEach(btn => {
+        const active = selected.has(btn.dataset.sourceKey);
+        btn.classList.toggle("active", active);
+        btn.setAttribute("aria-pressed", active ? "true" : "false");
+      });
+    }
+
+    function setReverseSourceSelection(keys) {
+      if (!reverseSourceFilterEl) return;
+      const wanted = new Set(keys || []);
+      Array.from(reverseSourceFilterEl.options || []).forEach(option => {
+        option.selected = wanted.has(option.value);
+      });
+      refreshReverseSourceChips();
+      renderReverse();
+    }
+
     function initReverseSourceFilter() {
       if (!reverseSourceFilterEl) return;
       reverseSourceFilterEl.innerHTML = reverseSourceCatalog
         .map(item => `<option value="${escapeHtml(item.key)}">${escapeHtml(item.label)}</option>`)
         .join("");
+
+      if (reverseSourceChipsEl) {
+        reverseSourceChipsEl.innerHTML = reverseSourceCatalog
+          .map(item => `<button type="button" class="source-chip-btn" data-source-key="${escapeHtml(item.key)}" aria-pressed="false">${escapeHtml(item.label)}</button>`)
+          .join("");
+      }
+      refreshReverseSourceChips();
     }
 
     const rcpFractionation = {
@@ -2496,9 +2526,34 @@ let data = [];
     tabButtons.forEach(btn => btn.addEventListener("click", () => switchTab(btn.dataset.tab)));
     [reverseMoleculeEl, reverseDoseEl, reverseUnitEl, reverseAdminModeEl, reverseFreqEl, reverseRcpEl, reverseSourceFilterEl].filter(Boolean).forEach(el => el.addEventListener("input", () => {
       updateReverseModeUI();
+      refreshReverseSourceChips();
       renderReverse();
     }));
+    if (reverseSourceFilterEl) {
+      reverseSourceFilterEl.addEventListener("change", () => {
+        refreshReverseSourceChips();
+        renderReverse();
+      });
+    }
     reverseRunEl.addEventListener("click", renderReverse);
+
+    if (reverseSourceChipsEl) {
+      reverseSourceChipsEl.addEventListener("click", (event) => {
+        const btn = event.target.closest(".source-chip-btn");
+        if (!btn) return;
+        const selected = new Set(selectedReverseSourceKeys());
+        const key = btn.dataset.sourceKey;
+        if (selected.has(key)) selected.delete(key);
+        else selected.add(key);
+        setReverseSourceSelection(Array.from(selected));
+      });
+    }
+    if (reverseSourceAllEl) {
+      reverseSourceAllEl.addEventListener("click", () => setReverseSourceSelection(reverseSourceCatalog.map(item => item.key)));
+    }
+    if (reverseSourceNoneEl) {
+      reverseSourceNoneEl.addEventListener("click", () => setReverseSourceSelection([]));
+    }
 
     [searchEl, deviceEl, sourceEl, useCaseEl, decisionEl, showComparisonEl, showYEl].forEach(el => el.addEventListener("input", render));
     resultsEl.addEventListener("change", (event) => {
