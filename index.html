@@ -1120,7 +1120,7 @@
     <section id="reverseTab" class="tab-panel">
       <section class="panel">
         <p class="reverse-intro">
-          Moteur inversé : sélectionner un anti-infectieux, une dose journalière et le mode d’administration, puis vérifier les dilutions théoriquement possibles selon les données de stabilité intégrées. Les volumes imposés sont préparamétrés avec solvant séparé : poches NaCl 0,9 % ou G5 50/100/250/500 mL, poches sur pompe volumétrique NaCl 0,9 % ou G5 50/100/250/500 mL en continu, PSE 48 mL NaCl 0,9 % ou G5 en continu uniquement avec changement q24h/q12h/q8h/q6h, pompe Rythmic/Micrel 100/200 mL NaCl 0,9 % ou G5 en continu uniquement, NEOPUMP 500 mL sur 12 h NaCl 0,9 % ou G5 et ANAPA 250 mL sur 12 h NaCl 0,9 % ou G5. En mode continu, les PSE 48 mL et le PSE HAD 24 mL sont proposés avec changement q24h/q12h/q8h/q6h ; le PSE HAD 24 mL réutilise les données de stabilité PSE 48 mL mais calcule la concentration sur 24 mL. En mode discontinu, seules les poches simples sont proposées.
+          Moteur inversé : sélectionner un anti-infectieux, une dose journalière et le mode d’administration, puis vérifier les dilutions théoriquement possibles selon les données de stabilité intégrées. Les volumes imposés sont préparamétrés avec solvant séparé : poches NaCl 0,9 % ou G5 50/100/250/500 mL, poches en pompe volumétrique classique NaCl 0,9 % ou G5 50/100/250/500 mL en continu, PSE 48 mL NaCl 0,9 % ou G5 en continu uniquement avec changement q24h/q12h/q8h/q6h, pompe Rythmic/Micrel 100/200 mL NaCl 0,9 % ou G5 en continu uniquement, NEOPUMP 500 mL sur 12 h NaCl 0,9 % ou G5 et ANAPA 250 mL sur 12 h NaCl 0,9 % ou G5. En mode continu, les PSE 48 mL et le PSE HAD 24 mL sont proposés avec changement q24h/q12h/q8h/q6h ; le PSE HAD 24 mL réutilise les données de stabilité PSE 48 mL mais calcule la concentration sur 24 mL. En mode discontinu, seules les poches classiques sont proposées. Dans les résultats, les poches sont regroupées par solvant avec le plus petit volume compatible affiché par défaut ; les PSE sont regroupés avec le fractionnement nécessitant le moins de changements affiché par défaut.
         </p>
         <div class="reverse-grid">
           <div>
@@ -1223,6 +1223,7 @@ let data = [];
     function parseStabilitySheet(workbook) {
       const sheet = workbook.Sheets["STABILITE"];
       if (!sheet) throw new Error("Onglet STABILITE introuvable dans la base Excel.");
+      const seen = new Set();
       return XLSX.utils.sheet_to_json(sheet, { defval: "" })
         .filter(row => normalizeExcelBoolean(row.actif) && String(row.molecule || "").trim())
         .map(row => ({
@@ -1237,7 +1238,15 @@ let data = [];
           reco: cleanExcelText(row.reco),
           note: cleanExcelText(row.note),
           pubmed: String(row.pubmed || "").trim()
-        }));
+        }))
+        .filter(row => {
+          const signature = [row.molecule, row.source, row.mode, row.poche, row.pse, row.elastomere, row.anapa, row.micrel, row.reco, row.note, row.pubmed]
+            .map(x => String(x || "").trim().replace(/\s+/g, " ").toLowerCase())
+            .join("||");
+          if (seen.has(signature)) return false;
+          seen.add(signature);
+          return true;
+        });
     }
 
     function parseYSiteSheet(workbook) {
@@ -2026,8 +2035,8 @@ let data = [];
 
     const reverseDevices = [
       ...[50, 100, 250, 500].flatMap(volume => [
-        { key: "poche", label: `Poche NaCl 0,9 % ${volume} mL`, labelContinuous: `Poche sur pompe volumétrique · NaCl 0,9 % ${volume} mL`, labelDiscontinuous: `Poche NaCl 0,9 % ${volume} mL`, volume, solvent: "nacl", sourceFilter: null, forcedTime: "Continu en pompe volumétrique / discontinu en poche", modes: ["continuous", "discontinuous"] },
-        { key: "poche", label: `Poche G5 ${volume} mL`, labelContinuous: `Poche sur pompe volumétrique · G5 ${volume} mL`, labelDiscontinuous: `Poche G5 ${volume} mL`, volume, solvent: "g5", sourceFilter: null, forcedTime: "Continu en pompe volumétrique / discontinu en poche", modes: ["continuous", "discontinuous"] }
+        { key: "poche", label: `Poche NaCl 0,9 % ${volume} mL`, labelContinuous: `Poche en pompe volumétrique classique · NaCl 0,9 % ${volume} mL`, labelDiscontinuous: `Poche classique · NaCl 0,9 % ${volume} mL`, volume, solvent: "nacl", sourceFilter: null, forcedTime: "Continu = poche en pompe volumétrique classique ; discontinu = poche classique", modes: ["continuous", "discontinuous"] },
+        { key: "poche", label: `Poche G5 ${volume} mL`, labelContinuous: `Poche en pompe volumétrique classique · G5 ${volume} mL`, labelDiscontinuous: `Poche classique · G5 ${volume} mL`, volume, solvent: "g5", sourceFilter: null, forcedTime: "Continu = poche en pompe volumétrique classique ; discontinu = poche classique", modes: ["continuous", "discontinuous"] }
       ]),
       ...[24, 12, 8, 6].flatMap(hours => [
         { key: "pse", label: `PSE seringue PP 48 mL · NaCl 0,9 % · q${hours}h`, volume: 48, solvent: "nacl", sourceFilter: null, forcedTime: `${hours} h par PSE 48 mL`, forcedHours: hours, modes: ["continuous"] },
@@ -2526,394 +2535,6 @@ let data = [];
       });
   </script>
 
-
-  <script>
-  /* Correctif robuste moteur inversé – affichage/rendu */
-  (function () {
-    function norm(text) {
-      return String(text || "")
-        .toLowerCase()
-        .normalize("NFD")
-        .replace(/[\u0300-\u036f]/g, "")
-        .replace(/[^a-z0-9]/g, "");
-    }
-    function esc(str) {
-      return String(str ?? "")
-        .replaceAll("&", "&amp;")
-        .replaceAll("<", "&lt;")
-        .replaceAll(">", "&gt;")
-        .replaceAll('"', "&quot;")
-        .replaceAll("'", "&#039;");
-    }
-    function fr(n) {
-      return Number(n || 0).toLocaleString("fr-FR", { maximumFractionDigits: 2 });
-    }
-    function getRows() {
-      try {
-        if (typeof data !== "undefined" && Array.isArray(data)) return data;
-      } catch (e) {}
-      return [];
-    }
-    function findMolecule(value) {
-      const rows = getRows();
-      const names = [...new Set(rows.map(x => x.molecule).filter(Boolean))];
-      const target = norm(value);
-      if (!target) return null;
-      const aliases = {
-        bactrim: "Cotrimoxazole IV / Bactrim®",
-        cotrimoxazole: "Cotrimoxazole IV / Bactrim®",
-        cotrimoxazoleiv: "Cotrimoxazole IV / Bactrim®",
-        piptazo: "Pipéracilline/tazobactam",
-        pipetazo: "Pipéracilline/tazobactam",
-        tazocilline: "Pipéracilline/tazobactam",
-        piperacillinetazobactam: "Pipéracilline/tazobactam",
-        ceftaz: "Ceftazidime",
-        cefepime: "Céfépime",
-        cefazoline: "Céfazoline",
-        cefotaxime: "Céfotaxime",
-        ceftriaxone: "Ceftriaxone",
-        meropenem: "Méropénem",
-        temocilline: "Témocilline",
-        fosfomycine: "Fosfomycine IV",
-        rifampicine: "Rifampicine IV",
-        voriconazole: "Voriconazole IV",
-        benzylpenicilline: "Benzylpénicilline",
-        penicillineg: "Benzylpénicilline",
-        cefoxitine: "Céfoxitine",
-        ceftolozane: "Ceftolozane/tazobactam",
-        zerbaxa: "Ceftolozane/tazobactam",
-        imipenem: "Imipénème/cilastatine",
-        tienam: "Imipénème/cilastatine",
-        cloxacilline: "Cloxacilline",
-        oxacilline: "Oxacilline",
-        erythromycine: "Érythromycine"
-      };
-      if (aliases[target] && names.includes(aliases[target])) return aliases[target];
-      return names.find(n => norm(n) === target)
-        || names.find(n => norm(n).includes(target))
-        || names.find(n => target.includes(norm(n)))
-        || null;
-    }
-    function doseMg(value, unit) {
-      const n = Number(value);
-      if (!Number.isFinite(n) || n <= 0) return null;
-      if (unit === "g") return n * 1000;
-      return n;
-    }
-    const devices = [
-      ...[50,100,250,500].flatMap(v => [
-        {key:"poche", label:`Poche NaCl 0,9 % ${v} mL`, volume:v, solvent:"nacl", modes:["continuous","discontinuous"]},
-        {key:"poche", label:`Poche G5 ${v} mL`, volume:v, solvent:"g5", modes:["continuous","discontinuous"]}
-      ]),
-      ...[24,12,8,6].flatMap(h => [
-        {key:"pse", label:`PSE seringue PP 48 mL · NaCl 0,9 % · q${h}h`, volume:48, solvent:"nacl", forcedHours:h, modes:["continuous"]},
-        {key:"pse", label:`PSE seringue PP 48 mL · G5 · q${h}h`, volume:48, solvent:"g5", forcedHours:h, modes:["continuous"]}
-      ]),
-      ...[100,150,250,500].flatMap(v => [
-        {key:"elastomere", label:`Diffuseur élastomère générique ${v} mL · NaCl 0,9 %`, volume:v, solvent:"nacl", modes:["continuous"]},
-        {key:"elastomere", label:`Diffuseur élastomère générique ${v} mL · G5`, volume:v, solvent:"g5", modes:["continuous"]}
-      ]),
-      {key:"micrel", label:"Pompe Rythmic / Micrel 100 mL · NaCl 0,9 %", volume:100, solvent:"nacl", source:"micrel", modes:["continuous"]},
-      {key:"micrel", label:"Pompe Rythmic / Micrel 100 mL · G5", volume:100, solvent:"g5", source:"micrel", modes:["continuous"]},
-      {key:"micrel", label:"Pompe Rythmic / Micrel 200 mL · NaCl 0,9 %", volume:200, solvent:"nacl", source:"micrel", modes:["continuous"]},
-      {key:"micrel", label:"Pompe Rythmic / Micrel 200 mL · G5", volume:200, solvent:"g5", source:"micrel", modes:["continuous"]},
-      {key:"elastomere", label:"NEOPUMP diffuseur 500 mL · NaCl 0,9 %", volume:500, solvent:"nacl", source:"neopump", forcedHours:12, modes:["continuous"]},
-      {key:"elastomere", label:"NEOPUMP diffuseur 500 mL · G5", volume:500, solvent:"g5", source:"neopump", forcedHours:12, modes:["continuous"]},
-      {key:"anapa", label:"ANAPA 250 mL · NaCl 0,9 %", volume:250, solvent:"nacl", source:"anapa", forcedHours:12, modes:["continuous"]},
-      {key:"anapa", label:"ANAPA 250 mL · G5", volume:250, solvent:"g5", source:"anapa", forcedHours:12, modes:["continuous"]}
-    ];
-
-    const sourceCatalog = [
-      { key: "chicas", label: "Doc interne CHICAS", patterns: ["doc interne", "chicas"] },
-      { key: "lyon_berard", label: "Recommandations Centre Léon Bérard / Lyon Bérard", patterns: ["centre leon berard", "centre léon bérard", "lyon berard", "lyon bérard", "had"] },
-      { key: "tourcoing", label: "Référentiel ATB Tourcoing", patterns: ["tourcoing"] },
-      { key: "spilf_sfpc", label: "Référentiel SPILF/SFPC", patterns: ["spilf", "sfpc", "splif"] },
-      { key: "anapa", label: "ANAPA – données laboratoire", patterns: ["anapa"] },
-      { key: "micrel", label: "Micrel/Rythmic – données laboratoire", patterns: ["micrel", "rythmic"] },
-      { key: "neopump", label: "NEOPUMP – données fabricant élastomère", patterns: ["neopump", "easyflow"] },
-      { key: "pubmed", label: "PubMed / littérature sélectionnée", patterns: ["pubmed", "litterature", "littérature"] },
-      { key: "interjurassienne", label: "Protocole Pharmacie Interjurassienne", patterns: ["interjurassienne"] }
-    ];
-    function sourceKeys(text) {
-      const t = norm(text || "");
-      return sourceCatalog.filter(item => item.patterns.some(p => t.includes(norm(p)))).map(item => item.key);
-    }
-    function selectedSources() {
-      const chipBox = document.getElementById("reverseSourceChips");
-      if (chipBox) {
-        const active = Array.from(chipBox.querySelectorAll(".source-chip-btn.active"))
-          .map(btn => btn.dataset.sourceKey)
-          .filter(Boolean);
-        if (active.length) return active;
-      }
-      const el = document.getElementById("reverseSourceFilter");
-      if (!el) return [];
-      return Array.from(el.selectedOptions || []).map(o => o.value).filter(Boolean);
-    }
-    function syncHiddenSourceSelect(keys) {
-      const el = document.getElementById("reverseSourceFilter");
-      if (!el) return;
-      const set = new Set(keys || []);
-      Array.from(el.options || []).forEach(opt => { opt.selected = set.has(opt.value); });
-      el.dispatchEvent(new Event("change", { bubbles: true }));
-    }
-    function matchSelectedSource(text) {
-      const selected = selectedSources();
-      if (!selected.length) return true;
-      const keys = sourceKeys(text);
-      return selected.some(key => keys.includes(key));
-    }
-    function displaySource(text) {
-      const keys = sourceKeys(text);
-      let labels = keys.length ? keys.map(k => (sourceCatalog.find(item => item.key === k) || {}).label || k) : [text || "Source non précisée"];
-      const selected = selectedSources();
-      if (selected.length) {
-        const selectedLabels = new Set(selected.map(k => (sourceCatalog.find(item => item.key === k) || {}).label || k));
-        labels = labels.filter(label => selectedLabels.has(label));
-        if (!labels.length) labels = keys.map(k => (sourceCatalog.find(item => item.key === k) || {}).label || k);
-      }
-      return labels.map(esc).join("<br>");
-    }
-    function initSourceFilter() {
-      const el = document.getElementById("reverseSourceFilter");
-      const chips = document.getElementById("reverseSourceChips");
-      if (el) {
-        el.innerHTML = sourceCatalog.map(item => `<option value="${esc(item.key)}">${esc(item.label)}</option>`).join("");
-      }
-      if (!chips) return;
-      chips.innerHTML = sourceCatalog.map(item => `<button type="button" class="source-chip-btn" data-source-key="${esc(item.key)}">${esc(item.label)}</button>`).join("");
-      const refresh = () => {
-        const keys = Array.from(chips.querySelectorAll(".source-chip-btn.active"))
-          .map(btn => btn.dataset.sourceKey)
-          .filter(Boolean);
-        syncHiddenSourceSelect(keys);
-        if (typeof renderReverseSafe === "function") renderReverseSafe();
-      };
-      chips.querySelectorAll(".source-chip-btn").forEach(btn => {
-        btn.addEventListener("click", () => {
-          btn.classList.toggle("active");
-          refresh();
-        });
-      });
-      const all = document.getElementById("reverseSourceAll");
-      const none = document.getElementById("reverseSourceNone");
-      if (all) all.addEventListener("click", () => {
-        chips.querySelectorAll(".source-chip-btn").forEach(btn => btn.classList.add("active"));
-        refresh();
-      });
-      if (none) none.addEventListener("click", () => {
-        chips.querySelectorAll(".source-chip-btn").forEach(btn => btn.classList.remove("active"));
-        refresh();
-      });
-    }
-    function solventLabel(s) { return s === "g5" ? "G5" : "NaCl 0,9 %"; }
-    function solventOK(text, solvent) {
-      const t = String(text || "").toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "");
-      const g5Bad = /(g5|glucose|dextrose).*?(incompatible|contre-indique|deconseille|non compatible)|(?:incompatible|contre-indique|deconseille|non compatible).*?(g5|glucose|dextrose)|only in nacl|uniquement en nacl|nacl uniquement en diffuseur/.test(t);
-      const naclBad = /(nacl|chlorure de sodium|sodium chloride).*?(incompatible|contre-indique|deconseille|non compatible)|(?:incompatible|contre-indique|deconseille|non compatible).*?(nacl|chlorure de sodium|sodium chloride)/.test(t);
-      if (solvent === "g5") return !g5Bad && (/\bg5\b|glucose|dextrose|d5w/.test(t));
-      if (solvent === "nacl") return !naclBad && (/nacl|chlorure de sodium|sodium chloride|0,9|0\.9/.test(t));
-      return true;
-    }
-    function concRules(text) {
-      const s = String(text || "").replace(/,/g,".");
-      const out = [];
-      let m;
-      const range = /(\d+(?:\.\d+)?)\s*[–-]\s*(\d+(?:\.\d+)?)\s*mg\s*\/\s*mL/gi;
-      while ((m = range.exec(s))) out.push({min:+m[1], max:+m[2], kind:"range"});
-      const max = /(?:max(?:imum)?|≤|<=|jusqu(?:’|'|’)à)\s*(\d+(?:\.\d+)?)\s*mg\s*\/\s*mL/gi;
-      while ((m = max.exec(s))) out.push({min:0, max:+m[1], kind:"max"});
-      const point = /(?:conc(?:entration)?(?:\s*(?:finale|pipéracilline|commerciale))?\s*)?(\d+(?:\.\d+)?)\s*mg\s*\/\s*mL/gi;
-      while ((m = point.exec(s))) {
-        const n = +m[1];
-        if (!out.some(r => Math.abs(r.min-n)<0.001 || Math.abs(r.max-n)<0.001)) out.push({min:n,max:n,kind:"point"});
-      }
-      return out;
-    }
-    function stabilityHours(text) {
-      const s = String(text || "").replace(/,/g,".");
-      const h = [];
-      let m;
-      const dayRange = /(\d+(?:\.\d+)?)\s*[–-]\s*(\d+(?:\.\d+)?)\s*j(?:our|ours)?\b/gi;
-      while ((m = dayRange.exec(s))) h.push(+m[2]*24);
-      const day = /(\d+(?:\.\d+)?)\s*j(?:our|ours)?\b/gi;
-      while ((m = day.exec(s))) h.push(+m[1]*24);
-      const hourRange = /(\d+(?:\.\d+)?)\s*[–-]\s*(\d+(?:\.\d+)?)\s*h\b/gi;
-      while ((m = hourRange.exec(s))) h.push(+m[2]);
-      const hour = /(\d+(?:\.\d+)?)\s*h\b/gi;
-      while ((m = hour.exec(s))) h.push(+m[1]);
-      return h.length ? Math.max(...h.filter(Number.isFinite)) : null;
-    }
-    function planFor(device, text, mode, freq) {
-      if (mode === "discontinuous") return {fraction:1/freq, label:`${freq} administration${freq>1?"s":""}/jour`, ok:true};
-      const stable = stabilityHours(text);
-      const forced = device.forcedHours || null;
-      if (forced) return {fraction:forced/24, label:`q${forced}h · ${Math.ceil(24/forced)} changements/jour`, ok:!stable || stable>=forced};
-      const interval = stable ? [24,12,8,6,4].find(x => stable >= x) : 24;
-      if (!interval) return {fraction:Math.max(stable || 0, 0)/24, label:`stabilité ${fr(stable)} h insuffisante`, ok:false};
-      return {fraction:interval/24, label:interval===24 ? "q24h · 1 changement/jour" : `q${interval}h · ${Math.ceil(24/interval)} changements/jour`, ok:true};
-    }
-    function assess(text, conc, planOk, solventOk) {
-      const t = String(text || "");
-      if (!t || t === "--") return {cls:"stop", label:"Aucune donnée", detail:"Aucune donnée pour ce contenant."};
-      if (!solventOk) return {cls:"stop", label:"Solvant non documenté", detail:"Le solvant demandé n’est pas documenté ou est déconseillé/incompatible."};
-      const rules = concRules(t);
-      if (!rules.length) return {cls:"warn", label:"À vérifier", detail:"Concentration non extractible automatiquement."};
-      let ok = rules.some(r => r.kind !== "point" && conc >= r.min-0.001 && conc <= r.max+0.001)
-        || rules.some(r => r.kind === "point" && Math.abs(conc-r.max) <= Math.max(0.5, r.max*0.05));
-      if (ok && planOk) return {cls:"ok", label:"Possible", detail:`${fr(conc)} mg/mL dans la plage extraite.`};
-      if (ok && !planOk) return {cls:"warn", label:"Stabilité insuffisante", detail:`${fr(conc)} mg/mL compatible, mais durée insuffisante.`};
-      return {cls:"stop", label:"Hors concentration", detail:`${fr(conc)} mg/mL hors concentrations extraites.`};
-    }
-    function excerpt(text) {
-      return String(text || "--").split(";").map(x=>x.trim()).filter(Boolean).slice(0,4).join(" ; ") || "--";
-    }
-
-    function doseLineMatches(text, dailyMg) {
-      const raw = String(text || "");
-      const m = raw.match(/dose journali[eè]re\s+([^;]+?)\/24\s*h/i);
-      if (!m) return true;
-      const expr = m[1].replace(",", ".").trim();
-      if (/mg\s*\/\s*kg/i.test(expr)) return true;
-      const usesMui = /m\s*iu|mui|mUI/i.test(expr);
-      const doseValue = usesMui ? dailyMg : dailyMg / 1000;
-      let r = expr.match(/[≤<=]+\s*(\d+(?:\.\d+)?)/);
-      if (r) return doseValue <= Number(r[1]) + 0.001;
-      r = expr.match(/>\s*(\d+(?:\.\d+)?)/);
-      if (r) return doseValue > Number(r[1]) - 0.001;
-      r = expr.match(/(\d+(?:\.\d+)?)\s*(?:to|à|-|–)\s*(\d+(?:\.\d+)?)/i);
-      if (r) return doseValue > Number(r[1]) - 0.001 && doseValue <= Number(r[2]) + 0.001;
-      r = expr.match(/(\d+(?:\.\d+)?)/);
-      if (!r) return true;
-      return Math.abs(doseValue - Number(r[1])) <= Math.max(0.01, Number(r[1]) * 0.02);
-    }
-
-    function renderReverseSafe() {
-      const rows = getRows();
-      const out = document.getElementById("reverseResults");
-      const pill = document.getElementById("reverseCountPill");
-      const molEl = document.getElementById("reverseMolecule");
-      const doseEl = document.getElementById("reverseDose");
-      const unitEl = document.getElementById("reverseUnit");
-      const modeEl = document.getElementById("reverseAdminMode");
-      const freqEl = document.getElementById("reverseFreq");
-      if (!out || !pill || !molEl || !doseEl || !unitEl || !modeEl || !freqEl) return;
-      const molecule = findMolecule(molEl.value);
-      const daily = doseMg(doseEl.value, unitEl.value);
-      const mode = modeEl.value || "continuous";
-      const freq = Math.max(1, Number(freqEl.value) || 1);
-      if (!molecule || !daily) {
-        pill.textContent = "0 option";
-        out.innerHTML = '<div class="no-result">Renseigner une molécule de la base et une dose journalière pour lancer le moteur inversé.</div>';
-        return;
-      }
-      const sources = rows.filter(x => norm(x.molecule) === norm(molecule) && matchSelectedSource(x.source));
-      const statusRank = cls => cls === "ok" ? 0 : (cls === "warn" || cls === "stop") ? 1 : 2;
-      const statusLabel = a => a.cls === "ok" ? "Conforme" : (a.cls === "warn" ? "Non conforme / à vérifier" : "Non conforme");
-      let possible = 0;
-      const positiveCards = [];
-      const hiddenCards = [];
-
-      devices.filter(d => !d.modes || d.modes.includes(mode)).forEach(d => {
-        const sourceRows = sources.filter(s => !d.source || norm(s.source || "").includes(d.source));
-        const lineObjects = sourceRows.map(s => ({s, value:s[d.key]}))
-          .filter(x => x.value && x.value !== "--" && doseLineMatches(x.value, daily))
-          .map(x => {
-            const p = planFor(d, x.value, mode, freq);
-            const dose = daily * p.fraction;
-            const conc = dose / d.volume;
-            const a = assess(x.value, conc, p.ok, solventOK(x.value, d.solvent));
-            return {
-              rank: statusRank(a.cls),
-              cls: a.cls,
-              html: `<tr><td class="reverse-${a.cls}">${esc(statusLabel(a))}<br><span class="reverse-source">${esc(a.label)}</span></td><td>${fr(dose)} mg / ${d.volume} mL<br><span class="reverse-source">${fr(conc)} mg/mL · ${esc(solventLabel(d.solvent))}</span></td><td>${esc(p.label)}<br><span class="reverse-source">${esc(a.detail)}</span></td><td>${esc(excerpt(x.value))}</td><td>${displaySource(x.s.source || "")}</td></tr>`
-            };
-          })
-          .sort((a,b) => a.rank - b.rank);
-
-        const okLines = lineObjects.filter(x => x.cls === "ok");
-        const notOkLines = lineObjects.filter(x => x.cls !== "ok");
-        const emptyLine = '<tr><td colspan="5" class="empty">NA — aucune donnée intégrée pour ce dispositif/source.</td></tr>';
-        const doseLine = mode === "discontinuous" ? `dose par administration ${fr(daily/freq)} mg · ${freq} fois/jour` : `dose journalière ${fr(daily)} mg · calcul par contenant selon renouvellement`;
-
-        function makeCard(lines, hiddenOnly = false) {
-          const cardRank = lines.length ? Math.min(...lines.map(x => x.rank)) : 2;
-          const badge = cardRank === 0 ? '<span class="badge ok">Conforme</span>' : cardRank === 1 ? '<span class="badge warn">Masqué · non conforme / à vérifier</span>' : '<span class="badge stop">Masqué · NA</span>';
-          const bodyRows = lines.length ? lines.map(x => x.html).join("") : emptyLine;
-          return `<article class="reverse-card"><div class="reverse-card-head"><div><h3>${esc(d.label)}</h3><div class="source">Volume ${d.volume} mL · solvant ${esc(solventLabel(d.solvent))} · ${doseLine}</div></div><div>${badge}</div></div><div class="reverse-card-body"><table class="reverse-table"><thead><tr><th>Conclusion</th><th>Dose / concentration</th><th>Schéma proposé</th><th>Stabilité / condition</th><th>Source</th></tr></thead><tbody>${bodyRows}</tbody></table></div></article>`;
-        }
-
-        if (okLines.length) {
-          possible += okLines.length;
-          positiveCards.push({ rank: 0, html: makeCard(okLines) });
-        }
-        if (notOkLines.length) {
-          hiddenCards.push({ rank: 1, html: makeCard(notOkLines, true) });
-        } else if (!lineObjects.length) {
-          hiddenCards.push({ rank: 2, html: makeCard([], true) });
-        }
-      });
-
-      const positiveHtml = positiveCards.sort((a,b) => a.rank - b.rank).map(c => c.html).join("");
-      const hiddenHtml = hiddenCards.sort((a,b) => a.rank - b.rank).map(c => c.html).join("");
-      pill.textContent = `${possible} option${possible>1?"s":""} conforme${possible>1?"s":""}`;
-
-      const noPositive = !positiveCards.length
-        ? '<div class="no-result">Aucune option conforme trouvée avec les paramètres actuels. Les options non retenues sont masquées par défaut.</div>'
-        : '';
-      const toggle = hiddenCards.length
-        ? `<button id="reverseHiddenToggle" type="button" class="reverse-hidden-toggle">Afficher les options non retenues / à vérifier (${hiddenCards.length})</button><div id="reverseHiddenOptions" class="reverse-hidden-options reverse-hidden">${hiddenHtml}</div>`
-        : '';
-      out.innerHTML = positiveHtml || noPositive;
-      out.innerHTML += toggle;
-
-      const toggleBtn = document.getElementById("reverseHiddenToggle");
-      const hiddenBox = document.getElementById("reverseHiddenOptions");
-      if (toggleBtn && hiddenBox) {
-        toggleBtn.addEventListener("click", () => {
-          const isHidden = hiddenBox.classList.toggle("reverse-hidden");
-          toggleBtn.textContent = isHidden
-            ? `Afficher les options non retenues / à vérifier (${hiddenCards.length})`
-            : `Masquer les options non retenues / à vérifier (${hiddenCards.length})`;
-        });
-      }
-    }
-    function initReverseSafe() {
-      const list = document.getElementById("reverseMoleculeList");
-      initSourceFilter();
-      if (list) {
-        const names = [...new Set(getRows().map(d => d.molecule).filter(Boolean))].sort((a,b)=>a.localeCompare(b,"fr"));
-        list.innerHTML = names.map(n => `<option value="${esc(n)}"></option>`).join("");
-      }
-      const modeEl = document.getElementById("reverseAdminMode");
-      const freqWrap = document.getElementById("reverseFreqWrap");
-      function syncFreq() {
-        if (modeEl && freqWrap) freqWrap.classList.toggle("reverse-hidden", modeEl.value !== "discontinuous");
-      }
-      ["reverseMolecule","reverseDose","reverseUnit","reverseAdminMode","reverseFreq","reverseRcp","reverseSourceFilter"].forEach(id => {
-        const el = document.getElementById(id);
-        if (!el) return;
-        ["input","change","keyup"].forEach(evt => el.addEventListener(evt, () => { syncFreq(); renderReverseSafe(); }));
-      });
-      const run = document.getElementById("reverseRun");
-      if (run) run.addEventListener("click", renderReverseSafe);
-      document.querySelectorAll(".tab-button").forEach(btn => {
-        btn.addEventListener("click", () => {
-          const tabId = btn.dataset.tab;
-          document.querySelectorAll(".tab-button").forEach(b => b.classList.toggle("active", b.dataset.tab === tabId));
-          document.querySelectorAll(".tab-panel").forEach(p => p.classList.toggle("active", p.id === tabId));
-          if (tabId === "reverseTab") renderReverseSafe();
-        });
-      });
-      syncFreq();
-      renderReverseSafe();
-      window.renderReverseSafe = renderReverseSafe;
-      window.initReverseSafe = initReverseSafe;
-    }
-    if (document.readyState === "loading") document.addEventListener("DOMContentLoaded", initReverseSafe);
-    else initReverseSafe();
-  })();
-  </script>
 
 </body>
 </html>
