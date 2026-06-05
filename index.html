@@ -990,6 +990,94 @@
       display: none;
     }
 
+    .cost-controls {
+      margin-top: 14px;
+      padding: 12px;
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      background: #ffffff;
+      display: grid;
+      grid-template-columns: minmax(220px, 0.6fr) minmax(220px, 1fr);
+      gap: 12px;
+      align-items: end;
+    }
+
+    .cost-estimate {
+      margin-top: 12px;
+      border: 1px solid #d8e5ef;
+      border-radius: 14px;
+      background: linear-gradient(180deg, #f8fbff, #ffffff);
+      overflow: hidden;
+    }
+
+    .cost-estimate-head {
+      padding: 10px 12px;
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: space-between;
+      gap: 8px;
+      border-bottom: 1px solid #d8e5ef;
+      color: var(--green);
+      font-weight: 900;
+    }
+
+    .cost-table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 0.78rem;
+    }
+
+    .cost-table th, .cost-table td {
+      border: 1px solid #e4edf5;
+      padding: 7px 8px;
+      text-align: left;
+      vertical-align: top;
+    }
+
+    .cost-table th {
+      background: #eef7ff;
+      color: var(--green);
+    }
+
+    .cost-total {
+      font-weight: 900;
+      color: #172637;
+      white-space: nowrap;
+    }
+
+    .cost-detail {
+      padding: 10px 12px;
+      color: var(--muted);
+      font-size: 0.78rem;
+      line-height: 1.35;
+    }
+
+    .cost-detail summary {
+      cursor: pointer;
+      font-weight: 900;
+      color: var(--green);
+    }
+
+    .cost-detail ul {
+      margin: 8px 0 0 18px;
+      padding: 0;
+    }
+
+    .cost-warning {
+      margin-top: 10px;
+      padding: 9px 10px;
+      border-radius: 12px;
+      background: #fff4e8;
+      border: 1px solid #efd0a3;
+      color: #8a5a14;
+      font-size: 0.78rem;
+      font-weight: 750;
+    }
+
+    @media (max-width: 760px) {
+      .cost-controls { grid-template-columns: 1fr; }
+    }
+
     @media (max-width: 760px) {
       .reverse-grid { grid-template-columns: 1fr; }
       .tab-button { width: 100%; }
@@ -1120,7 +1208,7 @@
     <section id="reverseTab" class="tab-panel">
       <section class="panel">
         <p class="reverse-intro">
-          Moteur inversé : sélectionner un anti-infectieux, une dose journalière et le mode d’administration, puis vérifier les dilutions théoriquement possibles selon les données de stabilité intégrées. Les volumes imposés sont préparamétrés avec solvant séparé : poches NaCl 0,9 % ou G5 50/100/250/500 mL, poches en pompe volumétrique classique NaCl 0,9 % ou G5 50/100/250/500 mL en continu, PSE 48 mL NaCl 0,9 % ou G5 en continu uniquement avec changement q24h/q12h/q8h/q6h, pompe Rythmic/Micrel 100/200 mL NaCl 0,9 % ou G5 en continu uniquement, NEOPUMP 500 mL sur 12 h NaCl 0,9 % ou G5 et ANAPA 250 mL sur 12 h NaCl 0,9 % ou G5. En mode continu, les PSE 48 mL et le PSE HAD 24 mL sont proposés avec changement q24h/q12h/q8h/q6h ; le PSE HAD 24 mL réutilise les données de stabilité PSE 48 mL mais calcule la concentration sur 24 mL. En mode discontinu, seules les poches classiques sont proposées. Dans les résultats, les poches sont regroupées par solvant avec le plus petit volume compatible affiché par défaut ; les PSE sont regroupés avec le fractionnement nécessitant le moins de changements affiché par défaut.
+          Moteur inversé : sélectionner un anti-infectieux, une dose journalière et le mode d’administration, puis vérifier les dilutions théoriquement possibles selon les données de stabilité intégrées. Les volumes imposés sont préparamétrés avec solvant séparé : poches NaCl 0,9 % ou G5 50/100/250/500 mL, poches en pompe volumétrique classique NaCl 0,9 % ou G5 50/100/250/500 mL en continu, PSE 48 mL NaCl 0,9 % ou G5 en continu uniquement avec changement q24h/q12h/q8h/q6h, pompe Rythmic/Micrel 100/200 mL NaCl 0,9 % ou G5 en continu uniquement, NEOPUMP 500 mL sur 12 h NaCl 0,9 % ou G5 et ANAPA 250 mL sur 12 h NaCl 0,9 % ou G5. En mode continu, les PSE 48 mL et le PSE HAD 24 mL sont proposés avec changement q24h/q12h/q8h/q6h ; le PSE HAD 24 mL réutilise les données de stabilité PSE 48 mL mais calcule la concentration sur 24 mL. En mode discontinu, seules les poches classiques sont proposées. Dans les résultats, les poches sont regroupées par solvant avec le plus petit volume compatible affiché par défaut ; les PSE sont regroupés avec le fractionnement nécessitant le moins de changements affiché par défaut. L’estimation coût/CO₂ par jour est calculée depuis breaking_stab_cost_co2_database.xlsx, avec séparation HAD / intra-hospitalier.
         </p>
         <div class="reverse-grid">
           <div>
@@ -1179,6 +1267,21 @@
             <button id="reverseSourceNone" type="button" class="source-mini-action">Tout décocher</button>
           </div>
         </div>
+
+        <div class="cost-controls">
+          <div>
+            <label for="reverseCostContext">Contexte coût / CO₂</label>
+            <select id="reverseCostContext">
+              <option value="auto">Comparer les contextes autorisés</option>
+              <option value="HAD">HAD / IDEL</option>
+              <option value="HOSPITALIER">Intra-hospitalier</option>
+            </select>
+          </div>
+          <label class="toggle-chip" style="width:100%; justify-content:flex-start; border-radius:13px; padding:11px 13px;">
+            <input type="checkbox" id="reverseShowCost" checked /> Afficher l’estimation coût € / kg eq CO₂ par jour
+          </label>
+        </div>
+
         <div class="summary-line">
           <span class="pill" id="reverseCountPill">0 option</span>
           <span>Résultat indicatif : la dose saisie est interprétée comme dose journalière. En discontinu, la dose par administration est calculée selon la fréquence choisie ou, si la case est cochée, selon le fractionnement RCP/usuel intégré. Vérifier la source originale, le dispositif, la température, le solvant et la procédure locale.</span>
@@ -1207,6 +1310,9 @@
 let data = [];
     let yCompat = {};
     const BREAKING_STAB_DB_FILE = "breaking_stab_database.xlsx";
+    const BREAKING_STAB_COST_DB_FILE = "breaking_stab_cost_co2_database.xlsx";
+    let costDb = null;
+    let costDbLoaded = false;
 
     function normalizeExcelBoolean(value) {
       if (value === true || value === false) return value;
@@ -1218,26 +1324,6 @@ let data = [];
     function cleanExcelText(value) {
       const s = String(value ?? "").trim();
       return s === "" ? "--" : s;
-    }
-
-    function canonicalTextForDedupe(value) {
-      return String(value ?? "")
-        .toLowerCase()
-        .normalize("NFD")
-        .replace(/[\u0300-\u036f]/g, "")
-        .replace(/[’‘´`]/g, "'")
-        .replace(/[–—]/g, "-")
-        .replace(/\bglucose\s*5\s*%/g, "g5")
-        .replace(/\bdextrose\s*5\s*%/g, "g5")
-        .replace(/\bnacl\s*0[,.]9\s*%/g, "nacl 0,9 %")
-        .replace(/\bchlorure de sodium\b/g, "nacl")
-        .replace(/\s+or\s+/g, " ou ")
-        .replace(/\s*;\s*/g, ";")
-        .replace(/\s*\/\s*/g, "/")
-        .replace(/\s+/g, " ")
-        .replace(/\b(\d+)\s*h\b/g, "$1h")
-        .replace(/\b(\d+)\s*j\b/g, "$1j")
-        .trim();
     }
 
     function parseStabilitySheet(workbook) {
@@ -1261,7 +1347,7 @@ let data = [];
         }))
         .filter(row => {
           const signature = [row.molecule, row.source, row.mode, row.poche, row.pse, row.elastomere, row.anapa, row.micrel, row.reco, row.note, row.pubmed]
-            .map(canonicalTextForDedupe)
+            .map(x => String(x || "").trim().replace(/\s+/g, " ").toLowerCase())
             .join("||");
           if (seen.has(signature)) return false;
           seen.add(signature);
@@ -1283,6 +1369,379 @@ let data = [];
           out[a][b] = s;
         });
       return out;
+    }
+
+
+    function sheetRowsByHeader(workbook, sheetName, firstHeader) {
+      const sheet = workbook.Sheets[sheetName];
+      if (!sheet) return [];
+      const matrix = XLSX.utils.sheet_to_json(sheet, { header: 1, defval: "" });
+      const idx = matrix.findIndex(row => row.map(x => String(x).trim()).includes(firstHeader));
+      if (idx < 0) return [];
+      const headers = matrix[idx].map(h => String(h).trim());
+      return matrix.slice(idx + 1)
+        .filter(row => row.some(cell => String(cell ?? "").trim() !== ""))
+        .map(row => {
+          const obj = {};
+          headers.forEach((h, i) => { if (h) obj[h] = row[i]; });
+          return obj;
+        });
+    }
+
+    function toNum(value, fallback = 0) {
+      if (typeof value === "number") return Number.isFinite(value) ? value : fallback;
+      const n = Number(String(value ?? "").replace(",", ".").replace(/[^\d.-]/g, ""));
+      return Number.isFinite(n) ? n : fallback;
+    }
+
+    function firstNonEmpty(...values) {
+      return values.find(v => String(v ?? "").trim() !== "") ?? "";
+    }
+
+    function parseCostDatabase(workbook) {
+      const items = {};
+      sheetRowsByHeader(workbook, "FACTEURS_ITEMS", "item_id").forEach(row => {
+        const id = String(row.item_id || "").trim();
+        if (!id) return;
+        items[id] = row;
+      });
+
+      const locations = {};
+      sheetRowsByHeader(workbook, "LOCATIONS", "methode_id").forEach(row => {
+        const id = String(row.methode_id || "").trim();
+        if (id) locations[id] = row;
+      });
+
+      const hadRows = {};
+      sheetRowsByHeader(workbook, "HAD", "contexte").forEach(row => {
+        const id = String(row.contexte || "").trim();
+        if (id) hadRows[id] = row;
+      });
+
+      const temps = {};
+      sheetRowsByHeader(workbook, "TEMPS_HUMAIN", "methode_id").forEach(row => {
+        const id = String(row.methode_id || "").trim();
+        if (id) temps[id] = row;
+      });
+
+      const hourly = {};
+      sheetRowsByHeader(workbook, "COUTS_HORAIRES", "profil").forEach(row => {
+        const id = normalize(String(row.profil || ""));
+        if (id) hourly[id] = row;
+      });
+
+      const dechets = {};
+      sheetRowsByHeader(workbook, "DECHETS", "type_dechet").forEach(row => {
+        const id = String(row.type_dechet || "").trim();
+        if (id) dechets[id] = row;
+      });
+
+      const params = {};
+      sheetRowsByHeader(workbook, "PARAMETRES", "parametre").forEach(row => {
+        const id = String(row.parametre || "").trim();
+        if (id) params[id] = row;
+      });
+
+      const equipments = {};
+      sheetRowsByHeader(workbook, "DM Perfusion de l'hôpital", "methode_id").forEach(row => {
+        const id = String(row.methode_id || "").trim();
+        if (id) equipments[id] = row;
+      });
+
+      const meds = sheetRowsByHeader(workbook, "ACV ATB", "molecule_outil")
+        .filter(row => String(row.molecule_outil || "").trim());
+
+      return { items, locations, hadRows, temps, hourly, dechets, params, equipments, meds };
+    }
+
+    async function loadCostDatabase() {
+      if (typeof XLSX === "undefined") return;
+      try {
+        const response = await fetch(BREAKING_STAB_COST_DB_FILE, { cache: "no-store" });
+        if (!response.ok) throw new Error(`Base coût/CO₂ introuvable : ${BREAKING_STAB_COST_DB_FILE}`);
+        const buffer = await response.arrayBuffer();
+        const workbook = XLSX.read(buffer, { type: "array" });
+        costDb = parseCostDatabase(workbook);
+        costDbLoaded = true;
+        console.info(`Breaking Stab : base coût/CO₂ chargée depuis ${BREAKING_STAB_COST_DB_FILE}.`);
+      } catch (error) {
+        costDb = null;
+        costDbLoaded = false;
+        console.warn("Breaking Stab : calcul coût/CO₂ désactivé.", error);
+      }
+    }
+
+    function costParam(name, fallback = 0) {
+      if (!costDb || !costDb.params || !costDb.params[name]) return fallback;
+      return toNum(costDb.params[name].valeur, fallback);
+    }
+
+    function itemFactor(itemId) {
+      return costDb && costDb.items ? costDb.items[itemId] : null;
+    }
+
+    function solventBagItemId(volume) {
+      const v = Number(volume) || 0;
+      if (v <= 50) return "POCHE_NACL_G5_50ML";
+      if (v <= 100) return "POCHE_NACL_G5_100ML";
+      if (v <= 250) return "POCHE_NACL_G5_250ML";
+      return "POCHE_NACL_G5_500ML";
+    }
+
+    function methodIdForDevice(device, adminMode) {
+      if (device.key === "poche" && adminMode === "continuous") return "POCHE_VOL_CONT";
+      if (device.key === "poche" && adminMode === "discontinuous") return "POCHE_DISCONT";
+      if (device.key === "pse" && Number(device.volume) === 48) return "PSE_48_CONT";
+      if (device.key === "pse" && Number(device.volume) === 24) return "PSE_24_HAD_CONT";
+      if (device.key === "micrel") return "RYTHMIC_CONT";
+      if (device.key === "anapa") return "ANAPA_CONT";
+      if (device.key === "elastomere" && normalize(device.label).includes("neopump")) return "NEOPUMP_CONT";
+      return "ELASTOMERE_GENERIC";
+    }
+
+    function allowedContextsForMethod(methodId) {
+      if (methodId === "RYTHMIC_CONT" || methodId === "PSE_24_HAD_CONT") return ["HAD"];
+      if (methodId === "POCHE_VOL_CONT" || methodId === "PSE_48_CONT") return ["HOSPITALIER"];
+      if (methodId === "ANAPA_CONT" || methodId === "NEOPUMP_CONT" || methodId === "POCHE_DISCONT") return ["HOSPITALIER", "HAD"];
+      return ["HOSPITALIER", "HAD"];
+    }
+
+    function deviceItemsForCost(device, adminMode) {
+      const methodId = methodIdForDevice(device, adminMode);
+      const items = [];
+      const bag = solventBagItemId(device.volume);
+
+      if (methodId === "POCHE_VOL_CONT") {
+        items.push(["POCHE_NACL_G5_" + device.volume + "ML", 1, "poche solvant/contenant"]);
+        items.push(["TUBULURE_POMPE_VOL", 1, "tubulure pompe volumétrique"]);
+        items.push(["RINCAGE_NACL_10ML", costParam("nb_rincages_par_perfusion", 1), "rinçage"]);
+      } else if (methodId === "POCHE_DISCONT") {
+        items.push(["POCHE_NACL_G5_" + device.volume + "ML", 1, "poche solvant/contenant"]);
+        items.push(["PERFUSEUR_STANDARD", 1, "perfuseur standard"]);
+        items.push(["RINCAGE_NACL_10ML", costParam("nb_rincages_par_perfusion", 1), "rinçage"]);
+      } else if (methodId === "PSE_48_CONT") {
+        items.push(["SERINGUE_PP_50ML", 1, "seringue PSE 48 mL"]);
+        items.push([bag, 1, "plus petite poche de solvant pour remplissage"]);
+        items.push(["PROLONGATEUR_PSE", 1, "prolongateur PSE"]);
+        items.push(["RINCAGE_NACL_10ML", costParam("nb_rincages_par_perfusion", 1), "rinçage"]);
+      } else if (methodId === "PSE_24_HAD_CONT") {
+        items.push(["SERINGUE_PP_24ML", 1, "seringue PSE HAD 24 mL"]);
+        items.push([bag, 1, "plus petite poche de solvant pour remplissage"]);
+        items.push(["PROLONGATEUR_PSE", 1, "prolongateur PSE"]);
+        items.push(["RINCAGE_NACL_10ML", costParam("nb_rincages_par_perfusion", 1), "rinçage"]);
+      } else if (methodId === "RYTHMIC_CONT") {
+        items.push([Number(device.volume) <= 100 ? "RESERVOIR_RYTHMIC_100ML" : "RESERVOIR_RYTHMIC_200ML", 1, "DM captif Rythmic"]);
+        items.push([bag, 1, "plus petite poche de solvant pour remplissage"]);
+        items.push(["RINCAGE_NACL_10ML", costParam("nb_rincages_par_perfusion", 1), "rinçage"]);
+      } else if (methodId === "ANAPA_CONT") {
+        items.push(["DISPOSITIF_ANAPA_250", 1, "DM unique ANAPA"]);
+        items.push([bag, 1, "plus petite poche de solvant pour remplissage"]);
+        items.push(["RINCAGE_NACL_10ML", costParam("nb_rincages_par_perfusion", 1), "rinçage"]);
+      } else if (methodId === "NEOPUMP_CONT") {
+        items.push(["NEOPUMP_500", 1, "DM unique NEOPUMP"]);
+        items.push([bag, 1, "plus petite poche de solvant pour remplissage"]);
+        items.push(["RINCAGE_NACL_10ML", costParam("nb_rincages_par_perfusion", 1), "rinçage"]);
+      }
+      return items;
+    }
+
+    function addItemCost(acc, itemId, qty, detailLabel) {
+      const f = itemFactor(itemId);
+      if (!f) {
+        acc.warnings.push(`Item non paramétré : ${itemId}`);
+        return;
+      }
+      const cost = toNum(f.cout_unitaire_eur) * qty;
+      const co2 = toNum(f.kgco2e_unitaire) * qty;
+      acc.dmCost += cost;
+      acc.dmCo2 += co2;
+      acc.detail.push(`${detailLabel || itemId} : ${formatNumber(qty)} × ${itemId} = ${formatNumber(cost)} € ; ${formatNumber(co2)} kg eq CO₂`);
+
+      if (costParam("inclure_dechets", 1)) {
+        const wasteType = String(f.type_dechet || "").trim();
+        const waste = costDb.dechets && costDb.dechets[wasteType];
+        if (waste) {
+          const kg = toNum(f.poids_g) / 1000 * qty;
+          acc.wasteCost += kg * toNum(waste.cout_traitement_eur_kg);
+          acc.wasteCo2 += kg * toNum(waste.kgco2e_traitement_kg);
+        }
+      }
+    }
+
+    function medDoseValue(row) {
+      return toNum(firstNonEmpty(row.PA1_mg, row.dosage_mg, row.dose_mg), 0);
+    }
+
+    function medACVBase(row) {
+      return toNum(firstNonEmpty(row.ACV_flacon_total_kgCO2e, row.ACV_medicament_total_avec_reconstitution_kgCO2e), 0);
+    }
+
+    function medicationPlan(molecule, dailyDoseMg, perfsPerDay = 1) {
+      const nPerfs = Math.max(1, Math.ceil(toNum(perfsPerDay, 1)));
+      const dosePerPerfMg = dailyDoseMg / nPerfs;
+      const acc = { medCost: 0, medCo2: 0, reconstitutionCost: 0, reconstitutionCo2: 0, detail: [], warnings: [], dosePerPerfMg, nPerfs };
+      if (!costDb || !costDb.meds || !costParam("inclure_medicament", 1)) return acc;
+      const meds = costDb.meds
+        .filter(row => yKey(row.molecule_outil) === yKey(molecule))
+        .map(row => ({ row, dose: medDoseValue(row) }))
+        .filter(x => x.dose > 0)
+        .sort((a, b) => b.dose - a.dose);
+
+      if (!meds.length) {
+        acc.warnings.push("Médicament non retrouvé dans ACV ATB : coût/CO₂ médicament non calculé.");
+        return acc;
+      }
+
+      // Important : les flacons sont arrondis par perfusion/changement, pas sur la dose journalière poolée.
+      // Exemple : 3 perfusions/j de 1,5 g avec flacons 1 g => 2 flacons par perfusion, donc 6 flacons/j.
+      function chooseVialsForOnePerf(doseMg) {
+        let remaining = doseMg;
+        const chosen = [];
+        while (remaining > 0.001 && chosen.length < 100) {
+          const pick = meds.find(m => m.dose <= remaining + 0.001) || meds[meds.length - 1];
+          chosen.push(pick);
+          remaining -= pick.dose;
+        }
+        return chosen;
+      }
+
+      const chosenOnePerf = chooseVialsForOnePerf(dosePerPerfMg);
+      const grouped = {};
+      chosenOnePerf.forEach(pick => {
+        const key = String(pick.row.presentation_flacon_dosage || `${pick.dose} mg`);
+        if (!grouped[key]) grouped[key] = { pick, nPerPerf: 0, nTotal: 0 };
+        grouped[key].nPerPerf += 1;
+        grouped[key].nTotal += nPerfs;
+      });
+
+      Object.values(grouped).forEach(g => {
+        const row = g.pick.row;
+        const n = g.nTotal;
+        const medCostUnit = toNum(firstNonEmpty(row.cout_unitaire_eur, row.cout_flacon_eur), 0);
+        const medCo2Unit = medACVBase(row);
+        acc.medCost += medCostUnit * n;
+        acc.medCo2 += medCo2Unit * n;
+
+        const reconstCo2 = toNum(row.ACV_DM_reconstitution_kgCO2e, 0) * n;
+        acc.reconstitutionCo2 += reconstCo2;
+        if (costParam("inclure_reconstitution", 1)) {
+          const syringeId = String(row.item_seringue_reconstitution || "").trim();
+          const needleId = String(row.item_aiguille_reconstitution || "").trim();
+          if (syringeId) {
+            const f = itemFactor(syringeId);
+            acc.reconstitutionCost += toNum(f && f.cout_unitaire_eur) * toNum(row.nb_seringue_reconstitution, 0) * n;
+          }
+          if (needleId) {
+            const f = itemFactor(needleId);
+            acc.reconstitutionCost += toNum(f && f.cout_unitaire_eur) * toNum(row.nb_aiguille_reconstitution, 0) * n;
+          }
+        }
+        acc.detail.push(`Médicament : ${n} flacon(s)/j de ${escapeHtml(String(row.presentation_flacon_dosage || ""))} (${formatNumber(g.pick.dose)} mg) = ${g.nPerPerf} flacon(s)/perfusion × ${nPerfs} perfusion(s)/j`);
+      });
+      acc.detail.unshift(`Dose médicament utilisée pour le calcul flacons : ${formatNumber(dosePerPerfMg)} mg par perfusion × ${nPerfs} perfusion(s)/j`);
+      return acc;
+    }
+
+    function computeCostForContext({ molecule, dailyDoseMg, device, row, adminMode, context }) {
+      const methodId = methodIdForDevice(device, adminMode);
+      const perfsPerDay = Math.max(1, toNum(row && row.plan && row.plan.administrationsPerDay, 1));
+      const acc = { context, methodId, perfsPerDay, dmCost: 0, dmCo2: 0, wasteCost: 0, wasteCo2: 0, medCost: 0, medCo2: 0, reconstitutionCost: 0, reconstitutionCo2: 0, locationCost: 0, locationCo2: 0, equipmentCost: 0, equipmentCo2: 0, staffCost: 0, transportCo2: 0, detail: [], warnings: [] };
+
+      deviceItemsForCost(device, adminMode).forEach(([itemId, qty, label]) => addItemCost(acc, itemId, qty * perfsPerDay, label));
+
+      const med = medicationPlan(molecule, dailyDoseMg, perfsPerDay);
+      acc.medCost += med.medCost;
+      acc.medCo2 += med.medCo2;
+      acc.reconstitutionCost += med.reconstitutionCost;
+      acc.reconstitutionCo2 += med.reconstitutionCo2;
+      acc.detail.push(...med.detail);
+      acc.warnings.push(...med.warnings);
+
+      if (costParam("inclure_location", 1) && costDb.locations && costDb.locations[methodId]) {
+        const loc = costDb.locations[methodId];
+        acc.locationCost += toNum(loc.location_par_jour_eur, 0);
+        acc.locationCo2 += toNum(loc.kgco2e_location_par_jour, 0);
+        acc.detail.push(`Location ${methodId} : ${formatNumber(acc.locationCost)} €/j ; ${formatNumber(acc.locationCo2)} kg eq CO₂/j`);
+      }
+
+      if (context === "HOSPITALIER" && costParam("inclure_equipement_hospitalier", 1) && costDb.equipments && costDb.equipments[methodId]) {
+        const eq = costDb.equipments[methodId];
+        acc.equipmentCost += toNum(eq.cout_par_jour, 0);
+        acc.equipmentCo2 += toNum(eq.kgco2e_par_jour, 0);
+        acc.detail.push(`Équipement hospitalier ${methodId} amorti : ${formatNumber(acc.equipmentCost)} €/j ; ${formatNumber(acc.equipmentCo2)} kg eq CO₂/j`);
+      }
+
+      if (context === "HAD") {
+        const had = (costDb.hadRows && (costDb.hadRows.HAD_IDEL || costDb.hadRows["IDEL pour passage"])) || {};
+        const passageCost = toNum(had.cout_passage_ide_eur, costParam("cout_passage_ide_had", 60));
+        const passagesPerDay = perfsPerDay;
+        acc.staffCost += passagesPerDay * passageCost;
+        if (costParam("inclure_transport_had", 0)) {
+          acc.transportCo2 += passagesPerDay * toNum(had.kgco2e_passage_ide, 0);
+        }
+        acc.detail.push(`HAD/IDEL : ${formatNumber(passagesPerDay)} passage(s)/j × ${formatNumber(passageCost)} € ; calculé sur le nombre réel de perfusions/changements par jour`);
+      } else if (context === "HOSPITALIER" && costParam("inclure_temps_humain_hospitalier", 1) && costDb.temps && costDb.temps[methodId]) {
+        const t = costDb.temps[methodId];
+        const prepRate = toNum(costDb.hourly?.[normalize("préparateur pharmacie")]?.cout_horaire_eur, 0);
+        const pharmRate = toNum(costDb.hourly?.[normalize("pharmacien")]?.cout_horaire_eur, 0);
+        const ideRate = toNum(costDb.hourly?.[normalize("IDE hospitalier")]?.cout_horaire_eur, 0);
+        const perPerfCost = (toNum(t.temps_preparation_min) * prepRate + toNum(t.temps_controle_pharma_min) * pharmRate + (toNum(t.temps_pose_ide_min) + toNum(t.temps_retrait_ide_min) + toNum(t.temps_surveillance_min)) * ideRate) / 60;
+        acc.staffCost += perPerfCost * perfsPerDay;
+        acc.detail.push(`Temps hospitalier : ${formatNumber(perfsPerDay)} acte(s)/j × ${formatNumber(perPerfCost)} €/acte`);
+      }
+
+      acc.totalCost = acc.dmCost + acc.wasteCost + acc.medCost + acc.reconstitutionCost + acc.locationCost + acc.equipmentCost + acc.staffCost;
+      acc.totalCo2 = acc.dmCo2 + acc.wasteCo2 + acc.medCo2 + acc.reconstitutionCo2 + acc.locationCo2 + acc.equipmentCo2 + acc.transportCo2;
+      return acc;
+    }
+
+    function renderCostEstimate(rowsToRender, device, adminMode, molecule, dailyDoseMg) {
+      if (!reverseShowCostEl || !reverseShowCostEl.checked) return "";
+      if (!costDbLoaded || !costDb) {
+        return `<div class="cost-warning">Base coût/CO₂ non chargée : déposer <strong>${escapeHtml(BREAKING_STAB_COST_DB_FILE)}</strong> dans le même dossier que l’HTML.</div>`;
+      }
+      const firstRow = rowsToRender && rowsToRender[0];
+      if (!firstRow) return "";
+      const methodId = methodIdForDevice(device, adminMode);
+      const selectedContext = reverseCostContextEl ? reverseCostContextEl.value : "auto";
+      let contexts = allowedContextsForMethod(methodId);
+      if (selectedContext !== "auto") contexts = contexts.filter(c => c === selectedContext);
+      if (!contexts.length) {
+        return `<div class="cost-warning">Méthode non disponible dans le contexte sélectionné : ${escapeHtml(selectedContext)}.</div>`;
+      }
+
+      const estimates = contexts.map(context => computeCostForContext({ molecule, dailyDoseMg, device, row: firstRow, adminMode, context }));
+      const rowsHtml = estimates.map(e => `
+        <tr>
+          <td><strong>${e.context === "HAD" ? "HAD / IDEL" : "Intra-hospitalier"}</strong><br><span class="reverse-source">${escapeHtml(e.methodId)} · ${formatNumber(e.perfsPerDay)} perfusion(s)/changement(s)/j</span></td>
+          <td class="cost-total">${formatNumber(e.totalCost)} € / j</td>
+          <td class="cost-total">${formatNumber(e.totalCo2)} kg eq CO₂ / j</td>
+          <td>DM ${formatNumber(e.dmCost)} € / ${formatNumber(e.dmCo2)} kg<br>Méd. + reconstitution ${formatNumber(e.medCost + e.reconstitutionCost)} € / ${formatNumber(e.medCo2 + e.reconstitutionCo2)} kg<br>Déchets ${formatNumber(e.wasteCost)} € / ${formatNumber(e.wasteCo2)} kg</td>
+          <td>Location/équipement ${formatNumber(e.locationCost + e.equipmentCost)} € / ${formatNumber(e.locationCo2 + e.equipmentCo2)} kg<br>Temps/IDEL ${formatNumber(e.staffCost)} €<br>Transport HAD ${formatNumber(e.transportCo2)} kg</td>
+        </tr>
+      `).join("");
+
+      const detail = estimates.map(e => `
+        <strong>${e.context === "HAD" ? "HAD / IDEL" : "Intra-hospitalier"} :</strong>
+        <ul>${e.detail.map(x => `<li>${x}</li>`).join("")}${e.warnings.map(x => `<li><strong>À compléter :</strong> ${escapeHtml(x)}</li>`).join("")}</ul>
+      `).join("");
+
+      return `
+        <div class="cost-estimate">
+          <div class="cost-estimate-head">
+            <span>Estimation économique et environnementale par jour</span>
+            <span>${escapeHtml(methodId)}</span>
+          </div>
+          <table class="cost-table">
+            <thead><tr><th>Contexte</th><th>Coût total</th><th>Impact total</th><th>Consommables / médicament / déchets</th><th>Organisation</th></tr></thead>
+            <tbody>${rowsHtml}</tbody>
+          </table>
+          <details class="cost-detail">
+            <summary>Voir la logique détaillée de ce calcul</summary>
+            ${detail}
+          </details>
+        </div>
+      `;
     }
 
     async function loadExcelDatabase() {
@@ -1325,6 +1784,8 @@ let data = [];
     const reverseSourceChipsEl = document.getElementById("reverseSourceChips");
     const reverseSourceAllEl = document.getElementById("reverseSourceAll");
     const reverseSourceNoneEl = document.getElementById("reverseSourceNone");
+    const reverseCostContextEl = document.getElementById("reverseCostContext");
+    const reverseShowCostEl = document.getElementById("reverseShowCost");
 
     function normalize(text) {
       return (text || "")
@@ -2141,7 +2602,7 @@ let data = [];
       while ((match = concRegex.exec(cleaned))) {
         const n = Number(match[1]);
         if (!rules.some(r => Math.abs((r.max || 0) - n) < 0.001 || Math.abs((r.min || 0) - n) < 0.001)) {
-          rules.push({ min: n, max: n, type: "point" });
+          rules.push({ min: 0, max: n, type: "max_inferred" });
         }
       }
       return rules.filter(r => Number.isFinite(r.min) && Number.isFinite(r.max));
@@ -2157,15 +2618,9 @@ let data = [];
       if (!rules.length) return { status: "warn", label: "À vérifier", detail: "Stabilité présente mais concentration non extractible automatiquement." };
       if (rules.some(r => conc >= r.min - 0.001 && conc <= r.max + 0.001)) {
         const inferred = rules.some(r => r.type === "max_inferred" && conc <= r.max + 0.001);
-        return {
-          status: "ok",
-          label: "Compatible concentration",
-          detail: inferred
-            ? `Concentration calculée ${formatNumber(conc)} mg/mL ≤ concentration documentée interprétée comme maximum validé.`
-            : `Concentration calculée ${formatNumber(conc)} mg/mL dans la plage ou sous le maximum extrait.`
-        };
+        return { status: "ok", label: "Compatible concentration", detail: inferred ? `Concentration calculée ${formatNumber(conc)} mg/mL ≤ concentration documentée interprétée comme maximum validé.` : `Concentration calculée ${formatNumber(conc)} mg/mL dans la plage ou sous le maximum extrait.` };
       }
-      return { status: "stop", label: "Hors concentration", detail: `Concentration calculée ${formatNumber(conc)} mg/mL au-dessus des concentrations extraites.` };
+      return { status: "stop", label: "Hors concentration", detail: `Concentration calculée ${formatNumber(conc)} mg/mL hors des concentrations extraites.` };
     }
 
     function formatNumber(n) {
@@ -2381,7 +2836,10 @@ let data = [];
       }
 
       const sources = data.filter(d => d.molecule === molecule && reverseSourceMatchesSelection(d.source));
-      const devices = reverseDevices.filter(device => !device.modes || device.modes.includes(adminMode));
+      const selectedCostContext = reverseCostContextEl ? reverseCostContextEl.value : "auto";
+      const devices = reverseDevices
+        .filter(device => !device.modes || device.modes.includes(adminMode))
+        .filter(device => selectedCostContext === "auto" || allowedContextsForMethod(methodIdForDevice(device, adminMode)).includes(selectedCostContext));
       const calculatedDose = adminMode === "discontinuous" ? dailyDoseMg / discontinuousFreq : null;
       const rcpLine = rcpRec
         ? `<br><span class="reverse-source">Fractionnement RCP indicatif : ${escapeHtml(rcpRec.label)} · ${escapeHtml(rcpRec.source)}</span>`
@@ -2430,6 +2888,7 @@ let data = [];
                 <thead><tr><th>Conclusion</th><th>Dose / concentration</th><th>Schéma proposé</th><th>Stabilité / condition</th><th>Source / preuve</th></tr></thead>
                 <tbody>${reverseRowsHtml(rowsToRender, device, adminMode)}</tbody>
               </table>
+              ${renderCostEstimate(rowsToRender, device, adminMode, molecule, dailyDoseMg)}
             </div>
           </article>
         `;
@@ -2545,7 +3004,7 @@ let data = [];
 
 
     tabButtons.forEach(btn => btn.addEventListener("click", () => switchTab(btn.dataset.tab)));
-    [reverseMoleculeEl, reverseDoseEl, reverseUnitEl, reverseAdminModeEl, reverseFreqEl, reverseRcpEl, reverseSourceFilterEl].filter(Boolean).forEach(el => el.addEventListener("input", () => {
+    [reverseMoleculeEl, reverseDoseEl, reverseUnitEl, reverseAdminModeEl, reverseFreqEl, reverseRcpEl, reverseSourceFilterEl, reverseCostContextEl, reverseShowCostEl].filter(Boolean).forEach(el => el.addEventListener("input", () => {
       updateReverseModeUI();
       refreshReverseSourceChips();
       renderReverse();
@@ -2600,7 +3059,7 @@ let data = [];
       if (window.initReverseSafe) window.initReverseSafe();
     }
 
-    loadExcelDatabase()
+    Promise.all([loadExcelDatabase(), loadCostDatabase()])
       .then(bootBreakingStab)
       .catch(error => {
         console.error(error);
