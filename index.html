@@ -1220,6 +1220,26 @@ let data = [];
       return s === "" ? "--" : s;
     }
 
+    function canonicalTextForDedupe(value) {
+      return String(value ?? "")
+        .toLowerCase()
+        .normalize("NFD")
+        .replace(/[\u0300-\u036f]/g, "")
+        .replace(/[’‘´`]/g, "'")
+        .replace(/[–—]/g, "-")
+        .replace(/\bglucose\s*5\s*%/g, "g5")
+        .replace(/\bdextrose\s*5\s*%/g, "g5")
+        .replace(/\bnacl\s*0[,.]9\s*%/g, "nacl 0,9 %")
+        .replace(/\bchlorure de sodium\b/g, "nacl")
+        .replace(/\s+or\s+/g, " ou ")
+        .replace(/\s*;\s*/g, ";")
+        .replace(/\s*\/\s*/g, "/")
+        .replace(/\s+/g, " ")
+        .replace(/\b(\d+)\s*h\b/g, "$1h")
+        .replace(/\b(\d+)\s*j\b/g, "$1j")
+        .trim();
+    }
+
     function parseStabilitySheet(workbook) {
       const sheet = workbook.Sheets["STABILITE"];
       if (!sheet) throw new Error("Onglet STABILITE introuvable dans la base Excel.");
@@ -1241,7 +1261,7 @@ let data = [];
         }))
         .filter(row => {
           const signature = [row.molecule, row.source, row.mode, row.poche, row.pse, row.elastomere, row.anapa, row.micrel, row.reco, row.note, row.pubmed]
-            .map(x => String(x || "").trim().replace(/\s+/g, " ").toLowerCase())
+            .map(canonicalTextForDedupe)
             .join("||");
           if (seen.has(signature)) return false;
           seen.add(signature);
@@ -2135,16 +2155,17 @@ let data = [];
       }
       const rules = parseConcentrationRules(text);
       if (!rules.length) return { status: "warn", label: "À vérifier", detail: "Stabilité présente mais concentration non extractible automatiquement." };
-      if (rules.some(r => r.type !== "point" && conc >= r.min - 0.001 && conc <= r.max + 0.001)) {
-        return { status: "ok", label: "Compatible concentration", detail: `Concentration calculée ${formatNumber(conc)} mg/mL dans la plage ou sous le maximum extrait.` };
+      if (rules.some(r => conc >= r.min - 0.001 && conc <= r.max + 0.001)) {
+        const inferred = rules.some(r => r.type === "max_inferred" && conc <= r.max + 0.001);
+        return {
+          status: "ok",
+          label: "Compatible concentration",
+          detail: inferred
+            ? `Concentration calculée ${formatNumber(conc)} mg/mL ≤ concentration documentée interprétée comme maximum validé.`
+            : `Concentration calculée ${formatNumber(conc)} mg/mL dans la plage ou sous le maximum extrait.`
+        };
       }
-      if (rules.some(r => r.type === "point" && Math.abs(conc - r.max) <= Math.max(0.5, r.max * 0.05))) {
-        return { status: "ok", label: "Concentration documentée", detail: `Concentration calculée ${formatNumber(conc)} mg/mL proche d’une concentration documentée.` };
-      }
-      if (rules.some(r => r.type === "point" && conc < r.max)) {
-        return { status: "warn", label: "Dilution plus faible", detail: `Concentration calculée ${formatNumber(conc)} mg/mL inférieure à une concentration ponctuelle documentée : vérifier l’extrapolation.` };
-      }
-      return { status: "stop", label: "Hors concentration", detail: `Concentration calculée ${formatNumber(conc)} mg/mL hors des concentrations extraites.` };
+      return { status: "stop", label: "Hors concentration", detail: `Concentration calculée ${formatNumber(conc)} mg/mL au-dessus des concentrations extraites.` };
     }
 
     function formatNumber(n) {
