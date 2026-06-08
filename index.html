@@ -1208,7 +1208,7 @@
     <section id="reverseTab" class="tab-panel">
       <section class="panel">
         <p class="reverse-intro">
-          Moteur inversé : sélectionner un anti-infectieux, une dose journalière et le mode d’administration, puis vérifier les dilutions théoriquement possibles selon les données de stabilité intégrées. Les volumes imposés sont préparamétrés avec solvant séparé : poches NaCl 0,9 % ou G5 50/100/250/500 mL, poches en pompe volumétrique classique NaCl 0,9 % ou G5 50/100/250/500 mL en continu, PSE 48 mL NaCl 0,9 % ou G5 en continu uniquement avec changement q24h/q12h/q8h/q6h, pompe Rythmic/Micrel 100/200 mL NaCl 0,9 % ou G5 en continu uniquement, NEOPUMP 500 mL sur 12 h NaCl 0,9 % ou G5 et ANAPA 250 mL sur 12 h NaCl 0,9 % ou G5. En mode continu, les PSE 48 mL et le PSE HAD 24 mL sont proposés avec changement q24h/q12h/q8h/q6h ; le PSE HAD 24 mL réutilise les données de stabilité PSE 48 mL mais calcule la concentration sur 24 mL. En mode discontinu, seules les poches classiques sont proposées. Dans les résultats, les poches sont regroupées par solvant avec le plus petit volume compatible affiché par défaut ; les PSE sont regroupés avec le fractionnement nécessitant le moins de changements affiché par défaut. L’estimation coût/CO₂ par jour est calculée depuis breaking_stab_cost_co2_database.xlsx, avec séparation HAD / intra-hospitalier.
+          Moteur inversé : sélectionner un anti-infectieux, une dose journalière et le mode d’administration, puis vérifier les dilutions théoriquement possibles selon les données de stabilité intégrées. Les volumes imposés sont préparamétrés avec solvant séparé : poches NaCl 0,9 % ou G5 50/100/250/500 mL, poches en pompe volumétrique classique NaCl 0,9 % ou G5 50/100/250/500 mL en continu, PSE 48 mL NaCl 0,9 % ou G5 en continu uniquement avec changement q24h/q12h/q8h/q6h, pompe Rythmic/Micrel 100/200 mL NaCl 0,9 % ou G5 en continu uniquement, NEOPUMP 500 mL sur 12 h NaCl 0,9 % ou G5 et ANAPA 250 mL sur 12 h NaCl 0,9 % ou G5. En mode continu, les PSE 48 mL et le PSE HAD 24 mL sont proposés avec changement q24h/q12h/q8h/q6h ; le PSE HAD 24 mL réutilise les données de stabilité PSE 48 mL mais calcule la concentration sur 24 mL. En mode discontinu, seules les poches classiques sont proposées. Dans les résultats, les poches sont regroupées par solvant avec le plus petit volume compatible affiché par défaut ; les PSE sont regroupés avec le fractionnement nécessitant le moins de changements affiché par défaut. L’estimation coût/CO₂ par jour est calculée depuis breaking_stab_cost_co2_database.xlsx : DM utilisé + tubulures/prolongateurs spécifiques + solvant + flacons + DM de reconstitution si poudre + déchets, avec séparation HAD / intra-hospitalier.
         </p>
         <div class="reverse-grid">
           <div>
@@ -1406,6 +1406,15 @@ let data = [];
         items[id] = row;
       });
 
+      const methodItems = {};
+      sheetRowsByHeader(workbook, "MATERIEL_PAR_METHODE", "methode_id").forEach(row => {
+        const id = String(row.methode_id || "").trim();
+        const item = String(row.item_id || "").trim();
+        if (!id || !item) return;
+        if (!methodItems[id]) methodItems[id] = [];
+        methodItems[id].push(row);
+      });
+
       const locations = {};
       sheetRowsByHeader(workbook, "LOCATIONS", "methode_id").forEach(row => {
         const id = String(row.methode_id || "").trim();
@@ -1451,8 +1460,9 @@ let data = [];
       const meds = sheetRowsByHeader(workbook, "ACV ATB", "molecule_outil")
         .filter(row => String(row.molecule_outil || "").trim());
 
-      return { items, locations, hadRows, temps, hourly, dechets, params, equipments, meds };
+      return { items, methodItems, locations, hadRows, temps, hourly, dechets, params, equipments, meds };
     }
+
 
     async function loadCostDatabase() {
       if (typeof XLSX === "undefined") return;
@@ -1474,6 +1484,12 @@ let data = [];
     function costParam(name, fallback = 0) {
       if (!costDb || !costDb.params || !costDb.params[name]) return fallback;
       return toNum(costDb.params[name].valeur, fallback);
+    }
+
+    function costParamText(name, fallback = "") {
+      if (!costDb || !costDb.params || !costDb.params[name]) return fallback;
+      const v = costDb.params[name].valeur;
+      return String(v ?? "").trim() || fallback;
     }
 
     function itemFactor(itemId) {
@@ -1508,65 +1524,84 @@ let data = [];
 
     function deviceItemsForCost(device, adminMode) {
       const methodId = methodIdForDevice(device, adminMode);
-      const items = [];
-      const bag = solventBagItemId(device.volume);
+      const rows = (costDb && costDb.methodItems && costDb.methodItems[methodId]) || [];
+      const out = [];
 
-      if (methodId === "POCHE_VOL_CONT") {
-        items.push(["POCHE_NACL_G5_" + device.volume + "ML", 1, "poche solvant/contenant"]);
-        items.push(["TUBULURE_POMPE_VOL", 1, "tubulure pompe volumétrique"]);
-        items.push(["RINCAGE_NACL_10ML", costParam("nb_rincages_par_perfusion", 1), "rinçage"]);
-      } else if (methodId === "POCHE_DISCONT") {
-        items.push(["POCHE_NACL_G5_" + device.volume + "ML", 1, "poche solvant/contenant"]);
-        items.push(["PERFUSEUR_STANDARD", 1, "perfuseur standard"]);
-        items.push(["RINCAGE_NACL_10ML", costParam("nb_rincages_par_perfusion", 1), "rinçage"]);
-      } else if (methodId === "PSE_48_CONT") {
-        items.push(["SERINGUE_PP_50ML", 1, "seringue PSE 48 mL"]);
-        items.push([bag, 1, "plus petite poche de solvant pour remplissage"]);
-        items.push(["PROLONGATEUR_PSE", 1, "prolongateur PSE"]);
-        items.push(["RINCAGE_NACL_10ML", costParam("nb_rincages_par_perfusion", 1), "rinçage"]);
-      } else if (methodId === "PSE_24_HAD_CONT") {
-        items.push(["SERINGUE_PP_24ML", 1, "seringue PSE HAD 24 mL"]);
-        items.push([bag, 1, "plus petite poche de solvant pour remplissage"]);
-        items.push(["PROLONGATEUR_PSE", 1, "prolongateur PSE"]);
-        items.push(["RINCAGE_NACL_10ML", costParam("nb_rincages_par_perfusion", 1), "rinçage"]);
-      } else if (methodId === "RYTHMIC_CONT") {
-        items.push([Number(device.volume) <= 100 ? "RESERVOIR_RYTHMIC_100ML" : "RESERVOIR_RYTHMIC_200ML", 1, "DM captif Rythmic"]);
-        items.push([bag, 1, "plus petite poche de solvant pour remplissage"]);
-        items.push(["RINCAGE_NACL_10ML", costParam("nb_rincages_par_perfusion", 1), "rinçage"]);
-      } else if (methodId === "ANAPA_CONT") {
-        items.push(["DISPOSITIF_ANAPA_250", 1, "DM unique ANAPA"]);
-        items.push([bag, 1, "plus petite poche de solvant pour remplissage"]);
-        items.push(["RINCAGE_NACL_10ML", costParam("nb_rincages_par_perfusion", 1), "rinçage"]);
-      } else if (methodId === "NEOPUMP_CONT") {
-        items.push(["NEOPUMP_500", 1, "DM unique NEOPUMP"]);
-        items.push([bag, 1, "plus petite poche de solvant pour remplissage"]);
-        items.push(["RINCAGE_NACL_10ML", costParam("nb_rincages_par_perfusion", 1), "rinçage"]);
+      function shouldCount(row) {
+        const flag = normalize(String(row.a_compter || "oui"));
+        if (!flag || flag === "oui" || flag === "yes" || flag === "1" || flag.includes("selon volume")) return true;
+        if (flag.includes("a confirmer")) return costParam("inclure_items_a_confirmer", 1) === 1;
+        if (flag.startsWith("non")) return false;
+        return true;
       }
-      return items;
+
+      function resolveItemId(row) {
+        const raw = String(row.item_id || "").trim();
+        if (!raw) return "";
+        if (raw === "POCHE_NACL_G5_VARIABLE") return solventBagItemId(device.volume);
+        if (raw === "RESERVOIR_RYTHMIC_100ML" && Number(device.volume) > 100) return "";
+        if (raw === "RESERVOIR_RYTHMIC_200ML" && Number(device.volume) <= 100) return "";
+        if (raw === "NEOPUMP_250" && Number(device.volume) > 250) return "";
+        if (raw === "NEOPUMP_500" && Number(device.volume) <= 250 && itemFactor("NEOPUMP_250")) return "NEOPUMP_250";
+        return raw;
+      }
+
+      rows.forEach(row => {
+        if (!shouldCount(row)) return;
+        const itemId = resolveItemId(row);
+        if (!itemId) return;
+        const qty = Math.max(0, toNum(row.quantite_par_perfusion, 1));
+        if (!qty) return;
+        const label = String(row.item_libelle || itemId).trim();
+        const comment = String(row.commentaire || "").trim();
+        out.push([itemId, qty, comment ? `${label} — ${comment}` : label]);
+      });
+
+      // Fallback de sécurité si l'onglet MATERIEL_PAR_METHODE est absent ou incomplet.
+      if (!out.length) {
+        const bag = solventBagItemId(device.volume);
+        if (methodId === "POCHE_VOL_CONT") out.push([bag, 1, "poche solvant/contenant"], ["TUBULURE_POMPE_VOL", 1, "tubulure pompe volumétrique"]);
+        if (methodId === "POCHE_DISCONT") out.push([bag, 1, "poche solvant/contenant"], ["PERFUSEUR_STANDARD", 1, "perfuseur standard"]);
+        if (methodId === "PSE_48_CONT") out.push(["SERINGUE_PP_50ML", 1, "seringue PSE 48 mL"], [bag, 1, "solvant final"], ["PROLONGATEUR_PSE", 1, "prolongateur PSE"]);
+        if (methodId === "PSE_24_HAD_CONT") out.push(["SERINGUE_PP_24ML", 1, "seringue PSE HAD 24 mL"], [bag, 1, "solvant final"], ["PROLONGATEUR_PSE", 1, "prolongateur PSE"]);
+        if (methodId === "RYTHMIC_CONT") out.push([Number(device.volume) <= 100 ? "RESERVOIR_RYTHMIC_100ML" : "RESERVOIR_RYTHMIC_200ML", 1, "DM captif Rythmic"], [bag, 1, "solvant final"]);
+        if (methodId === "ANAPA_CONT") out.push(["DISPOSITIF_ANAPA_250", 1, "DM unique ANAPA"], [bag, 1, "solvant final"]);
+        if (methodId === "NEOPUMP_CONT") out.push(["NEOPUMP_500", 1, "DM unique NEOPUMP"], [bag, 1, "solvant final"]);
+      }
+      return out;
     }
 
-    function addItemCost(acc, itemId, qty, detailLabel) {
+
+    function addItemCost(acc, itemId, qty, detailLabel, bucket = "dm") {
       const f = itemFactor(itemId);
+      const q = Math.max(0, toNum(qty, 0));
+      if (!q) return;
       if (!f) {
         acc.warnings.push(`Item non paramétré : ${itemId}`);
         return;
       }
-      const cost = toNum(f.cout_unitaire_eur) * qty;
-      const co2 = toNum(f.kgco2e_unitaire) * qty;
-      acc.dmCost += cost;
-      acc.dmCo2 += co2;
-      acc.detail.push(`${detailLabel || itemId} : ${formatNumber(qty)} × ${itemId} = ${formatNumber(cost)} € ; ${formatNumber(co2)} kg eq CO₂`);
+      const cost = toNum(f.cout_unitaire_eur) * q;
+      const co2 = toNum(f.kgco2e_unitaire) * q;
+      if (bucket === "reconstitution") {
+        acc.reconstitutionCost += cost;
+        acc.reconstitutionCo2 += co2;
+      } else {
+        acc.dmCost += cost;
+        acc.dmCo2 += co2;
+      }
+      acc.detail.push(`${detailLabel || itemId} : ${formatNumber(q)} × ${itemId} = ${formatNumber(cost)} € ; ${formatNumber(co2)} kg eq CO₂`);
 
       if (costParam("inclure_dechets", 1)) {
         const wasteType = String(f.type_dechet || "").trim();
         const waste = costDb.dechets && costDb.dechets[wasteType];
         if (waste) {
-          const kg = toNum(f.poids_g) / 1000 * qty;
+          const kg = toNum(f.poids_g) / 1000 * q;
           acc.wasteCost += kg * toNum(waste.cout_traitement_eur_kg);
           acc.wasteCo2 += kg * toNum(waste.kgco2e_traitement_kg);
         }
       }
     }
+
 
     function medDoseValue(row) {
       return toNum(firstNonEmpty(row.PA1_mg, row.dosage_mg, row.dose_mg), 0);
@@ -1579,7 +1614,7 @@ let data = [];
     function medicationPlan(molecule, dailyDoseMg, perfsPerDay = 1) {
       const nPerfs = Math.max(1, Math.ceil(toNum(perfsPerDay, 1)));
       const dosePerPerfMg = dailyDoseMg / nPerfs;
-      const acc = { medCost: 0, medCo2: 0, reconstitutionCost: 0, reconstitutionCo2: 0, detail: [], warnings: [], dosePerPerfMg, nPerfs };
+      const acc = { medCost: 0, medCo2: 0, reconstitutionCost: 0, reconstitutionCo2: 0, wasteCost: 0, wasteCo2: 0, dmCost: 0, dmCo2: 0, detail: [], warnings: [], dosePerPerfMg, nPerfs };
       if (!costDb || !costDb.meds || !costParam("inclure_medicament", 1)) return acc;
       const meds = costDb.meds
         .filter(row => yKey(row.molecule_outil) === yKey(molecule))
@@ -1592,7 +1627,14 @@ let data = [];
         return acc;
       }
 
-      // Important : les flacons sont arrondis par perfusion/changement, pas sur la dose journalière poolée.
+      function requiresReconstitution(row) {
+        const status = normalize(String(row.statut_preparation || ""));
+        const hypo = normalize(String(row.hypothese_reconstitution || ""));
+        if (status.includes("pret") || status.includes("pre dilue") || status.includes("pret a etre")) return false;
+        return status.includes("reconstitution") || status.includes("poudre") || hypo.includes("reconstitution") || hypo.includes("poudre");
+      }
+
+      // Les flacons sont arrondis par administration/changement, puis multipliés par le nombre d'administrations/j.
       // Exemple : 3 perfusions/j de 1,5 g avec flacons 1 g => 2 flacons par perfusion, donc 6 flacons/j.
       function chooseVialsForOnePerf(doseMg) {
         let remaining = doseMg;
@@ -1618,29 +1660,37 @@ let data = [];
         const row = g.pick.row;
         const n = g.nTotal;
         const medCostUnit = toNum(firstNonEmpty(row.cout_unitaire_eur, row.cout_flacon_eur), 0);
-        const medCo2Unit = medACVBase(row);
+        const medCo2Unit = medACVBase(row); // PA + conditionnement du médicament uniquement, sans DM de perfusion.
         acc.medCost += medCostUnit * n;
         acc.medCo2 += medCo2Unit * n;
+        acc.detail.push(`Médicament : ${n} flacon(s)/j de ${escapeHtml(String(row.presentation_flacon_dosage || ""))} (${formatNumber(g.pick.dose)} mg) = ${g.nPerPerf} flacon(s)/administration × ${nPerfs} administration(s)/j`);
 
-        const reconstCo2 = toNum(row.ACV_DM_reconstitution_kgCO2e, 0) * n;
-        acc.reconstitutionCo2 += reconstCo2;
-        if (costParam("inclure_reconstitution", 1)) {
-          const syringeId = String(row.item_seringue_reconstitution || "").trim();
-          const needleId = String(row.item_aiguille_reconstitution || "").trim();
-          if (syringeId) {
-            const f = itemFactor(syringeId);
-            acc.reconstitutionCost += toNum(f && f.cout_unitaire_eur) * toNum(row.nb_seringue_reconstitution, 0) * n;
-          }
-          if (needleId) {
-            const f = itemFactor(needleId);
-            acc.reconstitutionCost += toNum(f && f.cout_unitaire_eur) * toNum(row.nb_aiguille_reconstitution, 0) * n;
-          }
+        if (costParam("inclure_reconstitution", 1) && requiresReconstitution(row)) {
+          const syringeId = String(row.item_seringue_reconstitution || "").trim() || "SERINGUE_PP_24ML";
+          const syringeQty = toNum(row.nb_seringue_reconstitution, 1) * n;
+          addItemCost(acc, syringeId, syringeQty, "Reconstitution — seringue", "reconstitution");
+
+          const needleId = String(row.item_aiguille_reconstitution || "").trim() || "AIGUILLE_RECONSTITUTION";
+          const needleQty = toNum(row.nb_aiguille_reconstitution, 1) * n;
+          addItemCost(acc, needleId, needleQty, "Reconstitution — aiguille/dispositif de transfert", "reconstitution");
+
+          const solventId = costParamText("item_solvant_reconstitution", "RINCAGE_NACL_10ML");
+          const solventQty = costParam("nb_solvant_10ml_par_flacon_reconstitution", 1) * n;
+          addItemCost(acc, solventId, solventQty, "Reconstitution — solvant 10 mL NaCl/EPPI", "reconstitution");
+
+          const wipeId = costParamText("item_lingette_reconstitution", "COMPRESSE_ANTISEPTIQUE");
+          const wipeQty = costParam("nb_lingette_par_flacon_reconstitution", 1) * n;
+          addItemCost(acc, wipeId, wipeQty, "Reconstitution — lingette/compresse antiseptique", "reconstitution");
+
+          acc.detail.push(`Reconstitution : ${n} flacon(s)/j nécessitant poudre/reconstitution → seringue + aiguille/transfert + solvant 10 mL + lingette par flacon.`);
+        } else {
+          acc.detail.push(`Reconstitution : aucune DM de reconstitution ajoutée pour cette présentation (prête à être diluée/administrée ou paramètre désactivé).`);
         }
-        acc.detail.push(`Médicament : ${n} flacon(s)/j de ${escapeHtml(String(row.presentation_flacon_dosage || ""))} (${formatNumber(g.pick.dose)} mg) = ${g.nPerPerf} flacon(s)/perfusion × ${nPerfs} perfusion(s)/j`);
       });
-      acc.detail.unshift(`Dose médicament utilisée pour le calcul flacons : ${formatNumber(dosePerPerfMg)} mg par perfusion × ${nPerfs} perfusion(s)/j`);
+      acc.detail.unshift(`Dose utilisée pour les flacons : ${formatNumber(dosePerPerfMg)} mg par administration × ${nPerfs} administration(s)/j`);
       return acc;
     }
+
 
     function computeCostForContext({ molecule, dailyDoseMg, device, row, adminMode, context }) {
       const methodId = methodIdForDevice(device, adminMode);
@@ -1654,6 +1704,8 @@ let data = [];
       acc.medCo2 += med.medCo2;
       acc.reconstitutionCost += med.reconstitutionCost;
       acc.reconstitutionCo2 += med.reconstitutionCo2;
+      acc.wasteCost += med.wasteCost || 0;
+      acc.wasteCo2 += med.wasteCo2 || 0;
       acc.detail.push(...med.detail);
       acc.warnings.push(...med.warnings);
 
