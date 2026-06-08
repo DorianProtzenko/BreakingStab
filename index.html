@@ -1208,7 +1208,7 @@
     <section id="reverseTab" class="tab-panel">
       <section class="panel">
         <p class="reverse-intro">
-          Moteur inversé : sélectionner un anti-infectieux, une dose journalière et le mode d’administration, puis vérifier les dilutions théoriquement possibles selon les données de stabilité intégrées. Les volumes imposés sont préparamétrés avec solvant séparé : poches NaCl 0,9 % ou G5 50/100/250/500 mL, poches en pompe volumétrique classique NaCl 0,9 % ou G5 50/100/250/500 mL en continu, PSE 48 mL NaCl 0,9 % ou G5 en continu uniquement avec changement q24h/q12h/q8h/q6h, pompe Rythmic/Micrel 100/200 mL NaCl 0,9 % ou G5 en continu uniquement, NEOPUMP 500 mL sur 12 h NaCl 0,9 % ou G5 et ANAPA 250 mL sur 12 h NaCl 0,9 % ou G5. En mode continu, les PSE 48 mL et le PSE HAD 24 mL sont proposés avec changement q24h/q12h/q8h/q6h ; le PSE HAD 24 mL réutilise les données de stabilité PSE 48 mL mais calcule la concentration sur 24 mL. En mode discontinu, seules les poches classiques sont proposées. Dans les résultats, les poches sont regroupées par solvant avec le plus petit volume compatible affiché par défaut ; les PSE sont regroupés avec le fractionnement nécessitant le moins de changements affiché par défaut. L’estimation coût/CO₂ par jour est calculée depuis breaking_stab_cost_co2_database.xlsx : DM utilisé + tubulures/prolongateurs spécifiques + solvant + flacons + DM de reconstitution si poudre + déchets, avec séparation HAD / intra-hospitalier.
+          Moteur inversé : sélectionner un anti-infectieux, une dose journalière et le mode d’administration, puis vérifier les dilutions théoriquement possibles selon les données de stabilité intégrées. Les volumes imposés sont préparamétrés avec solvant séparé : poches NaCl 0,9 % ou G5 50/100/250/500 mL, poches en pompe volumétrique classique NaCl 0,9 % ou G5 50/100/250/500 mL en continu, PSE 48 mL NaCl 0,9 % ou G5 en continu uniquement avec changement q24h/q12h/q8h/q6h, pompe Rythmic/Micrel 100/200 mL NaCl 0,9 % ou G5 en continu uniquement, NEOPUMP 500 mL sur 12 h NaCl 0,9 % ou G5 et ANAPA 250 mL sur 12 h NaCl 0,9 % ou G5. En mode continu, les PSE 48 mL et le PSE HAD 24 mL sont proposés avec changement q24h/q12h/q8h/q6h ; le PSE HAD 24 mL réutilise les données de stabilité PSE 48 mL mais calcule la concentration sur 24 mL. En mode discontinu, seules les poches classiques sont proposées. Dans les résultats, les poches sont regroupées par solvant avec le plus petit volume compatible affiché par défaut ; les PSE sont regroupés avec le fractionnement nécessitant le moins de changements affiché par défaut. L’estimation coût/CO₂ par jour est calculée depuis breaking_stab_cost_co2_database.xlsx : DM utilisé + tubulures/prolongateurs spécifiques + solvant + flacons + DM de reconstitution si poudre + déchets, avec séparation HAD / intra-hospitalier et amortissement des pompes hospitalières au jour d’utilisation.
         </p>
         <div class="reverse-grid">
           <div>
@@ -1716,11 +1716,31 @@ let data = [];
         acc.detail.push(`Location ${methodId} : ${formatNumber(acc.locationCost)} €/j ; ${formatNumber(acc.locationCo2)} kg eq CO₂/j`);
       }
 
-      if (context === "HOSPITALIER" && costParam("inclure_equipement_hospitalier", 1) && costDb.equipments && costDb.equipments[methodId]) {
-        const eq = costDb.equipments[methodId];
-        acc.equipmentCost += toNum(eq.cout_par_jour, 0);
-        acc.equipmentCo2 += toNum(eq.kgco2e_par_jour, 0);
-        acc.detail.push(`Équipement hospitalier ${methodId} amorti : ${formatNumber(acc.equipmentCost)} €/j ; ${formatNumber(acc.equipmentCo2)} kg eq CO₂/j`);
+      if (context === "HOSPITALIER" && costParam("inclure_equipement_hospitalier", 1)) {
+        const eq = costDb.equipments && costDb.equipments[methodId];
+        if (eq) {
+          const coutAchat = toNum(eq["Coût à l'achat"], 0);
+          const acvFabrication = toNum(eq.ACV, 0);
+          const joursUtilisation = toNum(firstNonEmpty(eq["Jours d'utilisation"], eq.jours_utilisation, eq.jours_d_utilisation), 0);
+          const administrationsTotales = toNum(firstNonEmpty(eq.administrations_totales, eq.nb_total_administrations), 0);
+          const administrationsJourMoyen = Math.max(1, toNum(firstNonEmpty(eq.administrations_jour_moyen, eq.administrations_par_jour_moyen), 1));
+
+          let coutParJour = toNum(firstNonEmpty(eq.cout_par_jour, eq.cout_jour, eq.cout_par_jour_utilisation), 0);
+          if (!coutParJour && coutAchat > 0 && joursUtilisation > 0) coutParJour = coutAchat / joursUtilisation;
+          if (!coutParJour && toNum(eq.cout_par_administration, 0)) coutParJour = toNum(eq.cout_par_administration, 0) * administrationsJourMoyen;
+          if (!coutParJour && administrationsTotales > 0 && coutAchat > 0) coutParJour = (coutAchat / administrationsTotales) * administrationsJourMoyen;
+
+          let co2ParJour = toNum(firstNonEmpty(eq.kgco2e_par_jour, eq.co2_par_jour, eq.kgco2e_jour), 0);
+          if (!co2ParJour && acvFabrication > 0 && joursUtilisation > 0) co2ParJour = acvFabrication / joursUtilisation;
+          if (!co2ParJour && toNum(eq.kgco2e_par_administration, 0)) co2ParJour = toNum(eq.kgco2e_par_administration, 0) * administrationsJourMoyen;
+          if (!co2ParJour && administrationsTotales > 0 && acvFabrication > 0) co2ParJour = (acvFabrication / administrationsTotales) * administrationsJourMoyen;
+
+          acc.equipmentCost += coutParJour;
+          acc.equipmentCo2 += co2ParJour;
+          acc.detail.push(`Équipement hospitalier ${methodId} amorti au jour d’utilisation : ${formatNumber(coutParJour)} €/j ; ${formatNumber(co2ParJour)} kg eq CO₂/j. Le nombre d’administrations du scénario (${formatNumber(perfsPerDay)}/j) reste utilisé pour les consommables, flacons, reconstitution, temps IDE et déchets.`);
+        } else {
+          acc.warnings.push(`Aucun amortissement équipement renseigné pour ${methodId} dans l’onglet DM Perfusion de l’hôpital.`);
+        }
       }
 
       if (context === "HAD") {
@@ -1747,6 +1767,16 @@ let data = [];
       return acc;
     }
 
+
+    function costConfigLabel(device, row, adminMode, dailyDoseMg, context) {
+      const plan = row && row.plan ? row.plan : { administrationsPerDay: 1, label: "" };
+      const methodId = methodIdForDevice(device, adminMode);
+      const doseForContainer = row && Number.isFinite(Number(row.doseForContainer)) ? Number(row.doseForContainer) : dailyDoseMg;
+      const conc = row && Number.isFinite(Number(row.conc)) ? Number(row.conc) : (doseForContainer / (device.volume || 1));
+      const contextLabel = context === "HAD" ? "HAD / IDEL" : "intra-hospitalier";
+      return `${reverseDeviceLabel(device, adminMode)} · ${solventLabel(device.solvent)} · ${device.volume} mL · ${formatNumber(plan.administrationsPerDay || 1)} perfusion(s)/changement(s)/j · ${formatNumber(doseForContainer)} mg/contenant · ${formatNumber(conc)} mg/mL · ${contextLabel}`;
+    }
+
     function renderCostEstimate(rowsToRender, device, adminMode, molecule, dailyDoseMg) {
       if (!reverseShowCostEl || !reverseShowCostEl.checked) return "";
       if (!costDbLoaded || !costDb) {
@@ -1762,19 +1792,23 @@ let data = [];
         return `<div class="cost-warning">Méthode non disponible dans le contexte sélectionné : ${escapeHtml(selectedContext)}.</div>`;
       }
 
-      const estimates = contexts.map(context => computeCostForContext({ molecule, dailyDoseMg, device, row: firstRow, adminMode, context }));
+      const estimates = contexts.map(context => {
+        const e = computeCostForContext({ molecule, dailyDoseMg, device, row: firstRow, adminMode, context });
+        e.configLabel = costConfigLabel(device, firstRow, adminMode, dailyDoseMg, context);
+        return e;
+      });
       const rowsHtml = estimates.map(e => `
         <tr>
-          <td><strong>${e.context === "HAD" ? "HAD / IDEL" : "Intra-hospitalier"}</strong><br><span class="reverse-source">${escapeHtml(e.methodId)} · ${formatNumber(e.perfsPerDay)} perfusion(s)/changement(s)/j</span></td>
+          <td><strong>${e.context === "HAD" ? "HAD / IDEL" : "Intra-hospitalier"}</strong><br><span class="reverse-source">${escapeHtml(e.configLabel)}</span></td>
           <td class="cost-total">${formatNumber(e.totalCost)} € / j</td>
           <td class="cost-total">${formatNumber(e.totalCo2)} kg eq CO₂ / j</td>
           <td>DM ${formatNumber(e.dmCost)} € / ${formatNumber(e.dmCo2)} kg<br>Méd. + reconstitution ${formatNumber(e.medCost + e.reconstitutionCost)} € / ${formatNumber(e.medCo2 + e.reconstitutionCo2)} kg<br>Déchets ${formatNumber(e.wasteCost)} € / ${formatNumber(e.wasteCo2)} kg</td>
-          <td>Location/équipement ${formatNumber(e.locationCost + e.equipmentCost)} € / ${formatNumber(e.locationCo2 + e.equipmentCo2)} kg<br>Temps/IDEL ${formatNumber(e.staffCost)} €<br>Transport HAD ${formatNumber(e.transportCo2)} kg</td>
+          <td>Location/équipement amorti ${formatNumber(e.locationCost + e.equipmentCost)} € / ${formatNumber(e.locationCo2 + e.equipmentCo2)} kg<br>Temps/IDEL ${formatNumber(e.staffCost)} €<br>Transport HAD ${formatNumber(e.transportCo2)} kg</td>
         </tr>
       `).join("");
 
       const detail = estimates.map(e => `
-        <strong>${e.context === "HAD" ? "HAD / IDEL" : "Intra-hospitalier"} :</strong>
+        <strong>${e.context === "HAD" ? "HAD / IDEL" : "Intra-hospitalier"} — configuration chiffrée :</strong><br><span class="reverse-source">${escapeHtml(e.configLabel)}</span>
         <ul>${e.detail.map(x => `<li>${x}</li>`).join("")}${e.warnings.map(x => `<li><strong>À compléter :</strong> ${escapeHtml(x)}</li>`).join("")}</ul>
       `).join("");
 
@@ -1782,7 +1816,7 @@ let data = [];
         <div class="cost-estimate">
           <div class="cost-estimate-head">
             <span>Estimation économique et environnementale par jour</span>
-            <span>${escapeHtml(methodId)}</span>
+            <span>${escapeHtml(estimates.map(e => e.configLabel).join(" | "))}</span>
           </div>
           <table class="cost-table">
             <thead><tr><th>Contexte</th><th>Coût total</th><th>Impact total</th><th>Consommables / médicament / déchets</th><th>Organisation</th></tr></thead>
@@ -2598,8 +2632,8 @@ let data = [];
 
     const reverseDevices = [
       ...[50, 100, 250, 500].flatMap(volume => [
-        { key: "poche", label: `Poche NaCl 0,9 % ${volume} mL`, labelContinuous: `Poche en pompe volumétrique classique · NaCl 0,9 % ${volume} mL`, labelDiscontinuous: `Poche classique · NaCl 0,9 % ${volume} mL`, volume, solvent: "nacl", sourceFilter: null, forcedTime: "Continu = poche en pompe volumétrique classique ; discontinu = poche classique", modes: ["continuous", "discontinuous"] },
-        { key: "poche", label: `Poche G5 ${volume} mL`, labelContinuous: `Poche en pompe volumétrique classique · G5 ${volume} mL`, labelDiscontinuous: `Poche classique · G5 ${volume} mL`, volume, solvent: "g5", sourceFilter: null, forcedTime: "Continu = poche en pompe volumétrique classique ; discontinu = poche classique", modes: ["continuous", "discontinuous"] }
+        { key: "poche", label: `Poche NaCl 0,9 % ${volume} mL`, labelContinuous: `Poche en pompe volumétrique classique · NaCl 0,9 % ${volume} mL`, labelDiscontinuous: `Poche classique · NaCl 0,9 % ${volume} mL`, volume, solvent: "nacl", sourceFilter: null, forcedTime: "", modes: ["continuous", "discontinuous"] },
+        { key: "poche", label: `Poche G5 ${volume} mL`, labelContinuous: `Poche en pompe volumétrique classique · G5 ${volume} mL`, labelDiscontinuous: `Poche classique · G5 ${volume} mL`, volume, solvent: "g5", sourceFilter: null, forcedTime: "", modes: ["continuous", "discontinuous"] }
       ]),
       ...[24, 12, 8, 6].flatMap(hours => [
         { key: "pse", label: `PSE seringue PP 48 mL · NaCl 0,9 % · q${hours}h`, volume: 48, solvent: "nacl", sourceFilter: null, forcedTime: `${hours} h par PSE 48 mL`, forcedHours: hours, modes: ["continuous"] },
@@ -2859,7 +2893,7 @@ let data = [];
             <td>${formatNumber(r.doseForContainer)} mg / ${device.volume} mL<br><span class="reverse-source">${formatNumber(r.conc)} mg/mL · ${escapeHtml(solventLabel(device.solvent))}</span></td>
             <td>${escapeHtml(r.plan.label)}<br><span class="reverse-source">${escapeHtml(r.assessment.detail)}</span></td>
             <td>${escapeHtml(stabilityExcerpt(r.value))}</td>
-            <td>${reverseDisplaySource(r.source.source)}<br><span class="reverse-source">${escapeHtml(r.conf.label)} · ${escapeHtml(device.forcedTime)}</span></td>
+            <td>${reverseDisplaySource(r.source.source)}<br><span class="reverse-source">${escapeHtml(r.conf.label)}${device.forcedTime ? ` · ${escapeHtml(device.forcedTime)}` : ""}</span></td>
           </tr>
         `).join("");
     }
