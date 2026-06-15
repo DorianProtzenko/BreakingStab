@@ -1657,7 +1657,7 @@ let data = [];
         if (methodId === "PSE_24_HAD_CONT") out.push(["SERINGUE_PP_24ML", 1, "seringue PSE HAD 24 mL"], [bag, 1, "solvant final"], ["PROLONGATEUR_PSE", 1, "prolongateur PSE"]);
         if (methodId === "RYTHMIC_CONT") out.push([Number(device.volume) <= 100 ? "RESERVOIR_RYTHMIC_100ML" : "RESERVOIR_RYTHMIC_200ML", 1, "DM captif Rythmic"], [bag, 1, "solvant final"]);
         if (methodId === "ANAPA_CONT") out.push(["DISPOSITIF_ANAPA_250", 1, "DM unique ANAPA"], [bag, 1, "solvant final"]);
-        if (methodId === "NEOPUMP_CONT") out.push(["NEOPUMP_500", 1, "DM unique NEOPUMP"], [bag, 1, "solvant final"]);
+        if (methodId === "NEOPUMP_CONT" || methodId === "ELASTOMERE_GENERIC") out.push(["NEOPUMP_500", 1, methodId === "ELASTOMERE_GENERIC" ? "DM unique diffuseur élastomère générique (proxy NEOPUMP)" : "DM unique NEOPUMP"], [bag, 1, "solvant final"]);
       }
       return out;
     }
