@@ -1074,6 +1074,31 @@
       font-weight: 750;
     }
 
+
+    .message-clear {
+      margin: 12px 20px;
+      padding: 12px 14px;
+      border-radius: 14px;
+      background: #eef7ff;
+      border: 1px solid #bad7ee;
+      color: #234761;
+      font-size: 0.88rem;
+      line-height: 1.45;
+    }
+
+    .message-clear strong { color: var(--green); }
+
+    .message-clear.warning {
+      background: #fff4e8;
+      border-color: #efd0a3;
+      color: #8a5a14;
+    }
+
+    .message-clear ul {
+      margin: 7px 0 0 18px;
+      padding: 0;
+    }
+
     @media (max-width: 760px) {
       .cost-controls { grid-template-columns: 1fr; }
     }
@@ -1873,6 +1898,17 @@ let data = [];
     const reverseCostContextEl = document.getElementById("reverseCostContext");
     const reverseShowCostEl = document.getElementById("reverseShowCost");
 
+
+    function refreshSourceFilterOptions() {
+      if (!sourceEl || !Array.isArray(data)) return;
+      const current = sourceEl.value;
+      const sources = [...new Set(data.map(row => String(row.source || "").trim()).filter(Boolean))]
+        .sort((a, b) => a.localeCompare(b, "fr"));
+      const options = [["", "Toutes"], ...sources.map(src => [src, src])];
+      sourceEl.innerHTML = options.map(([value, label]) => `<option value="${escapeHtml(value)}">${escapeHtml(label)}</option>`).join("");
+      if (options.some(([value]) => value === current)) sourceEl.value = current;
+    }
+
     function normalize(text) {
       return (text || "")
         .toString()
@@ -1917,7 +1953,7 @@ let data = [];
     function confidenceLevel(item) {
       const src = normalize(item.source);
       if (src.includes("spilf") || src.includes("sfpc")) return { level: "A", label: "Niveau de preuve : A" };
-      if (src.includes("pubmed")) return { level: "B", label: "Niveau de preuve : B" };
+      if (src.includes("pubmed") || src.includes("stabilis")) return { level: "B", label: "Niveau de preuve : B" };
       if (src.includes("neopump") || src.includes("micrel") || src.includes("anapa")) return { level: "C", label: "Niveau de preuve : C" };
       return { level: "D", label: "Niveau de preuve : D" };
     }
@@ -2353,6 +2389,47 @@ let data = [];
       };
     }
 
+    function isAmoxicillinMolecule(name) {
+      return yKey(name) === yKey("Amoxicilline");
+    }
+
+    function isNonTransposableIvStandardSource(item) {
+      const low = normalize(rowText(item));
+      const dialysisLike = low.includes("dialyse peritoneale") || low.includes("extraneal") || low.includes("dianeal");
+      return dialysisLike && (low.includes("non transposable") || low.includes("ne pas assimiler"));
+    }
+
+    function simplifiedDeviceSummaryForMolecule(molecule, key) {
+      if (!isAmoxicillinMolecule(molecule)) return null;
+      const simplified = {
+        poche: "NaCl 0,9 % uniquement en prolongé : 5 mg/mL → 24 h ; jusqu’à 20 mg/mL → 12 h. En pratique, privilégier un fractionnement q12h pour les doses usuelles élevées ; G5 à éviter en prolongé.",
+        pse: "PSE 24 h non retenu. Utiliser plutôt pompe volumétrique/fractionnement 12 h ou vérifier une procédure locale validée.",
+        elastomere: "Élastomère : données CHICAS par dose journalière avec fractionnement ; 6–12 g/j généralement q12h, 15 g/j plutôt q8h, 16 g/j non recommandé en élastomère selon CHICAS.",
+        anapa: "ANAPA : NaCl 0,9 %, 25 mg/mL, stabilité 12 h selon données laboratoire.",
+        micrel: "Pas de donnée IV standard exploitable : la ligne Micrel concerne Extraneal®/Dianéal® en dialyse péritonéale, non assimilable à l’amoxicilline IV en NaCl 0,9 %."
+      };
+      return simplified[key] ? { text: formatStabilityValue(simplified[key]), discordant: false } : null;
+    }
+
+    function summarizeDeviceForGroup(group, key) {
+      const simplified = simplifiedDeviceSummaryForMolecule(group.molecule, key);
+      return simplified || summarizeDevice(group.sources, key);
+    }
+
+    function moleculeClearMessage(group) {
+      if (!isAmoxicillinMolecule(group.molecule)) return "";
+      return `
+        <div class="message-clear warning">
+          <strong>Lecture simplifiée amoxicilline :</strong> beaucoup de lignes décrivent des cas différents ; l’outil affiche donc une synthèse opérationnelle plutôt que toutes les variantes en façade.
+          <ul>
+            <li><strong>IV standard :</strong> NaCl 0,9 % ; 24 h seulement à faible concentration, sinon fractionnement 12 h.</li>
+            <li><strong>G5 :</strong> stabilité courte, déconseillé pour une perfusion prolongée.</li>
+            <li><strong>Micrel :</strong> donnée dialyse péritonéale non transposable à l’IV standard, gardée uniquement en détail de source.</li>
+          </ul>
+        </div>
+      `;
+    }
+
     function sourceDetails(sources) {
       return sources.map(s => `
         <details class="source-details">
@@ -2402,7 +2479,8 @@ let data = [];
 
     function comparisonTable(sources) {
       if (!showComparisonEl.checked || sources.length < 2) return "";
-      return `<details class="source-details" open>
+      const openAttr = sources.length <= 5 ? " open" : "";
+      return `<details class="source-details"${openAttr}>
         <summary>Comparaison rapide des sources</summary>
         <div class="source-content">
           <table class="compare-table">
@@ -2500,6 +2578,7 @@ let data = [];
       { key: "lyon_berard", label: "Recommandations Centre Léon Bérard / Lyon Bérard", patterns: ["centre leon berard", "centre léon bérard", "lyon berard", "lyon bérard", "had"] },
       { key: "tourcoing", label: "Référentiel ATB Tourcoing", patterns: ["tourcoing"] },
       { key: "spilf_sfpc", label: "Référentiel SPILF/SFPC", patterns: ["spilf", "sfpc", "splif"] },
+      { key: "stabilis", label: "Stabilis 4.0 – PVC / stabilité", patterns: ["stabilis", "polyvinyl", "polyvinyle", "pvc"] },
       { key: "anapa", label: "ANAPA – données laboratoire", patterns: ["anapa"] },
       { key: "micrel", label: "Micrel/Rythmic – données laboratoire", patterns: ["micrel", "rythmic"] },
       { key: "neopump", label: "NEOPUMP – données fabricant élastomère", patterns: ["neopump", "easyflow"] },
@@ -2794,6 +2873,7 @@ let data = [];
     }
 
     function sourceMatchesDevice(source, device) {
+      if (isNonTransposableIvStandardSource(source)) return false;
       const s = normalize(source.source || "");
       if (!device.sourceFilter) return true;
       return s.includes(device.sourceFilter);
@@ -2896,6 +2976,15 @@ let data = [];
             <td>${reverseDisplaySource(r.source.source)}<br><span class="reverse-source">${escapeHtml(r.conf.label)}${device.forcedTime ? ` · ${escapeHtml(device.forcedTime)}` : ""}</span></td>
           </tr>
         `).join("");
+    }
+
+    function reverseMoleculeClearMessage(molecule) {
+      if (!isAmoxicillinMolecule(molecule)) return "";
+      return `
+        <div class="message-clear warning">
+          <strong>Amoxicilline — interprétation volontairement simplifiée :</strong> le moteur écarte les lignes non transposables à l’IV standard, notamment la donnée Micrel sur solutés de dialyse péritonéale. Les options restantes doivent être lues comme des schémas fractionnés NaCl 0,9 % ; G5 est considéré comme défavorable en prolongé.
+        </div>
+      `;
     }
 
     function bindReverseHiddenToggle() {
@@ -3021,7 +3110,7 @@ let data = [];
         ? `<button id="reverseHiddenToggle" type="button" class="reverse-hidden-toggle">Afficher les autres possibilités / options non retenues</button>
            <div id="reverseHiddenOptions" class="reverse-hidden-options reverse-hidden">${auditHtml}</div>`
         : "";
-      reverseResultsEl.innerHTML = intro + hiddenBlock;
+      reverseResultsEl.innerHTML = reverseMoleculeClearMessage(molecule) + intro + hiddenBlock;
       bindReverseHiddenToggle();
     }
 
@@ -3051,11 +3140,11 @@ let data = [];
       }
 
       resultsEl.innerHTML = grouped.map(group => {
-        const poche = summarizeDevice(group.sources, "poche");
-        const pse = summarizeDevice(group.sources, "pse");
-        const elastomere = summarizeDevice(group.sources, "elastomere");
-        const anapa = summarizeDevice(group.sources, "anapa");
-        const micrel = summarizeDevice(group.sources, "micrel");
+        const poche = summarizeDeviceForGroup(group, "poche");
+        const pse = summarizeDeviceForGroup(group, "pse");
+        const elastomere = summarizeDeviceForGroup(group, "elastomere");
+        const anapa = summarizeDeviceForGroup(group, "anapa");
+        const micrel = summarizeDeviceForGroup(group, "micrel");
         const confidence = sourceConfidence(group.sources);
         const hasDiscordance = [poche, pse, elastomere, anapa, micrel].some(x => x.discordant);
 
@@ -3070,6 +3159,7 @@ let data = [];
             </div>
             ${metaBadges(group)}
             ${primaryRecommendation(group)}
+            ${moleculeClearMessage(group)}
             <div class="device-grid">
               ${deviceBlock("Poche soluté", poche.text, poche.discordant)}
               ${deviceBlock("PSE seringue PP", pse.text, pse.discordant)}
@@ -3137,6 +3227,7 @@ let data = [];
     });
 
     function bootBreakingStab() {
+      refreshSourceFilterOptions();
       initReverseMoleculeList();
       initReverseSourceFilter();
       updateReverseModeUI();
