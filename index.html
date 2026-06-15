@@ -650,6 +650,66 @@
       font-weight: 750;
     }
 
+    .source-config-list {
+      display: grid;
+      gap: 10px;
+    }
+
+    .source-config-row {
+      padding: 10px;
+      border-radius: 14px;
+      background: #ffffff;
+      border: 1px solid #e4ddd0;
+    }
+
+    .source-config-row.diff {
+      border-left: 4px solid #b42323;
+      padding-left: 10px;
+      color: inherit;
+      font-weight: inherit;
+      background: #fff8f8;
+    }
+
+    .source-config-row.multi {
+      border-left: 4px solid #1d5f8f;
+      padding-left: 10px;
+      background: #f8fbff;
+    }
+
+    .config-source-line {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+      align-items: center;
+      margin-bottom: 8px;
+    }
+
+    .config-source-badge {
+      display: inline-flex;
+      align-items: center;
+      max-width: 100%;
+      padding: 5px 8px;
+      border-radius: 999px;
+      background: #eef7ff;
+      border: 1px solid #cddbe8;
+      color: var(--green);
+      font-size: 0.72rem;
+      font-weight: 850;
+      line-height: 1.15;
+    }
+
+    .config-source-badge.config-extra {
+      background: #f6f1e8;
+      color: #5f574b;
+      border-color: #ded7ca;
+    }
+
+    .config-source-count {
+      color: var(--muted);
+      font-size: 0.72rem;
+      font-weight: 800;
+    }
+
     .notes {
       border-top: 1px solid var(--border);
       padding: 14px 20px;
@@ -1074,31 +1134,6 @@
       font-weight: 750;
     }
 
-
-    .message-clear {
-      margin: 12px 20px;
-      padding: 12px 14px;
-      border-radius: 14px;
-      background: #eef7ff;
-      border: 1px solid #bad7ee;
-      color: #234761;
-      font-size: 0.88rem;
-      line-height: 1.45;
-    }
-
-    .message-clear strong { color: var(--green); }
-
-    .message-clear.warning {
-      background: #fff4e8;
-      border-color: #efd0a3;
-      color: #8a5a14;
-    }
-
-    .message-clear ul {
-      margin: 7px 0 0 18px;
-      padding: 0;
-    }
-
     @media (max-width: 760px) {
       .cost-controls { grid-template-columns: 1fr; }
     }
@@ -1335,6 +1370,12 @@
 let data = [];
     let yCompat = {};
     const BREAKING_STAB_DB_FILE = "breaking_stab_database.xlsx";
+    const BREAKING_STAB_DB_CANDIDATES = [
+      BREAKING_STAB_DB_FILE,
+      "breaking_stab_database(5)(1).xlsx",
+      "breaking_stab_database(5).xlsx",
+      "breaking_stab_database(4).xlsx"
+    ];
     const BREAKING_STAB_COST_DB_FILE = "breaking_stab_cost_co2_database.xlsx";
     let costDb = null;
     let costDbLoaded = false;
@@ -1351,6 +1392,31 @@ let data = [];
       return s === "" ? "--" : s;
     }
 
+    async function fetchFirstAvailable(filenames) {
+      const tried = [];
+      for (const filename of filenames) {
+        if (!filename || tried.includes(filename)) continue;
+        tried.push(filename);
+        try {
+          const response = await fetch(filename, { cache: "no-store" });
+          if (response.ok) return { response, filename };
+        } catch (error) {
+          // On continue : cela permet un fallback local ou GitHub Pages.
+        }
+      }
+      throw new Error(`Aucun fichier Excel trouvé. Fichiers testés : ${tried.join(", ")}`);
+    }
+
+    function displayCleanText(value) {
+      return String(value ?? "")
+        .replaceAll("Pompe volumétriqueric pump", "Pompe volumétrique")
+        .replaceAll("pompe volumétriqueric pump", "pompe volumétrique")
+        .replaceAll("Non recommandéommandé", "Non recommandé")
+        .replaceAll("non recommandéommandé", "non recommandé")
+        .replaceAll("Stab ", "stab ")
+        .trim();
+    }
+
     function parseStabilitySheet(workbook) {
       const sheet = workbook.Sheets["STABILITE"];
       if (!sheet) throw new Error("Onglet STABILITE introuvable dans la base Excel.");
@@ -1359,15 +1425,15 @@ let data = [];
         .filter(row => normalizeExcelBoolean(row.actif) && String(row.molecule || "").trim())
         .map(row => ({
           molecule: String(row.molecule || "").trim(),
-          source: String(row.source || row.source_originale || "").trim(),
-          mode: cleanExcelText(row.mode),
-          poche: cleanExcelText(row.poche),
-          pse: cleanExcelText(row.pse),
-          elastomere: cleanExcelText(row.elastomere),
-          anapa: cleanExcelText(row.anapa),
-          micrel: cleanExcelText(row.micrel),
-          reco: cleanExcelText(row.reco),
-          note: cleanExcelText(row.note),
+          source: displayCleanText(row.source || row.source_originale || ""),
+          mode: cleanExcelText(displayCleanText(row.mode)),
+          poche: cleanExcelText(displayCleanText(row.poche)),
+          pse: cleanExcelText(displayCleanText(row.pse)),
+          elastomere: cleanExcelText(displayCleanText(row.elastomere)),
+          anapa: cleanExcelText(displayCleanText(row.anapa)),
+          micrel: cleanExcelText(displayCleanText(row.micrel)),
+          reco: cleanExcelText(displayCleanText(row.reco)),
+          note: cleanExcelText(displayCleanText(row.note)),
           pubmed: String(row.pubmed || "").trim()
         }))
         .filter(row => {
@@ -1859,13 +1925,13 @@ let data = [];
       if (typeof XLSX === "undefined") {
         throw new Error("Librairie XLSX non chargée : vérifier la connexion ou intégrer xlsx.full.min.js localement.");
       }
-      const response = await fetch(BREAKING_STAB_DB_FILE, { cache: "no-store" });
-      if (!response.ok) throw new Error(`Base Excel introuvable : ${BREAKING_STAB_DB_FILE}`);
+      const { response, filename } = await fetchFirstAvailable(BREAKING_STAB_DB_CANDIDATES);
       const buffer = await response.arrayBuffer();
       const workbook = XLSX.read(buffer, { type: "array" });
       data = parseStabilitySheet(workbook);
       yCompat = parseYSiteSheet(workbook);
-      console.info(`Breaking Stab : ${data.length} lignes stabilité et ${Object.keys(yCompat).length} molécules Y-site chargées depuis Excel.`);
+      refreshSourceSelectorsFromExcel();
+      console.info(`Breaking Stab : ${data.length} lignes stabilité et ${Object.keys(yCompat).length} molécules Y-site chargées depuis ${filename}.`);
     }
 
     const resultsEl = document.getElementById("results");
@@ -1898,15 +1964,25 @@ let data = [];
     const reverseCostContextEl = document.getElementById("reverseCostContext");
     const reverseShowCostEl = document.getElementById("reverseShowCost");
 
+    function sourceKeyFromLabel(label, index = 0) {
+      const key = yKey(label);
+      return key ? `src_${key}` : `src_${index}`;
+    }
 
-    function refreshSourceFilterOptions() {
-      if (!sourceEl || !Array.isArray(data)) return;
-      const current = sourceEl.value;
-      const sources = [...new Set(data.map(row => String(row.source || "").trim()).filter(Boolean))]
+    function refreshSourceSelectorsFromExcel() {
+      const sources = [...new Set(data.map(row => row.source).filter(Boolean))]
         .sort((a, b) => a.localeCompare(b, "fr"));
-      const options = [["", "Toutes"], ...sources.map(src => [src, src])];
-      sourceEl.innerHTML = options.map(([value, label]) => `<option value="${escapeHtml(value)}">${escapeHtml(label)}</option>`).join("");
-      if (options.some(([value]) => value === current)) sourceEl.value = current;
+
+      if (sourceEl) {
+        sourceEl.innerHTML = '<option value="">Toutes</option>' +
+          sources.map(source => `<option value="${escapeHtml(source)}">${escapeHtml(source)}</option>`).join("");
+      }
+
+      reverseSourceCatalog = sources.map((source, index) => ({
+        key: sourceKeyFromLabel(source, index),
+        label: source,
+        patterns: [source]
+      }));
     }
 
     function normalize(text) {
@@ -1953,7 +2029,7 @@ let data = [];
     function confidenceLevel(item) {
       const src = normalize(item.source);
       if (src.includes("spilf") || src.includes("sfpc")) return { level: "A", label: "Niveau de preuve : A" };
-      if (src.includes("pubmed") || src.includes("stabilis")) return { level: "B", label: "Niveau de preuve : B" };
+      if (src.includes("pubmed")) return { level: "B", label: "Niveau de preuve : B" };
       if (src.includes("neopump") || src.includes("micrel") || src.includes("anapa")) return { level: "C", label: "Niveau de preuve : C" };
       return { level: "D", label: "Niveau de preuve : D" };
     }
@@ -2379,55 +2455,78 @@ let data = [];
       `;
     }
 
+    function splitStabilityConfigurations(value) {
+      const raw = String(value || "").trim();
+      if (!raw || raw === "--") return [];
+      return raw
+        .split(/\s+\/\s+|\n+/)
+        .map(x => x.trim())
+        .filter(Boolean);
+    }
+
+    function normalizedConfigurationKey(value) {
+      return normalize(displayCleanText(value))
+        .replace(/\s+/g, " ")
+        .replace(/[.;]+$/g, "")
+        .trim();
+    }
+
+    function sourceShortLabel(source) {
+      return displayCleanText(source || "Source non précisée")
+        .replace(/^Référentiel\s+/i, "")
+        .replace(/^Doc interne\s+/i, "")
+        .replace(/^Données internes\s+/i, "")
+        .replace(/\s+–\s+données internes.*$/i, "")
+        .trim();
+    }
+
     function summarizeDevice(sources, key) {
-      const values = sources.map(s => s[key]).filter(v => v && v !== "--");
-      if (!values.length) return { text: "--", discordant: false };
-      const unique = [...new Set(values)];
-      return {
-        text: unique.map(v => `<div class="${unique.length > 1 ? "diff" : ""}">${formatStabilityValue(v)}</div>`).join(""),
-        discordant: unique.length > 1
-      };
-    }
+      const entries = [];
+      sources.forEach(sourceRow => {
+        splitStabilityConfigurations(sourceRow[key]).forEach((variant, index) => {
+          entries.push({
+            source: sourceRow.source || "Source non précisée",
+            variant: displayCleanText(variant),
+            index
+          });
+        });
+      });
 
-    function isAmoxicillinMolecule(name) {
-      return yKey(name) === yKey("Amoxicilline");
-    }
+      if (!entries.length) return { text: "--", discordant: false };
 
-    function isNonTransposableIvStandardSource(item) {
-      const low = normalize(rowText(item));
-      const dialysisLike = low.includes("dialyse peritoneale") || low.includes("extraneal") || low.includes("dianeal");
-      return dialysisLike && (low.includes("non transposable") || low.includes("ne pas assimiler"));
-    }
+      const grouped = new Map();
+      entries.forEach(entry => {
+        const norm = normalizedConfigurationKey(entry.variant);
+        if (!grouped.has(norm)) grouped.set(norm, { text: entry.variant, sources: [], count: 0 });
+        const group = grouped.get(norm);
+        if (!group.sources.includes(entry.source)) group.sources.push(entry.source);
+        group.count += 1;
+      });
 
-    function simplifiedDeviceSummaryForMolecule(molecule, key) {
-      if (!isAmoxicillinMolecule(molecule)) return null;
-      const simplified = {
-        poche: "NaCl 0,9 % uniquement en prolongé : 5 mg/mL → 24 h ; jusqu’à 20 mg/mL → 12 h. En pratique, privilégier un fractionnement q12h pour les doses usuelles élevées ; G5 à éviter en prolongé.",
-        pse: "PSE 24 h non retenu. Utiliser plutôt pompe volumétrique/fractionnement 12 h ou vérifier une procédure locale validée.",
-        elastomere: "Élastomère : données CHICAS par dose journalière avec fractionnement ; 6–12 g/j généralement q12h, 15 g/j plutôt q8h, 16 g/j non recommandé en élastomère selon CHICAS.",
-        anapa: "ANAPA : NaCl 0,9 %, 25 mg/mL, stabilité 12 h selon données laboratoire.",
-        micrel: "Pas de donnée IV standard exploitable : la ligne Micrel concerne Extraneal®/Dianéal® en dialyse péritonéale, non assimilable à l’amoxicilline IV en NaCl 0,9 %."
-      };
-      return simplified[key] ? { text: formatStabilityValue(simplified[key]), discordant: false } : null;
-    }
+      const groups = Array.from(grouped.values());
+      const sourceCount = new Set(entries.map(entry => entry.source)).size;
+      const discordant = groups.length > 1 && sourceCount > 1;
+      const multiConfig = groups.length > 1;
 
-    function summarizeDeviceForGroup(group, key) {
-      const simplified = simplifiedDeviceSummaryForMolecule(group.molecule, key);
-      return simplified || summarizeDevice(group.sources, key);
-    }
+      const html = '<div class="source-config-list">' + groups.map(group => {
+        const rowClass = discordant ? "diff" : (multiConfig ? "multi" : "");
+        const maxBadges = 3;
+        const badges = group.sources.slice(0, maxBadges)
+          .map(source => `<span class="config-source-badge">${escapeHtml(sourceShortLabel(source))}</span>`)
+          .join("");
+        const more = group.sources.length > maxBadges
+          ? `<span class="config-source-badge config-extra">+${group.sources.length - maxBadges} source${group.sources.length - maxBadges > 1 ? "s" : ""}</span>`
+          : "";
+        const count = group.count > group.sources.length
+          ? `<span class="config-source-count">${group.count} configuration${group.count > 1 ? "s" : ""} regroupée${group.count > 1 ? "s" : ""}</span>`
+          : "";
+        return `<div class="source-config-row ${rowClass}">
+          <div class="config-source-line">${badges}${more}${count}</div>
+          ${formatStabilityValue(group.text)}
+        </div>`;
+      }).join("") + '</div>';
 
-    function moleculeClearMessage(group) {
-      if (!isAmoxicillinMolecule(group.molecule)) return "";
-      return `
-        <div class="message-clear warning">
-          <strong>Lecture simplifiée amoxicilline :</strong> beaucoup de lignes décrivent des cas différents ; l’outil affiche donc une synthèse opérationnelle plutôt que toutes les variantes en façade.
-          <ul>
-            <li><strong>IV standard :</strong> NaCl 0,9 % ; 24 h seulement à faible concentration, sinon fractionnement 12 h.</li>
-            <li><strong>G5 :</strong> stabilité courte, déconseillé pour une perfusion prolongée.</li>
-            <li><strong>Micrel :</strong> donnée dialyse péritonéale non transposable à l’IV standard, gardée uniquement en détail de source.</li>
-          </ul>
-        </div>
-      `;
+      return { text: html, discordant };
     }
 
     function sourceDetails(sources) {
@@ -2479,8 +2578,7 @@ let data = [];
 
     function comparisonTable(sources) {
       if (!showComparisonEl.checked || sources.length < 2) return "";
-      const openAttr = sources.length <= 5 ? " open" : "";
-      return `<details class="source-details"${openAttr}>
+      return `<details class="source-details" open>
         <summary>Comparaison rapide des sources</summary>
         <div class="source-content">
           <table class="compare-table">
@@ -2573,12 +2671,11 @@ let data = [];
 
 
 
-    const reverseSourceCatalog = [
+    let reverseSourceCatalog = [
       { key: "chicas", label: "Doc interne CHICAS", patterns: ["doc interne", "chicas"] },
       { key: "lyon_berard", label: "Recommandations Centre Léon Bérard / Lyon Bérard", patterns: ["centre leon berard", "centre léon bérard", "lyon berard", "lyon bérard", "had"] },
       { key: "tourcoing", label: "Référentiel ATB Tourcoing", patterns: ["tourcoing"] },
       { key: "spilf_sfpc", label: "Référentiel SPILF/SFPC", patterns: ["spilf", "sfpc", "splif"] },
-      { key: "stabilis", label: "Stabilis 4.0 – PVC / stabilité", patterns: ["stabilis", "polyvinyl", "polyvinyle", "pvc"] },
       { key: "anapa", label: "ANAPA – données laboratoire", patterns: ["anapa"] },
       { key: "micrel", label: "Micrel/Rythmic – données laboratoire", patterns: ["micrel", "rythmic"] },
       { key: "neopump", label: "NEOPUMP – données fabricant élastomère", patterns: ["neopump", "easyflow"] },
@@ -2873,7 +2970,6 @@ let data = [];
     }
 
     function sourceMatchesDevice(source, device) {
-      if (isNonTransposableIvStandardSource(source)) return false;
       const s = normalize(source.source || "");
       if (!device.sourceFilter) return true;
       return s.includes(device.sourceFilter);
@@ -2976,15 +3072,6 @@ let data = [];
             <td>${reverseDisplaySource(r.source.source)}<br><span class="reverse-source">${escapeHtml(r.conf.label)}${device.forcedTime ? ` · ${escapeHtml(device.forcedTime)}` : ""}</span></td>
           </tr>
         `).join("");
-    }
-
-    function reverseMoleculeClearMessage(molecule) {
-      if (!isAmoxicillinMolecule(molecule)) return "";
-      return `
-        <div class="message-clear warning">
-          <strong>Amoxicilline — interprétation volontairement simplifiée :</strong> le moteur écarte les lignes non transposables à l’IV standard, notamment la donnée Micrel sur solutés de dialyse péritonéale. Les options restantes doivent être lues comme des schémas fractionnés NaCl 0,9 % ; G5 est considéré comme défavorable en prolongé.
-        </div>
-      `;
     }
 
     function bindReverseHiddenToggle() {
@@ -3110,7 +3197,7 @@ let data = [];
         ? `<button id="reverseHiddenToggle" type="button" class="reverse-hidden-toggle">Afficher les autres possibilités / options non retenues</button>
            <div id="reverseHiddenOptions" class="reverse-hidden-options reverse-hidden">${auditHtml}</div>`
         : "";
-      reverseResultsEl.innerHTML = reverseMoleculeClearMessage(molecule) + intro + hiddenBlock;
+      reverseResultsEl.innerHTML = intro + hiddenBlock;
       bindReverseHiddenToggle();
     }
 
@@ -3140,11 +3227,11 @@ let data = [];
       }
 
       resultsEl.innerHTML = grouped.map(group => {
-        const poche = summarizeDeviceForGroup(group, "poche");
-        const pse = summarizeDeviceForGroup(group, "pse");
-        const elastomere = summarizeDeviceForGroup(group, "elastomere");
-        const anapa = summarizeDeviceForGroup(group, "anapa");
-        const micrel = summarizeDeviceForGroup(group, "micrel");
+        const poche = summarizeDevice(group.sources, "poche");
+        const pse = summarizeDevice(group.sources, "pse");
+        const elastomere = summarizeDevice(group.sources, "elastomere");
+        const anapa = summarizeDevice(group.sources, "anapa");
+        const micrel = summarizeDevice(group.sources, "micrel");
         const confidence = sourceConfidence(group.sources);
         const hasDiscordance = [poche, pse, elastomere, anapa, micrel].some(x => x.discordant);
 
@@ -3159,7 +3246,6 @@ let data = [];
             </div>
             ${metaBadges(group)}
             ${primaryRecommendation(group)}
-            ${moleculeClearMessage(group)}
             <div class="device-grid">
               ${deviceBlock("Poche soluté", poche.text, poche.discordant)}
               ${deviceBlock("PSE seringue PP", pse.text, pse.discordant)}
@@ -3227,7 +3313,6 @@ let data = [];
     });
 
     function bootBreakingStab() {
-      refreshSourceFilterOptions();
       initReverseMoleculeList();
       initReverseSourceFilter();
       updateReverseModeUI();
@@ -3241,7 +3326,7 @@ let data = [];
       .catch(error => {
         console.error(error);
         countPill.textContent = "Base Excel non chargée";
-        resultsEl.innerHTML = `<div class="no-result">Impossible de charger la base Excel <strong>${escapeHtml(BREAKING_STAB_DB_FILE)}</strong>. Dépose le fichier dans le même dossier que index.html sur GitHub Pages, puis recharge la page.<br><br>${escapeHtml(error.message)}</div>`;
+        resultsEl.innerHTML = `<div class="no-result">Impossible de charger la base Excel. Dépose le fichier <strong>${escapeHtml(BREAKING_STAB_DB_FILE)}</strong> dans le même dossier que index.html sur GitHub Pages, puis recharge la page.<br><br>${escapeHtml(error.message)}</div>`;
         reverseCountPill.textContent = "Base Excel non chargée";
         reverseResultsEl.innerHTML = `<div class="no-result">Base Excel non chargée.</div>`;
       });
