@@ -814,22 +814,55 @@
       flex-wrap: wrap;
       gap: 10px;
       margin: 18px 0 22px;
+      align-items: stretch;
     }
 
     .tab-button {
       width: auto;
-      min-width: 170px;
+      min-width: 230px;
+      display: flex;
+      flex-direction: column;
+      align-items: flex-start;
+      justify-content: center;
+      gap: 2px;
+      text-align: left;
+      padding: 13px 18px;
       background: #ffffff;
       color: var(--green);
-      border-color: var(--border);
+      border: 1px solid var(--border);
+      border-radius: 16px;
       box-shadow: 0 8px 20px rgba(23, 38, 55, 0.06);
     }
 
+    .tab-button:hover {
+      transform: translateY(-1px);
+      filter: none;
+      box-shadow: 0 12px 26px rgba(23, 38, 55, 0.12);
+    }
+
+    .tab-title { font-size: 1.04rem; font-weight: 850; line-height: 1.1; }
+    .tab-sub { font-size: 0.78rem; font-weight: 650; color: var(--muted); line-height: 1.2; }
+    .tab-star {
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      font-size: 0.64rem;
+      font-weight: 900;
+      letter-spacing: 0.07em;
+      text-transform: uppercase;
+      color: #b8801b;
+      margin-bottom: 1px;
+    }
+
     .tab-button.active {
-      background: var(--green);
+      background: linear-gradient(135deg, var(--green), #16527c);
       color: #ffffff;
       border-color: var(--green);
+      box-shadow: 0 14px 30px rgba(29, 95, 143, 0.28);
     }
+
+    .tab-button.active .tab-sub { color: rgba(255, 255, 255, 0.82); }
+    .tab-button.active .tab-star { color: #ffe2a6; }
 
     .tab-panel { display: none; }
     .tab-panel.active { display: block; }
@@ -1169,6 +1202,117 @@
       .recommendation { grid-template-columns: 1fr; }
       .header-tags { justify-content: flex-start; max-width: none; }
     }
+    /* --- Sources : pastilles colorées par niveau de preuve --- */
+    .src-chip-wrap {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+      align-items: center;
+    }
+
+    .src-chip {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 4px 10px 4px 8px;
+      border-radius: 999px;
+      font-size: 0.76rem;
+      font-weight: 800;
+      line-height: 1.2;
+      border: 1px solid transparent;
+      white-space: nowrap;
+    }
+
+    .src-dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 999px;
+      flex: 0 0 auto;
+      box-shadow: 0 0 0 2px rgba(255, 255, 255, 0.6) inset;
+    }
+
+    .src-chip.src-a { background: #e7f5eb; color: #176234; border-color: #b9dfc5; }
+    .src-chip.src-a .src-dot { background: #2e9b56; }
+    .src-chip.src-b { background: #eef2ff; color: #2845bd; border-color: #c7cff7; }
+    .src-chip.src-b .src-dot { background: #4862e0; }
+    .src-chip.src-c { background: #fff4e8; color: #8a5a14; border-color: #efd0a3; }
+    .src-chip.src-c .src-dot { background: #d98a1e; }
+    .src-chip.src-d { background: #f1f3f6; color: #4a5568; border-color: #d6dde6; }
+    .src-chip.src-d .src-dot { background: #8b97a8; }
+
+    .source-details summary .src-chip-wrap { display: inline-flex; vertical-align: middle; }
+
+    /* --- Légende des sources --- */
+    .source-legend {
+      margin-top: 14px;
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      background: #ffffff;
+      overflow: hidden;
+    }
+
+    .source-legend summary {
+      cursor: pointer;
+      padding: 11px 14px;
+      font-size: 0.86rem;
+      font-weight: 800;
+      color: var(--green);
+      list-style: none;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .source-legend summary::before {
+      content: "?";
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 18px;
+      height: 18px;
+      border-radius: 999px;
+      background: var(--green-soft);
+      color: var(--green);
+      font-size: 0.78rem;
+      font-weight: 900;
+      flex: 0 0 auto;
+    }
+
+    .source-legend[open] summary { border-bottom: 1px solid var(--border); }
+
+    .source-legend-body {
+      padding: 13px 14px;
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      align-items: center;
+    }
+
+    .source-legend-note {
+      flex-basis: 100%;
+      margin: 4px 0 0;
+      color: var(--muted);
+      font-size: 0.82rem;
+      line-height: 1.45;
+    }
+
+    /* --- Lisibilité des tableaux --- */
+    .compare-table tbody tr:nth-child(even),
+    .reverse-table tbody tr:nth-child(even),
+    .y-table tbody tr:nth-child(even) { background: #fbfcfe; }
+
+    .reverse-table tbody tr:hover,
+    .compare-table tbody tr:hover { background: #f1f7fd; }
+
+    .reverse-table td:first-child { font-weight: 750; }
+
+    .reverse-empty { text-align: left; line-height: 1.5; }
+    .reverse-empty strong { display: block; color: var(--green); font-size: 1.02rem; margin-bottom: 4px; }
+
+    @media (max-width: 720px) {
+      .tab-button { width: 100%; min-width: 0; }
+      .src-chip { white-space: normal; }
+    }
   </style>
 </head>
 <body>
@@ -1178,7 +1322,8 @@
         <div class="eyebrow">Décarbonons la pharmacie · Outil pratique</div>
         <h1>Breaking Stab</h1>
         <p>
-          Outil de compilation de données de stabilité pour perfusion en intra et extra-hospitalier.
+          Données de stabilité des anti-infectieux en perfusion, à l’hôpital comme à domicile.
+          Partez d’une dose pour trouver les dilutions tenables, ou explorez la base molécule par molécule.
         </p>
         <div class="hero-meta">
           <a href="https://dorianprotzenko.github.io/decarboner-pharmacie/" target="_blank" rel="noopener">Rattaché au projet “Décarbonons la pharmacie”</a>
@@ -1190,12 +1335,19 @@
       </section>
     </header>
 
-    <nav class="tabs" aria-label="Modes de recherche">
-      <button type="button" class="tab-button active" data-tab="browseTab">Base stabilité</button>
-      <button type="button" class="tab-button" data-tab="reverseTab">Moteur inversé dose → dilution</button>
+    <nav class="tabs" aria-label="Modes de l’outil">
+      <button type="button" class="tab-button active" data-tab="reverseTab">
+        <span class="tab-star">★ Outil principal</span>
+        <span class="tab-title">Moteur inversé</span>
+        <span class="tab-sub">Dose du jour → dilutions possibles</span>
+      </button>
+      <button type="button" class="tab-button" data-tab="browseTab">
+        <span class="tab-title">Base stabilité</span>
+        <span class="tab-sub">Consulter molécule par molécule</span>
+      </button>
     </nav>
 
-    <section id="browseTab" class="tab-panel active">
+    <section id="browseTab" class="tab-panel">
     <section class="panel">
       <div class="filters">
         <div>
@@ -1260,15 +1412,25 @@
         <span class="pill" id="countPill">0 résultat</span>
         <span>Les champs “--” indiquent qu’aucune donnée exploitable n’a été retrouvée dans les sources intégrées.</span>
       </div>
+      <details class="source-legend">
+        <summary>Comprendre les sources et les niveaux de preuve</summary>
+        <div class="source-legend-body">
+          <span class="src-chip src-a"><span class="src-dot"></span>A · Référentiel — SPILF/SFPC</span>
+          <span class="src-chip src-b"><span class="src-dot"></span>B · Littérature — PubMed</span>
+          <span class="src-chip src-c"><span class="src-dot"></span>C · Données labo / fabricant — ANAPA, Micrel, NEOPUMP</span>
+          <span class="src-chip src-d"><span class="src-dot"></span>D · Doc interne / local — CHICAS, Tourcoing, Léon Bérard…</span>
+          <p class="source-legend-note">La couleur de chaque source indique son niveau de preuve. La donnée de meilleur niveau prime à l’affichage, mais toute décision clinique impose de revenir à la source d’origine.</p>
+        </div>
+      </details>
     </section>
 
     <section id="results" class="results"></section>
     </section>
 
-    <section id="reverseTab" class="tab-panel">
+    <section id="reverseTab" class="tab-panel active">
       <section class="panel">
         <p class="reverse-intro">
-          Moteur inversé : sélectionner un anti-infectieux, une dose journalière et le mode d’administration, puis vérifier les dilutions théoriquement possibles selon les données de stabilité intégrées. 
+          <strong>Trois étapes :</strong> choisissez la molécule, saisissez la dose journalière et le mode d’administration, puis lancez le calcul. L’outil propose les dilutions théoriquement tenables d’après les données de stabilité intégrées, classées du schéma le plus simple au plus exigeant.
         </p>
         <div class="reverse-grid">
           <div>
@@ -1326,6 +1488,16 @@
             <button id="reverseSourceAll" type="button" class="source-mini-action">Tout cocher</button>
             <button id="reverseSourceNone" type="button" class="source-mini-action">Tout décocher</button>
           </div>
+          <details class="source-legend">
+            <summary>Comprendre les sources et les niveaux de preuve</summary>
+            <div class="source-legend-body">
+              <span class="src-chip src-a"><span class="src-dot"></span>A · Référentiel — SPILF/SFPC</span>
+              <span class="src-chip src-b"><span class="src-dot"></span>B · Littérature — PubMed</span>
+              <span class="src-chip src-c"><span class="src-dot"></span>C · Données labo / fabricant — ANAPA, Micrel, NEOPUMP</span>
+              <span class="src-chip src-d"><span class="src-dot"></span>D · Doc interne / local — CHICAS, Tourcoing, Léon Bérard…</span>
+              <p class="source-legend-note">La couleur de chaque source indique son niveau de preuve. La donnée de meilleur niveau prime à l’affichage, mais toute décision clinique impose de revenir à la source d’origine.</p>
+            </div>
+          </details>
         </div>
 
         <div class="cost-controls">
@@ -2532,7 +2704,7 @@ let data = [];
     function sourceDetails(sources) {
       return sources.map(s => `
         <details class="source-details">
-          <summary>${s.source}</summary>
+          <summary><span class="src-chip-wrap">${sourceChipsFromText(s.source)}</span></summary>
           <div class="source-content">
             <p><strong>Modalité :</strong> ${s.mode}</p>
             <p><strong>Poche :</strong> ${s.poche || "--"}</p>
@@ -2586,7 +2758,7 @@ let data = [];
             <tbody>${sources.map(s => {
               const c = confidenceLevel(s);
               const hasData = value => value && value !== "--";
-              return `<tr><td>${s.source}</td><td>${c.label}</td><td>${s.reco || "--"}</td><td>${hasData(s.poche) ? "oui" : "--"}</td><td>${hasData(s.pse) ? "oui" : "--"}</td><td>${hasData(s.elastomere) ? "oui" : "--"}</td><td>${hasData(s.anapa) ? "oui" : "--"}</td><td>${hasData(s.micrel) ? "oui" : "--"}</td></tr>`;
+              return `<tr><td><div class="src-chip-wrap">${sourceChipsFromText(s.source, { compact: true })}</div></td><td>${c.label}</td><td>${s.reco || "--"}</td><td>${hasData(s.poche) ? "oui" : "--"}</td><td>${hasData(s.pse) ? "oui" : "--"}</td><td>${hasData(s.elastomere) ? "oui" : "--"}</td><td>${hasData(s.anapa) ? "oui" : "--"}</td><td>${hasData(s.micrel) ? "oui" : "--"}</td></tr>`;
             }).join("")}</tbody>
           </table>
         </div>
@@ -2672,16 +2844,46 @@ let data = [];
 
 
     let reverseSourceCatalog = [
-      { key: "chicas", label: "Doc interne CHICAS", patterns: ["doc interne", "chicas"] },
-      { key: "lyon_berard", label: "Recommandations Centre Léon Bérard / Lyon Bérard", patterns: ["centre leon berard", "centre léon bérard", "lyon berard", "lyon bérard", "had"] },
-      { key: "tourcoing", label: "Référentiel ATB Tourcoing", patterns: ["tourcoing"] },
-      { key: "spilf_sfpc", label: "Référentiel SPILF/SFPC", patterns: ["spilf", "sfpc", "splif"] },
-      { key: "anapa", label: "ANAPA – données laboratoire", patterns: ["anapa"] },
-      { key: "micrel", label: "Micrel/Rythmic – données laboratoire", patterns: ["micrel", "rythmic"] },
-      { key: "neopump", label: "NEOPUMP – données fabricant élastomère", patterns: ["neopump", "easyflow"] },
-      { key: "pubmed", label: "PubMed / littérature sélectionnée", patterns: ["pubmed", "litterature", "littérature"] },
-      { key: "interjurassienne", label: "Protocole Pharmacie Interjurassienne", patterns: ["interjurassienne"] }
+      { key: "spilf_sfpc", label: "Référentiel SPILF/SFPC 2025", short: "SPILF/SFPC", tier: "A", patterns: ["spilf", "sfpc", "splif"] },
+      { key: "pubmed", label: "PubMed / littérature sélectionnée", short: "PubMed", tier: "B", patterns: ["pubmed", "litterature", "littérature"] },
+      { key: "anapa", label: "ANAPA – données laboratoire", short: "ANAPA", tier: "C", patterns: ["anapa"] },
+      { key: "micrel", label: "Micrel / Rythmic – données laboratoire", short: "Micrel", tier: "C", patterns: ["micrel", "rythmic"] },
+      { key: "neopump", label: "NEOPUMP – données fabricant élastomère", short: "NEOPUMP", tier: "C", patterns: ["neopump", "easyflow"] },
+      { key: "lyon_berard", label: "Centre Léon Bérard – HAD", short: "Léon Bérard", tier: "D", patterns: ["centre leon berard", "centre léon bérard", "lyon berard", "lyon bérard", "had"] },
+      { key: "tourcoing", label: "CH de Tourcoing 2017", short: "Tourcoing", tier: "D", patterns: ["tourcoing"] },
+      { key: "chicas", label: "Doc interne CHICAS", short: "CHICAS", tier: "D", patterns: ["doc interne", "chicas"] },
+      { key: "interjurassienne", label: "Pharmacie Interjurassienne", short: "Interjurassienne", tier: "D", patterns: ["interjurassienne"] }
     ];
+
+    const sourceTierMeta = {
+      A: { label: "Référentiel / recommandation", help: "SPILF/SFPC" },
+      B: { label: "Littérature", help: "PubMed" },
+      C: { label: "Données laboratoire / fabricant", help: "ANAPA, Micrel, NEOPUMP" },
+      D: { label: "Document interne / local", help: "CHICAS, Tourcoing, Léon Bérard…" }
+    };
+
+    function sourceChipsFromText(sourceText, { compact = false, respectFilter = false } = {}) {
+      const keys = sourceKeysForText(sourceText);
+      let used = keys;
+      if (respectFilter) {
+        const selected = selectedReverseSourceKeys();
+        if (selected.length) {
+          const allow = new Set(selected);
+          const filtered = keys.filter(k => allow.has(k));
+          if (filtered.length) used = filtered;
+        }
+      }
+      if (!used.length) {
+        const txt = String(sourceText || "").trim() || "Source non précisée";
+        return `<span class="src-chip src-d"><span class="src-dot"></span>${escapeHtml(txt)}</span>`;
+      }
+      return used.map(key => {
+        const item = reverseSourceCatalog.find(i => i.key === key) || {};
+        const tier = (item.tier || "D").toLowerCase();
+        const label = compact ? (item.short || item.label || key) : (item.label || key);
+        return `<span class="src-chip src-${tier}" title="Niveau de preuve ${(item.tier || "D")} · ${escapeHtml((sourceTierMeta[item.tier] || sourceTierMeta.D).label)}"><span class="src-dot"></span>${escapeHtml(label)}</span>`;
+      }).join("");
+    }
 
     function sourceKeysForText(sourceText) {
       const src = normalize(sourceText || "");
@@ -3069,7 +3271,7 @@ let data = [];
             <td>${formatNumber(r.doseForContainer)} mg / ${device.volume} mL<br><span class="reverse-source">${formatNumber(r.conc)} mg/mL · ${escapeHtml(solventLabel(device.solvent))}</span></td>
             <td>${escapeHtml(r.plan.label)}<br><span class="reverse-source">${escapeHtml(r.assessment.detail)}</span></td>
             <td>${escapeHtml(stabilityExcerpt(r.value))}</td>
-            <td>${reverseDisplaySource(r.source.source)}<br><span class="reverse-source">${escapeHtml(r.conf.label)}${device.forcedTime ? ` · ${escapeHtml(device.forcedTime)}` : ""}</span></td>
+            <td><div class="src-chip-wrap">${sourceChipsFromText(r.source.source, { compact: true, respectFilter: true })}</div>${device.forcedTime ? `<span class="reverse-source">${escapeHtml(device.forcedTime)}</span>` : ""}</td>
           </tr>
         `).join("");
     }
@@ -3093,7 +3295,10 @@ let data = [];
 
       if (!molecule || !dailyDoseMg) {
         reverseCountPill.textContent = "0 option";
-        reverseResultsEl.innerHTML = `<div class="no-result">Renseigner une molécule de la base et une dose journalière pour lancer le moteur inversé.</div>`;
+        reverseResultsEl.innerHTML = `<div class="no-result reverse-empty">
+          <strong>Prêt à calculer une dilution.</strong>
+          Choisissez une molécule de la base, saisissez la dose journalière, puis lancez le calcul pour afficher les dispositifs et dilutions tenables.
+        </div>`;
         return;
       }
 
