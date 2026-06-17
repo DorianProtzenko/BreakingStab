@@ -1309,6 +1309,87 @@
     .reverse-empty { text-align: left; line-height: 1.5; }
     .reverse-empty strong { display: block; color: var(--green); font-size: 1.02rem; margin-bottom: 4px; }
 
+    /* Solvant : NaCl par défaut, G5 sur demande */
+    .reverse-options {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      gap: 10px;
+      margin-top: 12px;
+    }
+
+    .reverse-options-note {
+      color: var(--muted);
+      font-size: 0.84rem;
+    }
+
+    /* En-tête de section recommandations */
+    .reverse-section-head {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+      margin: 4px 0 2px;
+      font-size: 0.74rem;
+      font-weight: 900;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+      color: var(--green);
+    }
+
+    .reverse-section-tag {
+      padding: 4px 10px;
+      border-radius: 999px;
+      background: var(--green-soft);
+      color: var(--green);
+      letter-spacing: 0.02em;
+    }
+
+    /* Carte recommandée : accent à gauche */
+    .reverse-card-reco {
+      border-left: 4px solid #2e9b56;
+    }
+
+    .reverse-card-reco .reverse-card-head {
+      background: linear-gradient(90deg, #f1faf4, #eef7ff);
+    }
+
+    /* Tableau comparaison : points lisibles + compteur */
+    .cmp-yes { color: #2e9b56; font-weight: 900; }
+    .cmp-no { color: #b6bfca; font-weight: 800; }
+
+    .src-count {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      min-width: 20px;
+      height: 20px;
+      padding: 0 6px;
+      margin-left: 6px;
+      border-radius: 999px;
+      background: var(--green-soft);
+      color: var(--green);
+      font-size: 0.74rem;
+      font-weight: 900;
+    }
+
+    .table-scroll { overflow-x: auto; -webkit-overflow-scrolling: touch; }
+
+    .reverse-g5-hint {
+      margin-top: 12px;
+      padding: 12px 14px;
+      border-radius: 14px;
+      background: #fff8ec;
+      border: 1px solid #efd9ad;
+      color: #6f5318;
+      font-size: 0.9rem;
+      line-height: 1.45;
+    }
+
+    /* Détail par source regroupé */
+    .source-detail-stack { display: grid; gap: 8px; padding-top: 4px; }
+    .source-detail-stack .source-details { margin-top: 0; }
+
     @media (max-width: 720px) {
       .tab-button { width: 100%; min-width: 0; }
       .src-chip { white-space: normal; }
@@ -1476,6 +1557,10 @@
           <div>
             <button id="reverseRun" type="button">Calculer</button>
           </div>
+        </div>
+        <div class="reverse-options">
+          <label class="toggle-chip"><input type="checkbox" id="reverseShowG5" /> Afficher aussi le G5 (sur demande)</label>
+          <span class="reverse-options-note">Par défaut, l’outil ne propose que le <strong>NaCl 0,9 %</strong>, une recommandation par type de dispositif.</span>
         </div>
         <div class="reverse-source-panel">
           <div class="reverse-source-panel-head">
@@ -2135,6 +2220,7 @@ let data = [];
     const reverseSourceNoneEl = document.getElementById("reverseSourceNone");
     const reverseCostContextEl = document.getElementById("reverseCostContext");
     const reverseShowCostEl = document.getElementById("reverseShowCost");
+    const reverseShowG5El = document.getElementById("reverseShowG5");
 
     function sourceKeyFromLabel(label, index = 0) {
       const key = yKey(label);
@@ -2208,6 +2294,11 @@ let data = [];
 
     function sourceConfidence(sources) {
       return sources.map(confidenceLevel).sort((a,b) => confidenceRank[b.level] - confidenceRank[a.level])[0] || { level: "D", label: "Niveau de preuve : D" };
+    }
+
+    function sortSourcesByConfidence(sources) {
+      return [...sources].sort((a, b) =>
+        confidenceRank[confidenceLevel(b).level] - confidenceRank[confidenceLevel(a).level]);
     }
 
     function detectLimits(text) {
@@ -2702,7 +2793,7 @@ let data = [];
     }
 
     function sourceDetails(sources) {
-      return sources.map(s => `
+      return sortSourcesByConfidence(sources).map(s => `
         <details class="source-details">
           <summary><span class="src-chip-wrap">${sourceChipsFromText(s.source)}</span></summary>
           <div class="source-content">
@@ -2750,17 +2841,21 @@ let data = [];
 
     function comparisonTable(sources) {
       if (!showComparisonEl.checked || sources.length < 2) return "";
-      return `<details class="source-details" open>
-        <summary>Comparaison rapide des sources</summary>
+      const ordered = sortSourcesByConfidence(sources);
+      const many = ordered.length > 4;
+      const hasData = value => value && value !== "--";
+      const cell = ok => ok ? '<span class="cmp-yes" title="Donnée disponible">●</span>' : '<span class="cmp-no" title="Pas de donnée">–</span>';
+      return `<details class="source-details"${many ? "" : " open"}>
+        <summary>Comparaison des sources <span class="src-count">${ordered.length}</span></summary>
         <div class="source-content">
+          <div class="table-scroll">
           <table class="compare-table">
-            <thead><tr><th>Source</th><th>Niveau de preuve</th><th>Reco</th><th>Poche</th><th>PSE</th><th>Élastomère</th><th>ANAPA</th><th>Micrel</th></tr></thead>
-            <tbody>${sources.map(s => {
-              const c = confidenceLevel(s);
-              const hasData = value => value && value !== "--";
-              return `<tr><td><div class="src-chip-wrap">${sourceChipsFromText(s.source, { compact: true })}</div></td><td>${c.label}</td><td>${s.reco || "--"}</td><td>${hasData(s.poche) ? "oui" : "--"}</td><td>${hasData(s.pse) ? "oui" : "--"}</td><td>${hasData(s.elastomere) ? "oui" : "--"}</td><td>${hasData(s.anapa) ? "oui" : "--"}</td><td>${hasData(s.micrel) ? "oui" : "--"}</td></tr>`;
+            <thead><tr><th>Source</th><th>Reco</th><th>Poche</th><th>PSE</th><th>Élasto.</th><th>ANAPA</th><th>Micrel</th></tr></thead>
+            <tbody>${ordered.map(s => {
+              return `<tr><td><div class="src-chip-wrap">${sourceChipsFromText(s.source, { compact: true })}</div></td><td>${s.reco || "--"}</td><td>${cell(hasData(s.poche))}</td><td>${cell(hasData(s.pse))}</td><td>${cell(hasData(s.elastomere))}</td><td>${cell(hasData(s.anapa))}</td><td>${cell(hasData(s.micrel))}</td></tr>`;
             }).join("")}</tbody>
           </table>
+          </div>
         </div>
       </details>`;
     }
@@ -3282,7 +3377,7 @@ let data = [];
       if (!btn || !hidden) return;
       btn.addEventListener("click", () => {
         const isHidden = hidden.classList.toggle("reverse-hidden");
-        btn.textContent = isHidden ? "Afficher les options non retenues / à vérifier" : "Masquer les options non retenues / à vérifier";
+        btn.textContent = isHidden ? "Afficher les autres possibilités et options à vérifier" : "Masquer les autres possibilités et options à vérifier";
       });
     }
 
@@ -3304,8 +3399,10 @@ let data = [];
 
       const sources = data.filter(d => d.molecule === molecule && reverseSourceMatchesSelection(d.source));
       const selectedCostContext = reverseCostContextEl ? reverseCostContextEl.value : "auto";
+      const showG5 = !!(reverseShowG5El && reverseShowG5El.checked);
       const devices = reverseDevices
         .filter(device => !device.modes || device.modes.includes(adminMode))
+        .filter(device => showG5 || device.solvent === "nacl")
         .filter(device => selectedCostContext === "auto" || allowedContextsForMethod(methodIdForDevice(device, adminMode)).includes(selectedCostContext));
       const calculatedDose = adminMode === "discontinuous" ? dailyDoseMg / discontinuousFreq : null;
       const rcpLine = rcpRec
@@ -3323,7 +3420,7 @@ let data = [];
         if (device.key === "micrel") return `micrel-${device.solvent}`;
         if (label.includes("neopump")) return `neopump-${device.solvent}`;
         if (device.key === "anapa") return `anapa-${device.solvent}`;
-        if (device.key === "elastomere") return `elastomere-${device.volume}-${device.solvent}`;
+        if (device.key === "elastomere") return `elastomere-generic-${device.solvent}`;
         return `${device.key}-${device.volume}-${device.solvent}`;
       }
 
@@ -3334,6 +3431,8 @@ let data = [];
         if (device.key === "pse" && device.volume === 48) return -(device.forcedHours || 0);
         // PSE HAD 24 mL continu : proposer en premier celui qui nécessite le moins de changements.
         if (device.key === "pse" && device.volume === 24) return -(device.forcedHours || 0);
+        // Élastomère générique : proposer en premier le plus petit volume documenté.
+        if (device.key === "elastomere") return device.volume;
         return 0;
       }
 
@@ -3344,11 +3443,11 @@ let data = [];
         const status = reverseCardStatus(rows);
         const bestBadge = status === "ok" ? '<span class="badge ok">Possible</span>' : status === "warn" ? '<span class="badge warn">À vérifier</span>' : '<span class="badge stop">Non documenté</span>';
         const displayLabel = reverseDeviceLabel(device, adminMode);
-        const renderCard = (rowsToRender, forceHiddenBadge = false, extraBadge = "") => `
-          <article class="reverse-card">
+        const renderCard = (rowsToRender, forceHiddenBadge = false, extraBadge = "", primaryBadge = '<span class="badge ok">Possible</span>', cardClass = "") => `
+          <article class="reverse-card ${cardClass}">
             <div class="reverse-card-head">
               <div><h3>${escapeHtml(displayLabel)}</h3><div class="source">Volume ${device.volume} mL · solvant ${escapeHtml(solventLabel(device.solvent))} · ${doseLine}</div></div>
-              <div>${extraBadge}${forceHiddenBadge ? bestBadge : '<span class="badge ok">Possible</span>'}</div>
+              <div>${extraBadge}${forceHiddenBadge ? bestBadge : primaryBadge}</div>
             </div>
             <div class="reverse-card-body">
               <table class="reverse-table">
@@ -3367,7 +3466,7 @@ let data = [];
           status,
           positiveCount: positiveRows.length,
           hiddenCount: hiddenRows.length,
-          positiveHtml: positiveRows.length ? renderCard(positiveRows, false) : "",
+          positiveHtml: positiveRows.length ? renderCard(positiveRows, false, "", '<span class="badge ok">✓ Recommandé</span>', "reverse-card-reco") : "",
           otherPositiveHtml: positiveRows.length ? renderCard(positiveRows, false, '<span class="badge lab">Autre possibilité</span> ') : "",
           hiddenHtml: hiddenRows.length || !positiveRows.length ? renderCard(hiddenRows, true) : ""
         };
@@ -3396,10 +3495,27 @@ let data = [];
       const hiddenHtml = nonPositiveCards.map(card => card.hiddenHtml).filter(Boolean).join("");
       const auditHtml = [otherPositiveHtml, hiddenHtml].filter(Boolean).join("");
 
-      reverseCountPill.textContent = `${shownPossible} option${shownPossible > 1 ? "s" : ""} simple${shownPossible > 1 ? "s" : ""} affichée${shownPossible > 1 ? "s" : ""} · ${possible} possible${possible > 1 ? "s" : ""} au total`;
-      const intro = positiveHtml || `<div class="no-result">Aucune option conforme retrouvée avec les paramètres saisis. Les options non retenues peuvent être affichées pour audit.</div>`;
+      reverseCountPill.textContent = `${selectedCards.length} dispositif${selectedCards.length > 1 ? "s" : ""} recommandé${selectedCards.length > 1 ? "s" : ""}${showG5 ? "" : " · NaCl 0,9 %"} · ${possible} dilution${possible > 1 ? "s" : ""} possible${possible > 1 ? "s" : ""} au total`;
+      const recoHeading = positiveHtml
+        ? `<div class="reverse-section-head"><span>Recommandation par dispositif</span><span class="reverse-section-tag">${showG5 ? "NaCl 0,9 % + G5" : "NaCl 0,9 %"}</span></div>`
+        : "";
+      let g5Hint = "";
+      if (!showG5 && !positiveHtml) {
+        const g5Devices = reverseDevices
+          .filter(device => !device.modes || device.modes.includes(adminMode))
+          .filter(device => device.solvent === "g5")
+          .filter(device => selectedCostContext === "auto" || allowedContextsForMethod(methodIdForDevice(device, adminMode)).includes(selectedCostContext));
+        const anyG5 = g5Devices.some(device =>
+          reverseRowsForDevice(sources, device, dailyDoseMg, adminMode, discontinuousFreq)
+            .some(r => r.assessment.status === "ok"));
+        if (anyG5) g5Hint = `<div class="reverse-g5-hint">Aucune dilution retenue en NaCl 0,9 %, mais des dilutions en <strong>G5</strong> existent pour cette molécule. Cochez « Afficher aussi le G5 » pour les afficher.</div>`;
+      }
+      const intro = positiveHtml
+        ? recoHeading + positiveHtml
+        : `<div class="no-result reverse-empty"><strong>Aucune dilution conforme avec ces paramètres.</strong>Élargissez les sources, vérifiez la dose, ou affichez les options à vérifier ci-dessous pour audit.</div>` + g5Hint;
+      const auditTotal = otherPositiveCards.length + nonPositiveCards.length;
       const hiddenBlock = auditHtml
-        ? `<button id="reverseHiddenToggle" type="button" class="reverse-hidden-toggle">Afficher les autres possibilités / options non retenues</button>
+        ? `<button id="reverseHiddenToggle" type="button" class="reverse-hidden-toggle">Afficher les autres possibilités et options à vérifier${auditTotal ? ` (${auditTotal})` : ""}</button>
            <div id="reverseHiddenOptions" class="reverse-hidden-options reverse-hidden">${auditHtml}</div>`
         : "";
       reverseResultsEl.innerHTML = intro + hiddenBlock;
@@ -3459,10 +3575,14 @@ let data = [];
               ${deviceBlock("Micrel PVC", micrel.text, micrel.discordant)}
             </div>
             <div class="notes">
-              <strong>Détail des sources :</strong>
               ${comparisonTable(group.sources)}
               ${yCompatibilityPanel(group.molecule)}
-              ${sourceDetails(group.sources)}
+              <details class="source-details source-detail-group"${group.sources.length > 4 ? "" : " open"}>
+                <summary>Détail par source <span class="src-count">${group.sources.length}</span></summary>
+                <div class="source-content source-detail-stack">
+                  ${sourceDetails(group.sources)}
+                </div>
+              </details>
             </div>
           </article>
         `;
@@ -3471,7 +3591,7 @@ let data = [];
 
 
     tabButtons.forEach(btn => btn.addEventListener("click", () => switchTab(btn.dataset.tab)));
-    [reverseMoleculeEl, reverseDoseEl, reverseUnitEl, reverseAdminModeEl, reverseFreqEl, reverseRcpEl, reverseSourceFilterEl, reverseCostContextEl, reverseShowCostEl].filter(Boolean).forEach(el => el.addEventListener("input", () => {
+    [reverseMoleculeEl, reverseDoseEl, reverseUnitEl, reverseAdminModeEl, reverseFreqEl, reverseRcpEl, reverseSourceFilterEl, reverseCostContextEl, reverseShowCostEl, reverseShowG5El].filter(Boolean).forEach(el => el.addEventListener("input", () => {
       updateReverseModeUI();
       refreshReverseSourceChips();
       renderReverse();
