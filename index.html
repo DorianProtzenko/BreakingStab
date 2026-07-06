@@ -1394,6 +1394,144 @@
       .tab-button { width: 100%; min-width: 0; }
       .src-chip { white-space: normal; }
     }
+    /* ————————————————————————————————————————————————
+       Améliorations lisibilité / UI (v13)
+       ———————————————————————————————————————————————— */
+
+    /* Strip « Hypothèses retenues » sous chaque carte du moteur inversé */
+    .reverse-assumptions {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      gap: 6px 8px;
+      padding: 10px 12px;
+      margin-bottom: 12px;
+      background: #f3f9ff;
+      border: 1px solid #cfe2f4;
+      border-radius: 12px;
+    }
+    .assum-title {
+      font-size: 0.7rem;
+      font-weight: 800;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      color: var(--green);
+      margin-right: 4px;
+    }
+    .assum-chip {
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      padding: 4px 9px;
+      border-radius: 999px;
+      background: #fff;
+      border: 1px solid #d5e5f4;
+      font-size: 0.78rem;
+      color: #38506a;
+    }
+    .assum-chip strong { color: var(--ink); font-weight: 750; }
+    .assum-chip.assum-warn {
+      background: #fff6ea;
+      border-color: #eccf9d;
+      color: #7a5312;
+    }
+    .assum-chip.assum-warn strong { color: #7a5312; }
+
+    /* Meilleure lisibilité des verdicts (contraste renforcé) */
+    .reverse-ok { color: #15633a; }
+    .reverse-warn { color: #7c4f11; }
+    .reverse-stop { color: #952727; }
+
+    /* En-têtes de tableau collants dans le moteur inversé (desktop) */
+    @media (min-width: 761px) {
+      .reverse-card-body { overflow: visible; }
+      .reverse-table thead th {
+        position: sticky;
+        top: 0;
+        z-index: 2;
+      }
+    }
+
+    /* En-tête de carte plus lisible */
+    .reverse-card-head h3 { font-size: 1.06rem; letter-spacing: -0.01em; }
+    .reverse-card-reco { border-color: #a9d3b7; box-shadow: 0 8px 24px rgba(31, 107, 58, 0.10); }
+
+    /* Bouton « audit » plus clair comme zone dépliable */
+    .reverse-hidden-toggle {
+      transition: background 0.15s ease, border-color 0.15s ease;
+    }
+    .reverse-hidden-toggle:hover { border-color: var(--green); color: var(--green); }
+
+    /* Accessibilité clavier : focus visible homogène */
+    a:focus-visible,
+    button:focus-visible,
+    input:focus-visible,
+    select:focus-visible,
+    summary:focus-visible,
+    .source-chip-btn:focus-visible {
+      outline: 3px solid rgba(29, 95, 143, 0.45);
+      outline-offset: 2px;
+      border-radius: 8px;
+    }
+
+    /* Espace de respiration entre cartes du moteur inversé */
+    .reverse-results > .reverse-card,
+    .reverse-hidden-options > .reverse-card { margin-bottom: 14px; }
+
+    @media (max-width: 520px) {
+      .reverse-assumptions { padding: 9px 10px; }
+      .assum-chip { font-size: 0.74rem; }
+    }
+
+    /* Étiquette « N lignes regroupées » dans le détail par source (synthèse) */
+    .src-merged {
+      display: inline-flex;
+      align-items: center;
+      margin-left: 8px;
+      padding: 2px 8px;
+      border-radius: 999px;
+      background: #eef3f9;
+      border: 1px solid #cfe0f0;
+      color: #4a627c;
+      font-size: 0.7rem;
+      font-weight: 700;
+      white-space: nowrap;
+    }
+
+    /* Raisonnement en surcoût : note explicative + socle médicament */
+    .cost-mode-note {
+      margin-top: 8px;
+      padding: 10px 12px;
+      border-radius: 12px;
+      background: #f3f9ff;
+      border: 1px solid #cfe2f4;
+      color: #38506a;
+      font-size: 0.84rem;
+      line-height: 1.4;
+    }
+    .cost-mode-note strong { color: var(--green); }
+    .cost-mode-tag {
+      display: inline-block;
+      padding: 2px 9px;
+      border-radius: 999px;
+      background: var(--green-soft);
+      color: var(--green);
+      font-size: 0.74rem;
+      font-weight: 800;
+    }
+    .cost-socle {
+      color: var(--muted);
+      font-size: 0.74rem;
+      font-weight: 650;
+    }
+    .cost-socle-note {
+      margin: 8px 0 0;
+      padding-top: 8px;
+      border-top: 1px dashed #d9e3ee;
+      color: #4a627c;
+      font-size: 0.82rem;
+    }
+    .cost-socle-note strong { color: var(--ink); }
   </style>
 </head>
 <body>
@@ -1597,11 +1735,15 @@
           <label class="toggle-chip" style="width:100%; justify-content:flex-start; border-radius:13px; padding:11px 13px;">
             <input type="checkbox" id="reverseShowCost" checked /> Afficher l’estimation coût € / kg eq CO₂ par jour
           </label>
+          <label class="toggle-chip" style="width:100%; justify-content:flex-start; border-radius:13px; padding:11px 13px;">
+            <input type="checkbox" id="reverseIncludeMed" /> Inclure le médicament (socle commun identique entre méthodes)
+          </label>
         </div>
+        <div class="cost-mode-note">Par défaut, la comparaison raisonne en <strong>surcoût de la méthode</strong> : le médicament (flacons + ACV du principe actif) est un socle commun, identique quelle que soit la méthode de perfusion, donc exclu du total comparé. Cochez la case pour l’ajouter au total affiché.</div>
 
         <div class="summary-line">
           <span class="pill" id="reverseCountPill">0 option</span>
-          <span>Résultat indicatif : la dose saisie est interprétée comme dose journalière. En discontinu, la dose par administration est calculée selon la fréquence choisie ou, si la case est cochée, selon le fractionnement RCP/usuel intégré. Vérifier la source originale, le dispositif, la température, le solvant et la procédure locale.</span>
+          <span>Résultat indicatif : la dose saisie est interprétée comme dose journalière. En discontinu, la dose par administration est calculée selon la fréquence choisie ou, si la case est cochée, selon le fractionnement RCP/usuel intégré. Pour une perfusion continue, l’outil retient en priorité une stabilité documentée à température d’usage (≥ 25 °C) ; une stabilité uniquement réfrigérée n’est jamais recommandée telle quelle et est signalée « à confirmer ». Vérifier la source originale, le dispositif, la température, le solvant et la procédure locale.</span>
         </div>
       </section>
       <section id="reverseResults" class="reverse-results"></section>
@@ -2110,8 +2252,21 @@ let data = [];
         acc.detail.push(`Temps hospitalier : ${formatNumber(perfsPerDay)} acte(s)/j × ${formatNumber(perPerfCost)} €/acte`);
       }
 
-      acc.totalCost = acc.dmCost + acc.wasteCost + acc.medCost + acc.reconstitutionCost + acc.locationCost + acc.equipmentCost + acc.staffCost;
-      acc.totalCo2 = acc.dmCo2 + acc.wasteCo2 + acc.medCo2 + acc.reconstitutionCo2 + acc.locationCo2 + acc.equipmentCo2 + acc.transportCo2;
+      // Le médicament (flacons + ACV du principe actif/conditionnement) est un SOCLE COMMUN :
+      // le nombre de flacons ne dépend pas de la méthode de perfusion comparée, il ajoute donc
+      // le même montant à toutes les méthodes et n'entre pas dans le surcoût qui les différencie.
+      // On le calcule à part pour pouvoir l'afficher, mais on raisonne par défaut en SURCOÛT.
+      acc.medBaselineCost = acc.medCost;
+      acc.medBaselineCo2 = acc.medCo2;
+
+      // Surcoût méthode = tout ce qui dépend réellement de la méthode (hors médicament).
+      // La reconstitution reste dans le surcoût : son nombre d'actes dépend du schéma.
+      acc.surcoutCost = acc.dmCost + acc.wasteCost + acc.reconstitutionCost + acc.locationCost + acc.equipmentCost + acc.staffCost;
+      acc.surcoutCo2 = acc.dmCo2 + acc.wasteCo2 + acc.reconstitutionCo2 + acc.locationCo2 + acc.equipmentCo2 + acc.transportCo2;
+
+      // Totaux complets (socle inclus) conservés pour affichage optionnel.
+      acc.totalCost = acc.surcoutCost + acc.medBaselineCost;
+      acc.totalCo2 = acc.surcoutCo2 + acc.medBaselineCo2;
       return acc;
     }
 
@@ -2145,29 +2300,44 @@ let data = [];
         e.configLabel = costConfigLabel(device, firstRow, adminMode, dailyDoseMg, context);
         return e;
       });
-      const rowsHtml = estimates.map(e => `
+
+      const includeMed = !!(reverseIncludeMedEl && reverseIncludeMedEl.checked);
+      // Métrique de tête : surcoût méthode par défaut ; total (socle médicament inclus) sur demande.
+      const headCost = e => includeMed ? e.totalCost : e.surcoutCost;
+      const headCo2 = e => includeMed ? e.totalCo2 : e.surcoutCo2;
+      const headLabel = includeMed ? "Coût total / j" : "Surcoût méthode / j";
+      const headLabelCo2 = includeMed ? "Impact total / j" : "Surcoût CO₂ / j";
+
+      const rowsHtml = estimates.map(e => {
+        const medLine = e.medBaselineCost || e.medBaselineCo2
+          ? `<br><span class="cost-socle">Socle médicament ${includeMed ? "inclus" : "exclu"} : ${formatNumber(e.medBaselineCost)} € / ${formatNumber(e.medBaselineCo2)} kg</span>`
+          : "";
+        return `
         <tr>
           <td><strong>${e.context === "HAD" ? "HAD / IDEL" : "Intra-hospitalier"}</strong><br><span class="reverse-source">${escapeHtml(e.configLabel)}</span></td>
-          <td class="cost-total">${formatNumber(e.totalCost)} € / j</td>
-          <td class="cost-total">${formatNumber(e.totalCo2)} kg eq CO₂ / j</td>
-          <td>DM ${formatNumber(e.dmCost)} € / ${formatNumber(e.dmCo2)} kg<br>Méd. + reconstitution ${formatNumber(e.medCost + e.reconstitutionCost)} € / ${formatNumber(e.medCo2 + e.reconstitutionCo2)} kg<br>Déchets ${formatNumber(e.wasteCost)} € / ${formatNumber(e.wasteCo2)} kg</td>
+          <td class="cost-total">${formatNumber(headCost(e))} € / j${medLine}</td>
+          <td class="cost-total">${formatNumber(headCo2(e))} kg eq CO₂ / j</td>
+          <td>DM perfusion ${formatNumber(e.dmCost)} € / ${formatNumber(e.dmCo2)} kg<br>Reconstitution ${formatNumber(e.reconstitutionCost)} € / ${formatNumber(e.reconstitutionCo2)} kg<br>Déchets ${formatNumber(e.wasteCost)} € / ${formatNumber(e.wasteCo2)} kg</td>
           <td>Location/équipement amorti ${formatNumber(e.locationCost + e.equipmentCost)} € / ${formatNumber(e.locationCo2 + e.equipmentCo2)} kg<br>Temps/IDEL ${formatNumber(e.staffCost)} €<br>Transport HAD ${formatNumber(e.transportCo2)} kg</td>
         </tr>
-      `).join("");
+      `;
+      }).join("");
 
       const detail = estimates.map(e => `
         <strong>${e.context === "HAD" ? "HAD / IDEL" : "Intra-hospitalier"} — configuration chiffrée :</strong><br><span class="reverse-source">${escapeHtml(e.configLabel)}</span>
         <ul>${e.detail.map(x => `<li>${x}</li>`).join("")}${e.warnings.map(x => `<li><strong>À compléter :</strong> ${escapeHtml(x)}</li>`).join("")}</ul>
+        <p class="cost-socle-note">Surcoût méthode retenu : <strong>${formatNumber(e.surcoutCost)} € / ${formatNumber(e.surcoutCo2)} kg eq CO₂ / j</strong>. Socle médicament (flacons + ACV du PA, identique entre méthodes, hors surcoût) : ${formatNumber(e.medBaselineCost)} € / ${formatNumber(e.medBaselineCo2)} kg eq CO₂ / j.</p>
       `).join("");
 
+      const modeTag = includeMed ? "Total (médicament inclus)" : "Surcoût méthode (médicament exclu)";
       return `
         <div class="cost-estimate">
           <div class="cost-estimate-head">
-            <span>Estimation économique et environnementale par jour</span>
+            <span>Estimation économique et environnementale par jour · <span class="cost-mode-tag">${modeTag}</span></span>
             <span>${escapeHtml(estimates.map(e => e.configLabel).join(" | "))}</span>
           </div>
           <table class="cost-table">
-            <thead><tr><th>Contexte</th><th>Coût total</th><th>Impact total</th><th>Consommables / médicament / déchets</th><th>Organisation</th></tr></thead>
+            <thead><tr><th>Contexte</th><th>${headLabel}</th><th>${headLabelCo2}</th><th>Consommables / reconstitution / déchets</th><th>Organisation</th></tr></thead>
             <tbody>${rowsHtml}</tbody>
           </table>
           <details class="cost-detail">
@@ -2220,6 +2390,7 @@ let data = [];
     const reverseSourceNoneEl = document.getElementById("reverseSourceNone");
     const reverseCostContextEl = document.getElementById("reverseCostContext");
     const reverseShowCostEl = document.getElementById("reverseShowCost");
+    const reverseIncludeMedEl = document.getElementById("reverseIncludeMed");
     const reverseShowG5El = document.getElementById("reverseShowG5");
 
     function sourceKeyFromLabel(label, index = 0) {
@@ -2236,11 +2407,23 @@ let data = [];
           sources.map(source => `<option value="${escapeHtml(source)}">${escapeHtml(source)}</option>`).join("");
       }
 
-      reverseSourceCatalog = sources.map((source, index) => ({
-        key: sourceKeyFromLabel(source, index),
-        label: source,
-        patterns: [source]
-      }));
+      // On CONSERVE le catalogue curé (libellés courts + niveaux de preuve A/B/C/D)
+      // et on n'ajoute que les sources Excel non déjà couvertes par un motif existant,
+      // afin que le pastillage par niveau de preuve reste correct après chargement.
+      const known = new Set(reverseSourceCatalog.map(item => item.key));
+      sources.forEach((source, index) => {
+        if (sourceKeysForText(source).length) return; // déjà reconnue par un motif curé
+        const key = sourceKeyFromLabel(source, index);
+        if (known.has(key)) return;
+        known.add(key);
+        reverseSourceCatalog.push({
+          key,
+          label: source,
+          short: sourceShortLabel(source),
+          tier: confidenceLevel({ source }).level,
+          patterns: [source]
+        });
+      });
     }
 
     function normalize(text) {
@@ -2792,10 +2975,73 @@ let data = [];
       return { text: html, discordant };
     }
 
+    // Synthèse d'affichage : regroupe les lignes qui partagent le MÊME libellé de source
+    // (ex. 9 lignes « Doc interne CHICAS – ATB IV outpatient » avec des paliers de dose
+    // différents) en une seule entrée, en dédoublonnant les configurations quasi-identiques
+    // par dispositif. On ne fusionne jamais deux libellés de source distincts : la
+    // provenance reste tracée. Utilisé uniquement pour l'affichage de la base (onglet
+    // « Base stabilité »), pas pour le moteur inversé qui reste au niveau ligne.
+    function consolidateSourcesByLabel(sources) {
+      const order = [];
+      const byLabel = new Map();
+      sources.forEach(row => {
+        const label = displayCleanText(row.source || "Source non précisée");
+        if (!byLabel.has(label)) {
+          order.push(label);
+          byLabel.set(label, {
+            source: label,
+            rows: [],
+            poche: new Map(), pse: new Map(), elastomere: new Map(),
+            anapa: new Map(), micrel: new Map(),
+            modes: new Map(), recos: new Map(), notes: new Map(),
+            pubmed: ""
+          });
+        }
+        const g = byLabel.get(label);
+        g.rows.push(row);
+        ["poche", "pse", "elastomere", "anapa", "micrel"].forEach(key => {
+          splitStabilityConfigurations(row[key]).forEach(variant => {
+            const clean = displayCleanText(variant);
+            const k = normalizedConfigurationKey(clean);
+            if (k && !g[key].has(k)) g[key].set(k, clean);
+          });
+        });
+        [["mode", "modes"], ["reco", "recos"], ["note", "notes"]].forEach(([src, dest]) => {
+          const val = displayCleanText(row[src] || "");
+          const k = normalizedConfigurationKey(val);
+          if (k && val !== "--" && !g[dest].has(k)) g[dest].set(k, val);
+        });
+        if (!g.pubmed && String(row.pubmed || "").trim()) g.pubmed = String(row.pubmed).trim();
+      });
+
+      return order.map(label => {
+        const g = byLabel.get(label);
+        const join = m => (m.size ? [...m.values()].join(" / ") : "--");
+        return {
+          source: label,
+          rowCount: g.rows.length,
+          mode: join(g.modes),
+          poche: join(g.poche),
+          pse: join(g.pse),
+          elastomere: join(g.elastomere),
+          anapa: join(g.anapa),
+          micrel: join(g.micrel),
+          reco: g.recos.size ? [...g.recos.values()].join(" / ") : "",
+          note: g.notes.size ? [...g.notes.values()].join(" / ") : "",
+          pubmed: g.pubmed
+        };
+      });
+    }
+
     function sourceDetails(sources) {
-      return sortSourcesByConfidence(sources).map(s => `
+      const consolidated = sortSourcesByConfidence(consolidateSourcesByLabel(sources));
+      return consolidated.map(s => {
+        const mergedTag = s.rowCount > 1
+          ? `<span class="src-merged" title="${s.rowCount} lignes de cette source regroupées (paliers de dose / reformulations)">${s.rowCount} lignes regroupées</span>`
+          : "";
+        return `
         <details class="source-details">
-          <summary><span class="src-chip-wrap">${sourceChipsFromText(s.source)}</span></summary>
+          <summary><span class="src-chip-wrap">${sourceChipsFromText(s.source)}</span>${mergedTag}</summary>
           <div class="source-content">
             <p><strong>Modalité :</strong> ${s.mode}</p>
             <p><strong>Poche :</strong> ${s.poche || "--"}</p>
@@ -2803,11 +3049,12 @@ let data = [];
             <p><strong>Diffuseur élastomère :</strong> ${s.elastomere || "--"}</p>
             <p><strong>ANAPA :</strong> ${s.anapa || "--"}</p>
             <p><strong>Micrel :</strong> ${s.micrel || "--"}</p>
-            ${s.note ? `<p><strong>Remarque :</strong> ${s.note}</p>
-            ${s.pubmed ? `<p><strong>PubMed :</strong> <a href="${s.pubmed}" target="_blank" rel="noopener">ouvrir l’article</a></p>` : ""}` : ""}
+            ${s.note ? `<p><strong>Remarque :</strong> ${s.note}</p>` : ""}
+            ${s.pubmed ? `<p><strong>PubMed :</strong> <a href="${s.pubmed}" target="_blank" rel="noopener">ouvrir l’article</a></p>` : ""}
           </div>
         </details>
-      `).join("");
+      `;
+      }).join("");
     }
 
 
@@ -2840,8 +3087,8 @@ let data = [];
     }
 
     function comparisonTable(sources) {
-      if (!showComparisonEl.checked || sources.length < 2) return "";
-      const ordered = sortSourcesByConfidence(sources);
+      const ordered = sortSourcesByConfidence(consolidateSourcesByLabel(sources));
+      if (!showComparisonEl.checked || ordered.length < 2) return "";
       const many = ordered.length > 4;
       const hasData = value => value && value !== "--";
       const cell = ok => ok ? '<span class="cmp-yes" title="Donnée disponible">●</span>' : '<span class="cmp-no" title="Pas de donnée">–</span>';
@@ -3210,9 +3457,67 @@ let data = [];
       return hours.filter(h => Number.isFinite(h) && h > 0);
     }
 
-    function bestStabilityHours(text) {
-      const h = parseStabilityHours(text);
-      return h.length ? Math.max(...h) : null;
+    // Couples (durée, température) extraits d'un champ de stabilité, pour retenir la
+    // durée pertinente selon le contexte d'usage plutôt qu'un simple maximum global.
+    function parseStabilityPoints(text) {
+      const raw = String(text || "");
+      if (!raw || raw === "--") return [];
+      const cleaned = raw.replace(/\bRT\b/gi, "température ambiante");
+      const points = [];
+      const segments = cleaned
+        .split(/\s*;\s*|\s+\/\s+|,(?=\s*(?:[<>≤≥]?\s*\d|température|ambiante|frigo|réfrig|[234578]\s*°))/i)
+        .map(x => x.trim()).filter(Boolean);
+
+      function tempOf(segment) {
+        const fl = normalize(segment);
+        if (/(?:2\s*[–\-aà]\s*8|(?<!\d)(?:4|5|8))\s*°?\s*c/i.test(segment) || fl.includes("frigo") || fl.includes("refriger")) return { temp: 4, label: "réfrigéré (2–8 °C)" };
+        if (/3[07]\s*°?\s*c/i.test(segment)) return { temp: 35, label: "à 30–37 °C" };
+        if (/32\s*°?\s*c/i.test(segment)) return { temp: 32, label: "à 32 °C" };
+        if (/25\s*°?\s*c/i.test(segment) || fl.includes("temperature ambiante") || fl.includes("ambiant")) return { temp: 25, label: "ambiant (~25 °C)" };
+        return null;
+      }
+
+      segments.forEach(segment => {
+        const matches = Array.from(segment.matchAll(/(?:>|<|≥|≤)?\s*(\d+(?:[,.]\d+)?)\s*(j|jours?|h|heures?|min)\b/ig));
+        matches.forEach(m => {
+          const before = normalize(segment.slice(Math.max(0, m.index - 26), m.index));
+          const after = normalize(segment.slice(m.index, m.index + 32));
+          if (/run[- ]?out|rincage|residuelle/.test(before) || /run[- ]?out/.test(after)) return;
+          const val = parseFloat(m[1].replace(",", "."));
+          const unit = m[2].toLowerCase();
+          let hours = val;
+          if (unit.startsWith("j")) hours = val * 24;
+          else if (unit.startsWith("min")) hours = val / 60;
+          if (!Number.isFinite(hours) || hours <= 0) return;
+          const t = tempOf(segment) || { temp: 25, label: "température non précisée" };
+          points.push({ hours, temp: t.temp, tempLabel: t.label });
+        });
+      });
+      return points;
+    }
+
+    // Stabilité retenue selon le mode. Pour une perfusion continue, on privilégie une
+    // stabilité documentée à température d'usage (≥ 25 °C, la ligne perfuse à l'air
+    // ambiant/au contact du patient). On ne retient une valeur réfrigérée que faute de
+    // mieux, en le signalant : le froid concerne la conservation avant pose, pas la perfusion.
+    function retainedStability(text, adminMode = "continuous") {
+      const points = parseStabilityPoints(text);
+      if (!points.length) {
+        const flat = parseStabilityHours(text);
+        return flat.length ? { hours: Math.max(...flat), tempLabel: "température non précisée", fallback: false } : null;
+      }
+      const inUse = points.filter(p => p.temp >= 25);
+      if (inUse.length) {
+        const best = inUse.reduce((a, b) => (b.hours > a.hours ? b : a));
+        return { hours: best.hours, tempLabel: best.tempLabel, fallback: false };
+      }
+      const best = points.reduce((a, b) => (b.hours > a.hours ? b : a));
+      return { hours: best.hours, tempLabel: best.tempLabel, fallback: true };
+    }
+
+    function bestStabilityHours(text, adminMode = "continuous") {
+      const r = retainedStability(text, adminMode);
+      return r ? r.hours : null;
     }
 
     function renewalPlan(device, sourceText, adminMode, discontinuousFreq) {
@@ -3228,16 +3533,24 @@ let data = [];
       }
 
       const forced = device.forcedHours || null;
-      const stable = bestStabilityHours(sourceText);
+      const retained = retainedStability(sourceText, adminMode);
+      const stable = retained ? retained.hours : null;
+      const tempInfo = retained ? ` (${retained.tempLabel})` : "";
+      const fridgeOnly = !!(retained && retained.fallback);
+      const fridgeNote = fridgeOnly
+        ? " Attention : seule une stabilité réfrigérée est documentée — non transposable telle quelle à une perfusion à température ambiante."
+        : "";
       if (forced) {
         return {
           intervalHours: forced,
           administrationsPerDay: Math.ceil(24 / forced),
           doseFraction: forced / 24,
           label: `${Math.ceil(24 / forced)} changement${Math.ceil(24 / forced) > 1 ? "s" : ""}/jour · q${forced}h`,
-          detail: `Temps imposé dispositif : ${forced} h.`,
+          detail: `Temps imposé dispositif : ${forced} h.${stable != null ? ` Stabilité retenue : ${formatNumber(stable)} h${tempInfo}.` : ""}${fridgeNote}`,
           allowed: !stable || stable >= forced - 0.001,
-          stabilityHours: stable
+          stabilityHours: stable,
+          stabilityTemp: retained ? retained.tempLabel : "",
+          stabilityFallback: fridgeOnly
         };
       }
 
@@ -3251,7 +3564,9 @@ let data = [];
           label: stable ? `Stabilité ${formatNumber(stable)} h insuffisante` : "Stabilité non extractible",
           detail: "Aucun schéma continu simple q24h/q12h/q8h/q6h/q4h retenu automatiquement.",
           allowed: false,
-          stabilityHours: stable
+          stabilityHours: stable,
+          stabilityTemp: retained ? retained.tempLabel : "",
+          stabilityFallback: fridgeOnly
         };
       }
       const changes = Math.ceil(24 / interval);
@@ -3260,9 +3575,11 @@ let data = [];
         administrationsPerDay: changes,
         doseFraction: interval / 24,
         label: changes === 1 ? "1 changement/jour · q24h" : `${changes} changements/jour · q${interval}h`,
-        detail: stable ? `Stabilité extraite : jusqu’à ${formatNumber(stable)} h.` : "Stabilité non extractible : schéma q24h indicatif à vérifier.",
+        detail: stable ? `Stabilité retenue : jusqu’à ${formatNumber(stable)} h${tempInfo}.${fridgeNote}` : "Stabilité non extractible : schéma q24h indicatif à vérifier.",
         allowed: true,
-        stabilityHours: stable
+        stabilityHours: stable,
+        stabilityTemp: retained ? retained.tempLabel : "",
+        stabilityFallback: fridgeOnly
       };
     }
 
@@ -3336,6 +3653,10 @@ let data = [];
             assessment.status = "warn";
             assessment.label = "Stabilité insuffisante";
             assessment.detail = `${assessment.detail} ${plan.detail}`;
+          } else if (plan.stabilityFallback && adminMode === "continuous" && assessment.status === "ok") {
+            assessment.status = "warn";
+            assessment.label = "À confirmer (donnée réfrigérée)";
+            assessment.detail = `${assessment.detail} ${plan.detail}`;
           } else if (plan.allowed && adminMode === "continuous" && plan.administrationsPerDay > 1 && assessment.status === "ok") {
             assessment.label = `Possible avec ${plan.label}`;
             assessment.detail = `${assessment.detail} ${plan.detail}`;
@@ -3356,6 +3677,20 @@ let data = [];
       const okCount = rows.filter(r => r.assessment.status === "ok").length;
       const warnCount = rows.filter(r => r.assessment.status === "warn").length;
       return okCount ? "ok" : warnCount ? "warn" : "stop";
+    }
+
+    function reverseAssumptions(rows, device) {
+      const r = rows && rows[0];
+      if (!r || !r.plan) return "";
+      const chips = [];
+      chips.push(`<span class="assum-chip">Solvant : <strong>${escapeHtml(solventLabel(device.solvent))}</strong></span>`);
+      chips.push(`<span class="assum-chip">Concentration : <strong>${formatNumber(r.conc)} mg/mL</strong> · ${escapeHtml(r.assessment.label)}</span>`);
+      if (r.plan.stabilityHours != null) {
+        const temp = r.plan.stabilityTemp ? ` ${r.plan.stabilityTemp}` : "";
+        chips.push(`<span class="assum-chip${r.plan.stabilityFallback ? " assum-warn" : ""}">Stabilité retenue : <strong>${formatNumber(r.plan.stabilityHours)} h</strong>${escapeHtml(temp)}</span>`);
+      }
+      chips.push(`<span class="assum-chip">Schéma : <strong>${escapeHtml(r.plan.label)}</strong></span>`);
+      return `<div class="reverse-assumptions"><span class="assum-title">Hypothèses retenues</span>${chips.join("")}</div>`;
     }
 
     function reverseRowsHtml(rows, device, adminMode) {
@@ -3450,6 +3785,7 @@ let data = [];
               <div>${extraBadge}${forceHiddenBadge ? bestBadge : primaryBadge}</div>
             </div>
             <div class="reverse-card-body">
+              ${reverseAssumptions(rowsToRender, device)}
               <table class="reverse-table">
                 <thead><tr><th>Conclusion</th><th>Dose / concentration</th><th>Schéma proposé</th><th>Stabilité / condition</th><th>Source / preuve</th></tr></thead>
                 <tbody>${reverseRowsHtml(rowsToRender, device, adminMode)}</tbody>
@@ -3555,13 +3891,17 @@ let data = [];
         const micrel = summarizeDevice(group.sources, "micrel");
         const confidence = sourceConfidence(group.sources);
         const hasDiscordance = [poche, pse, elastomere, anapa, micrel].some(x => x.discordant);
+        const distinctSources = consolidateSourcesByLabel(group.sources);
+        const nSources = distinctSources.length;
+        const nMergedRows = group.sources.length - nSources;
+        const mergedHint = nMergedRows > 0 ? ` · ${group.sources.length} lignes synthétisées` : "";
 
         return `
           <article class="result-card ${hasDiscordance ? "has-discordance" : ""}">
             <div class="result-head">
               <div>
                 <h3>${group.molecule}</h3>
-                <div class="source">${group.sources.length} source${group.sources.length > 1 ? "s" : ""} intégrée${group.sources.length > 1 ? "s" : ""}${hasDiscordance ? " · discordance détectée" : ""}</div>
+                <div class="source">${nSources} source${nSources > 1 ? "s" : ""} intégrée${nSources > 1 ? "s" : ""}${mergedHint}${hasDiscordance ? " · discordance détectée" : ""}</div>
               </div>
               <div class="header-tags"><span class="badge conf-${confidence.level.toLowerCase()}">${confidence.label}</span>${hasDiscordance ? '<span class="badge stop">Discordance</span>' : ''}</div>
             </div>
@@ -3577,8 +3917,8 @@ let data = [];
             <div class="notes">
               ${comparisonTable(group.sources)}
               ${yCompatibilityPanel(group.molecule)}
-              <details class="source-details source-detail-group"${group.sources.length > 4 ? "" : " open"}>
-                <summary>Détail par source <span class="src-count">${group.sources.length}</span></summary>
+              <details class="source-details source-detail-group"${nSources > 4 ? "" : " open"}>
+                <summary>Détail par source <span class="src-count">${nSources}</span></summary>
                 <div class="source-content source-detail-stack">
                   ${sourceDetails(group.sources)}
                 </div>
@@ -3591,7 +3931,7 @@ let data = [];
 
 
     tabButtons.forEach(btn => btn.addEventListener("click", () => switchTab(btn.dataset.tab)));
-    [reverseMoleculeEl, reverseDoseEl, reverseUnitEl, reverseAdminModeEl, reverseFreqEl, reverseRcpEl, reverseSourceFilterEl, reverseCostContextEl, reverseShowCostEl, reverseShowG5El].filter(Boolean).forEach(el => el.addEventListener("input", () => {
+    [reverseMoleculeEl, reverseDoseEl, reverseUnitEl, reverseAdminModeEl, reverseFreqEl, reverseRcpEl, reverseSourceFilterEl, reverseCostContextEl, reverseShowCostEl, reverseIncludeMedEl, reverseShowG5El].filter(Boolean).forEach(el => el.addEventListener("input", () => {
       updateReverseModeUI();
       refreshReverseSourceChips();
       renderReverse();
