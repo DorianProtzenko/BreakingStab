@@ -1743,7 +1743,7 @@
 
         <div class="summary-line">
           <span class="pill" id="reverseCountPill">0 option</span>
-          <span>Résultat indicatif : la dose saisie est interprétée comme dose journalière. En discontinu, la dose par administration est calculée selon la fréquence choisie ou, si la case est cochée, selon le fractionnement RCP/usuel intégré. Pour une perfusion continue, l’outil retient en priorité une stabilité documentée à température d’usage (≥ 25 °C) ; une stabilité uniquement réfrigérée n’est jamais recommandée telle quelle et est signalée « à confirmer ». Vérifier la source originale, le dispositif, la température, le solvant et la procédure locale.</span>
+          <span>Résultat indicatif : la dose saisie est interprétée comme dose journalière. En discontinu, la dose par administration est calculée selon la fréquence choisie ou, si la case est cochée, selon le fractionnement RCP/usuel intégré. Pour une perfusion continue, l’outil retient en priorité une stabilité documentée à température d’usage (≥ 25 °C) ; une stabilité uniquement réfrigérée n’est jamais recommandée telle quelle et est signalée « à confirmer ». Les diffuseurs sont proposés selon leurs débits réels (250 mL/12 h, 500 mL/12 h, 500 mL/24 h) et séparés par matériau de membrane (siliconé vs non siliconé/polyisoprène) : une stabilité validée sur un matériau n’est pas transposée à l’autre. Vérifier la source originale, le dispositif, la température, le solvant et la procédure locale.</span>
         </div>
       </section>
       <section id="reverseResults" class="reverse-results"></section>
@@ -3361,18 +3361,28 @@ let data = [];
         { key: "pse", label: `PSE HAD seringue PP 24 mL · NaCl 0,9 % · q${hours}h`, volume: 24, solvent: "nacl", sourceFilter: null, forcedTime: `${hours} h par PSE HAD 24 mL · stabilité PSE appliquée, concentration calculée sur 24 mL`, forcedHours: hours, modes: ["continuous"] },
         { key: "pse", label: `PSE HAD seringue PP 24 mL · G5 · q${hours}h`, volume: 24, solvent: "g5", sourceFilter: null, forcedTime: `${hours} h par PSE HAD 24 mL · stabilité PSE appliquée, concentration calculée sur 24 mL`, forcedHours: hours, modes: ["continuous"] }
       ]),
-      ...[100, 150, 250, 500].flatMap(volume => [
-        { key: "elastomere", label: `Diffuseur élastomère générique ${volume} mL · NaCl 0,9 %`, volume, solvent: "nacl", sourceFilter: null, forcedTime: "Continu fractionnable selon stabilité", modes: ["continuous"] },
-        { key: "elastomere", label: `Diffuseur élastomère générique ${volume} mL · G5`, volume, solvent: "g5", sourceFilter: null, forcedTime: "Continu fractionnable selon stabilité", modes: ["continuous"] }
-      ]),
+      ...[
+        { volume: 250, hours: 12 },
+        { volume: 500, hours: 12 },
+        { volume: 500, hours: 24 }
+      ].flatMap(({ volume, hours }) => [
+        { material: "silicone" },
+        { material: "polyisoprene" }
+      ].flatMap(({ material }) => {
+        const mat = diffuserMaterialShort(material);
+        return [
+          { key: "elastomere", material, label: `Diffuseur ${mat} ${volume} mL / ${hours} h · NaCl 0,9 %`, volume, solvent: "nacl", sourceFilter: null, forcedTime: `${volume} mL sur ${hours} h (débit imposé)`, forcedHours: hours, modes: ["continuous"] },
+          { key: "elastomere", material, label: `Diffuseur ${mat} ${volume} mL / ${hours} h · G5`, volume, solvent: "g5", sourceFilter: null, forcedTime: `${volume} mL sur ${hours} h (débit imposé)`, forcedHours: hours, modes: ["continuous"] }
+        ];
+      })),
       { key: "micrel", label: "Pompe Rythmic / Micrel 100 mL · NaCl 0,9 %", volume: 100, solvent: "nacl", sourceFilter: "micrel", forcedTime: "Continu fractionnable selon stabilité", modes: ["continuous"] },
       { key: "micrel", label: "Pompe Rythmic / Micrel 100 mL · G5", volume: 100, solvent: "g5", sourceFilter: "micrel", forcedTime: "Continu fractionnable selon stabilité", modes: ["continuous"] },
       { key: "micrel", label: "Pompe Rythmic / Micrel 200 mL · NaCl 0,9 %", volume: 200, solvent: "nacl", sourceFilter: "micrel", forcedTime: "Continu fractionnable selon stabilité", modes: ["continuous"] },
       { key: "micrel", label: "Pompe Rythmic / Micrel 200 mL · G5", volume: 200, solvent: "g5", sourceFilter: "micrel", forcedTime: "Continu fractionnable selon stabilité", modes: ["continuous"] },
-      { key: "elastomere", label: "NEOPUMP diffuseur 500 mL · NaCl 0,9 %", volume: 500, solvent: "nacl", sourceFilter: "neopump", forcedTime: "12 h forcées", forcedHours: 12, modes: ["continuous"] },
-      { key: "elastomere", label: "NEOPUMP diffuseur 500 mL · G5", volume: 500, solvent: "g5", sourceFilter: "neopump", forcedTime: "12 h forcées", forcedHours: 12, modes: ["continuous"] },
-      { key: "anapa", label: "ANAPA 250 mL · NaCl 0,9 %", volume: 250, solvent: "nacl", sourceFilter: "anapa", forcedTime: "12 h forcées", forcedHours: 12, modes: ["continuous"] },
-      { key: "anapa", label: "ANAPA 250 mL · G5", volume: 250, solvent: "g5", sourceFilter: "anapa", forcedTime: "12 h forcées", forcedHours: 12, modes: ["continuous"] }
+      { key: "elastomere", material: "polyisoprene", materialKnown: true, label: "NEOPUMP diffuseur non siliconé 500 mL / 12 h · NaCl 0,9 %", volume: 500, solvent: "nacl", sourceFilter: "neopump", forcedTime: "12 h forcées", forcedHours: 12, modes: ["continuous"] },
+      { key: "elastomere", material: "polyisoprene", materialKnown: true, label: "NEOPUMP diffuseur non siliconé 500 mL / 12 h · G5", volume: 500, solvent: "g5", sourceFilter: "neopump", forcedTime: "12 h forcées", forcedHours: 12, modes: ["continuous"] },
+      { key: "anapa", material: "abs", materialKnown: true, label: "ANAPA (ABS) 250 mL / 12 h · NaCl 0,9 %", volume: 250, solvent: "nacl", sourceFilter: "anapa", forcedTime: "12 h forcées", forcedHours: 12, modes: ["continuous"] },
+      { key: "anapa", material: "abs", materialKnown: true, label: "ANAPA (ABS) 250 mL / 12 h · G5", volume: 250, solvent: "g5", sourceFilter: "anapa", forcedTime: "12 h forcées", forcedHours: 12, modes: ["continuous"] }
     ];
 
     function doseToMg(value, unit) {
@@ -3636,11 +3646,49 @@ let data = [];
       return Math.abs(doseValue - Number(r[1])) <= Math.max(0.01, Number(r[1]) * 0.02);
     }
 
+    // Matériau de membrane du diffuseur élastomère. Les données de stabilité portent la
+    // mention « matériau Silicone / Polyisoprene / Polyisoprene ou silicone » : le silicone
+    // et le polyisoprène (non siliconé) ne sorbent pas de la même façon, une stabilité
+    // documentée sur l'un n'est pas transposable à l'autre.
+    function parseDiffuserMaterial(text) {
+      const t = normalize(text);
+      const sil = t.includes("silicon");
+      const poly = t.includes("polyisopren") || t.includes("isoprene");
+      if (sil && poly) return "both";
+      if (sil) return "silicone";
+      if (poly) return "polyisoprene";
+      return null;
+    }
+    function diffuserMaterialShort(m) {
+      if (m === "silicone") return "siliconé";
+      if (m === "polyisoprene") return "polyisoprène";
+      if (m === "both") return "silicone/polyisoprène";
+      if (m === "abs") return "ABS";
+      return "matériau non précisé";
+    }
+    function diffuserMaterialLabel(m) {
+      if (m === "silicone") return "siliconé";
+      if (m === "polyisoprene") return "non siliconé (polyisoprène)";
+      if (m === "both") return "silicone ou polyisoprène";
+      if (m === "abs") return "ABS (rigide, non siliconé)";
+      return "matériau non précisé";
+    }
+
     function reverseRowsForDevice(moleculeSources, device, dailyDoseMg, adminMode, discontinuousFreq) {
+      const gateMaterial = (device.key === "elastomere" && device.material) ? device.material : null;
       return moleculeSources
         .filter(s => sourceMatchesDevice(s, device))
         .map(s => ({ source: s, value: s[device.key] || "--", conf: confidenceLevel(s) }))
         .filter(x => x.value && x.value !== "--" && sourceMatchesDailyDose(x.value, dailyDoseMg))
+        .filter(x => {
+          if (!gateMaterial) return true;
+          const mat = parseDiffuserMaterial(x.value);
+          // Matériau non précisé : conservé (signalé). « both » : compatible. Matériau
+          // opposé explicite : exclu — ne jamais recommander un diffuseur d'un matériau
+          // sur une stabilité validée uniquement pour l'autre.
+          if (mat === null || mat === "both") return true;
+          return mat === gateMaterial;
+        })
         .map(x => {
           const plan = renewalPlan(device, x.value, adminMode, discontinuousFreq);
           const doseForContainer = dailyDoseMg * plan.doseFraction;
@@ -3663,7 +3711,7 @@ let data = [];
           } else {
             assessment.detail = `${assessment.detail} ${plan.detail}`;
           }
-          return { ...x, assessment, conc, plan, doseForContainer };
+          return { ...x, assessment, conc, plan, doseForContainer, rowMaterial: parseDiffuserMaterial(x.value) };
         });
     }
 
@@ -3690,6 +3738,11 @@ let data = [];
         chips.push(`<span class="assum-chip${r.plan.stabilityFallback ? " assum-warn" : ""}">Stabilité retenue : <strong>${formatNumber(r.plan.stabilityHours)} h</strong>${escapeHtml(temp)}</span>`);
       }
       chips.push(`<span class="assum-chip">Schéma : <strong>${escapeHtml(r.plan.label)}</strong></span>`);
+      if (device.material) {
+        const term = device.key === "anapa" ? "Matériau" : "Membrane";
+        const unspecified = !device.materialKnown && !r.rowMaterial;
+        chips.push(`<span class="assum-chip${unspecified ? " assum-warn" : ""}">${term} : <strong>${escapeHtml(diffuserMaterialLabel(device.material))}</strong>${unspecified ? " — matériau non précisé dans la source" : ""}</span>`);
+      }
       return `<div class="reverse-assumptions"><span class="assum-title">Hypothèses retenues</span>${chips.join("")}</div>`;
     }
 
@@ -3755,6 +3808,7 @@ let data = [];
         if (device.key === "micrel") return `micrel-${device.solvent}`;
         if (label.includes("neopump")) return `neopump-${device.solvent}`;
         if (device.key === "anapa") return `anapa-${device.solvent}`;
+        if (device.key === "elastomere" && device.material) return `elastomere-${device.material}-${device.solvent}`;
         if (device.key === "elastomere") return `elastomere-generic-${device.solvent}`;
         return `${device.key}-${device.volume}-${device.solvent}`;
       }
@@ -3766,6 +3820,9 @@ let data = [];
         if (device.key === "pse" && device.volume === 48) return -(device.forcedHours || 0);
         // PSE HAD 24 mL continu : proposer en premier celui qui nécessite le moins de changements.
         if (device.key === "pse" && device.volume === 24) return -(device.forcedHours || 0);
+        // Diffuseur avec débit imposé : d'abord le moins de changements/jour (durée longue),
+        // puis à durée égale le plus petit volume.
+        if (device.key === "elastomere" && device.material) return -(device.forcedHours || 0) * 1000 + device.volume;
         // Élastomère générique : proposer en premier le plus petit volume documenté.
         if (device.key === "elastomere") return device.volume;
         return 0;
