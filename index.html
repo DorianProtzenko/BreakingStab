@@ -1532,6 +1532,33 @@
       font-size: 0.82rem;
     }
     .cost-socle-note strong { color: var(--ink); }
+
+    /* Rendu compact synthétique des blocs dispositif (base stabilité) */
+    .cfg-list { display: flex; flex-direction: column; gap: 7px; }
+    .cfg-row {
+      padding: 8px 10px;
+      border-radius: 10px;
+      background: #f7fafc;
+      border: 1px solid #e4ebf2;
+    }
+    .cfg-row.diff { border-color: #e6c78f; background: #fdf7ec; }
+    .cfg-line { font-size: 0.86rem; color: var(--ink); line-height: 1.5; }
+    .cfg-solvent { font-weight: 750; }
+    .cfg-conc { color: #38506a; }
+    .cfg-dev { color: var(--muted); }
+    .stab-chip {
+      display: inline-block;
+      padding: 1px 8px;
+      border-radius: 999px;
+      font-weight: 750;
+      font-size: 0.8rem;
+      white-space: nowrap;
+    }
+    .stab-ok { background: #e3f4ea; color: #15633a; }
+    .stab-mid { background: #fbf0da; color: #7c4f11; }
+    .stab-stop { background: #fbe4e4; color: #952727; }
+    .cfg-src { display: flex; flex-wrap: wrap; gap: 4px; margin-top: 5px; }
+    .cfg-warn { margin-top: 5px; font-size: 0.78rem; color: #952727; font-weight: 650; }
   </style>
 </head>
 <body>
@@ -2926,53 +2953,171 @@ let data = [];
         .trim();
     }
 
+    // Distille une configuration brute en son essence clinique : solvant, concentration
+    // (mg/mL, avec repérage d'un plafond "max"), stabilité, dispositif, alertes. Les
+    // fragments non informatifs (dose journalière, fractions de dose g/mL, « If fluid
+    // intake is restricted », « stab non précisée », glitch « volumétriqueric pump »…)
+    // sont écartés puisqu'on ne reconstruit que les champs structurés.
+    function distillConfig(text) {
+      const t = displayCleanText(String(text || "")).replace(/\s+/g, " ").trim();
+      if (!t || t === "--") return null;
+      const low = normalize(t);
+
+      let solvent = "";
+      const hasNaCl = low.includes("nacl");
+      const hasG5 = /\bg5\b/.test(low);
+      if (hasNaCl && hasG5) solvent = "NaCl 0,9 % ou G5";
+      else if (hasNaCl) solvent = "NaCl 0,9 %";
+      else if (hasG5) solvent = "G5";
+      else if (low.includes("eppi") || low.includes("eau ppi")) solvent = "EPPI";
+      else if (low.includes("extraneal")) solvent = "Extraneal®";
+      else if (low.includes("dianeal")) solvent = "Dianéal®";
+      else if (low.includes("pret")) solvent = "Prêt à l’emploi";
+      else if (low.includes("solute non precise") || low.includes("non precise")) solvent = "Soluté non précisé";
+
+      // Concentrations en mg/mL ou MUI/mL (exclut les fractions de dose « 3 g/250 mL »).
+      const concs = [];
+      const reConc = /(\d+(?:[.,]\d+)?)\s*(?:[–\-àa]\s*(\d+(?:[.,]\d+)?)\s*)?(mg\/ml|mui\/ml)/gi;
+      let m;
+      while ((m = reConc.exec(t))) {
+        const lo = parseFloat(m[1].replace(",", "."));
+        const hi = m[2] ? parseFloat(m[2].replace(",", ".")) : lo;
+        const ctx = low.slice(Math.max(0, m.index - 6), m.index + m[0].length + 6);
+        concs.push({ lo, hi, unit: /mui/i.test(m[3]) ? "MUI/mL" : "mg/mL", max: ctx.includes("max") });
+      }
+
+      // Stabilité : priorité au champ « stab X » ; sinon première durée hors contexte de dose.
+      let stab = null;
+      const reStab = /stab(?:ilit[eé])?\.?\s*[:=]?\s*((?:>|<|≥|≤)?\s*\d+(?:[.,]\d+)?\s*(?:j|jours?|h|heures?|min))/i;
+      const sm = reStab.exec(t);
+      if (sm) {
+        stab = sm[1].trim();
+      } else {
+        const reDur = /(\d+(?:[.,]\d+)?)\s*(j|jours?|h|heures?|min)\b/gi;
+        let dm;
+        while ((dm = reDur.exec(t))) {
+          const before = low.slice(Math.max(0, dm.index - 16), dm.index);
+          if (/g\s*\/\s*$/.test(before) || before.includes("journalier") || /\/\s*$/.test(before)) continue;
+          stab = dm[0].trim();
+          break;
+        }
+      }
+      const stabHours = stab ? durationToHoursGlobal(stab) : null;
+
+      let device = "";
+      if (low.includes("pompe volum") || low.includes("volumetriqu")) device = "pompe volumétrique";
+      else if (low.includes("diffuseur")) device = "diffuseur";
+      else if (low.includes("elastomere")) device = "élastomère";
+      else if (low.includes("seringue") || low.includes("pse")) device = "PSE";
+      else if (low.includes("rythmic") || low.includes("micrel")) device = "Micrel";
+      else if (low.includes("anapa")) device = "ANAPA";
+
+      const warnings = [];
+      [["deconseille", "déconseillé"], ["incompatible", "incompatible"], ["contre-indique", "contre-indiqué"],
+       ["non transposable", "non transposable"], ["non recommande", "non recommandé"], ["photoprotection", "photoprotection"]]
+        .forEach(([k, lbl]) => { if (low.includes(k) && !warnings.includes(lbl)) warnings.push(lbl); });
+
+      if (!solvent && !concs.length && !stab) return null;
+      return { solvent: solvent || "Soluté non précisé", concs, stab, stabHours, device, warnings };
+    }
+
+    function durationToHoursGlobal(raw) {
+      const txt = normalize(raw).replace(/,/g, ".");
+      const day = txt.match(/(\d+(?:\.\d+)?)\s*j/);
+      if (day) return parseFloat(day[1]) * 24;
+      const hour = txt.match(/(\d+(?:\.\d+)?)\s*h/);
+      if (hour) return parseFloat(hour[1]);
+      const min = txt.match(/(\d+(?:\.\d+)?)\s*min/);
+      if (min) return parseFloat(min[1]) / 60;
+      return null;
+    }
+
+    function stabChipClass(hours) {
+      if (hours == null) return "mid";
+      if (hours >= 24) return "ok";
+      if (hours >= 12) return "mid";
+      return "stop";
+    }
+
+    function formatConcSummary(concs) {
+      if (!concs.length) return "";
+      const unit = concs[0].unit || "mg/mL";
+      const lo = Math.min(...concs.map(c => c.lo));
+      const hi = Math.max(...concs.map(c => c.hi));
+      const anyMax = concs.some(c => c.max);
+      if (anyMax) return `≤ ${formatNumber(hi)} ${unit}`;
+      if (hi > lo) return `${formatNumber(lo)}–${formatNumber(hi)} ${unit}`;
+      return `${formatNumber(lo)} ${unit}`;
+    }
+
     function summarizeDevice(sources, key) {
-      const entries = [];
+      // 1) Distiller toutes les configurations, en gardant la source.
+      const items = [];
       sources.forEach(sourceRow => {
-        splitStabilityConfigurations(sourceRow[key]).forEach((variant, index) => {
-          entries.push({
-            source: sourceRow.source || "Source non précisée",
-            variant: displayCleanText(variant),
-            index
-          });
+        splitStabilityConfigurations(sourceRow[key]).forEach(variant => {
+          const d = distillConfig(variant);
+          if (d) items.push({ ...d, source: sourceRow.source || "Source non précisée" });
         });
       });
+      if (!items.length) return { text: "--", discordant: false };
 
-      if (!entries.length) return { text: "--", discordant: false };
-
-      const grouped = new Map();
-      entries.forEach(entry => {
-        const norm = normalizedConfigurationKey(entry.variant);
-        if (!grouped.has(norm)) grouped.set(norm, { text: entry.variant, sources: [], count: 0 });
-        const group = grouped.get(norm);
-        if (!group.sources.includes(entry.source)) group.sources.push(entry.source);
-        group.count += 1;
+      // 2) Fusionner par signature (solvant + stabilité) : les paliers de dose d'une même
+      //    règle (ex. CHICAS 6/8/10/12 g → tous NaCl, 12 h) se regroupent en une ligne,
+      //    les concentrations étant agrégées en plage.
+      const groups = new Map();
+      const order = [];
+      items.forEach(it => {
+        const sig = `${it.solvent}||${it.stabHours != null ? it.stabHours : (it.stab || "?")}`;
+        if (!groups.has(sig)) {
+          order.push(sig);
+          groups.set(sig, { solvent: it.solvent, stab: it.stab, stabHours: it.stabHours, concs: [], devices: new Set(), warnings: new Set(), sources: new Set(), count: 0 });
+        }
+        const g = groups.get(sig);
+        it.concs.forEach(c => g.concs.push(c));
+        if (it.device) g.devices.add(it.device);
+        it.warnings.forEach(w => g.warnings.add(w));
+        g.sources.add(it.source);
+        g.count += 1;
       });
 
-      const groups = Array.from(grouped.values());
-      const sourceCount = new Set(entries.map(entry => entry.source)).size;
-      const discordant = groups.length > 1 && sourceCount > 1;
-      const multiConfig = groups.length > 1;
+      const groupList = order.map(sig => groups.get(sig));
 
-      const html = '<div class="source-config-list">' + groups.map(group => {
-        const rowClass = discordant ? "diff" : (multiConfig ? "multi" : "");
-        const maxBadges = 3;
-        const badges = group.sources.slice(0, maxBadges)
-          .map(source => `<span class="config-source-badge">${escapeHtml(sourceShortLabel(source))}</span>`)
-          .join("");
-        const more = group.sources.length > maxBadges
-          ? `<span class="config-source-badge config-extra">+${group.sources.length - maxBadges} source${group.sources.length - maxBadges > 1 ? "s" : ""}</span>`
-          : "";
-        const count = group.count > group.sources.length
-          ? `<span class="config-source-count">${group.count} configuration${group.count > 1 ? "s" : ""} regroupée${group.count > 1 ? "s" : ""}</span>`
-          : "";
-        return `<div class="source-config-row ${rowClass}">
-          <div class="config-source-line">${badges}${more}${count}</div>
-          ${formatStabilityValue(group.text)}
+      // 3) Discordance = même solvant, plages de concentration qui se recoupent, mais
+      //    stabilités différentes, appuyées par des sources distinctes (vraie divergence,
+      //    pas une simple dépendance à la concentration).
+      let discordant = false;
+      for (let i = 0; i < groupList.length && !discordant; i++) {
+        for (let j = i + 1; j < groupList.length; j++) {
+          const a = groupList[i], b = groupList[j];
+          if (a.solvent !== b.solvent) continue;
+          if ((a.stabHours ?? -1) === (b.stabHours ?? -2)) continue;
+          const aLo = Math.min(...a.concs.map(c => c.lo), Infinity), aHi = Math.max(...a.concs.map(c => c.hi), -Infinity);
+          const bLo = Math.min(...b.concs.map(c => c.lo), Infinity), bHi = Math.max(...b.concs.map(c => c.hi), -Infinity);
+          const overlap = a.concs.length && b.concs.length ? (aLo <= bHi && bLo <= aHi) : true;
+          const multiSource = new Set([...a.sources, ...b.sources]).size > 1;
+          if (overlap && multiSource) { discordant = true; break; }
+        }
+      }
+
+      // 4) Rendu compact : une ligne par règle synthétisée.
+      const rows = groupList.map(g => {
+        const chipCls = stabChipClass(g.stabHours);
+        const conc = formatConcSummary(g.concs);
+        const stabTxt = g.stab ? g.stab.replace(/\s+/g, " ").replace(/(\d)\s*(h|j|jours?|min|heures?)\b/i, "$1 $2") : "stab. non précisée";
+        const devTxt = g.devices.size ? ` · ${[...g.devices].join(", ")}` : "";
+        const srcBadges = [...g.sources].slice(0, 3)
+          .map(s => `<span class="config-source-badge">${escapeHtml(sourceShortLabel(s))}</span>`).join("");
+        const moreSrc = g.sources.size > 3 ? `<span class="config-source-badge config-extra">+${g.sources.size - 3}</span>` : "";
+        const mergedTag = g.count > g.sources.size ? `<span class="config-source-count">${g.count} paliers regroupés</span>` : "";
+        const warn = g.warnings.size ? `<div class="cfg-warn">⚠ ${escapeHtml([...g.warnings].join(" · "))}</div>` : "";
+        return `<div class="cfg-row ${discordant ? "diff" : ""}">
+          <div class="cfg-line"><span class="cfg-solvent">${escapeHtml(g.solvent)}</span>${conc ? ` · <span class="cfg-conc">${escapeHtml(conc)}</span>` : ""} · <span class="stab-chip stab-${chipCls}">${escapeHtml(stabTxt)}</span><span class="cfg-dev">${escapeHtml(devTxt)}</span></div>
+          <div class="cfg-src">${srcBadges}${moreSrc}${mergedTag}</div>
+          ${warn}
         </div>`;
-      }).join("") + '</div>';
+      }).join("");
 
-      return { text: html, discordant };
+      return { text: `<div class="cfg-list">${rows}</div>`, discordant };
     }
 
     // Synthèse d'affichage : regroupe les lignes qui partagent le MÊME libellé de source
