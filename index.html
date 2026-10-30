@@ -167,7 +167,7 @@ footer{max-width:1240px;margin:0 auto;padding:18px 20px 40px;color:var(--ink2);f
 <header class="top">
   <div class="brand">
     <h1>Breaking Stab</h1>
-    <p>Choisir une méthode de perfusion d’anti-infectieux selon la stabilité, le coût et l’empreinte carbone.</p>
+    <p>Stabilité, coût et CO₂ des modes de perfusion des anti-infectieux.</p>
   </div>
 </header>
 <nav class="tabs" role="tablist" aria-label="Sections">
@@ -216,11 +216,10 @@ footer{max-width:1240px;margin:0 auto;padding:18px 20px 40px;color:var(--ink2);f
       </div>
       <details class="more">
         <summary>Options</summary>
-        <label class="check"><input type="checkbox" id="g5"> Proposer aussi le G5</label>
-        <label class="check"><input type="checkbox" id="pvc"> Mes poches sont en PVC</label>
-        <label class="check"><input type="checkbox" id="med"> Inclure le médicament dans le coût et le CO₂</label>
-        <label class="check"><input type="checkbox" id="legacy"> Accepter une concentration inférieure à la seule valeur testée</label>
-        <p class="hint">Par défaut, une concentration n’est « documentée » que si elle est dans la plage testée (±10 % autour d’une valeur unique). La case rétablit l’ancienne règle, où une valeur unique valait maximum.</p>
+        <label class="check"><input type="checkbox" id="g5"> Inclure G5</label>
+        <label class="check"><input type="checkbox" id="pvc"> Poches PVC</label>
+        <label class="check"><input type="checkbox" id="med"> Inclure le médicament (coût, CO₂)</label>
+        <label class="check"><input type="checkbox" id="legacy"> Valeur unique testée = maximum (hors SPILF R-5)</label>
       </details>
     </form>
 
@@ -241,7 +240,7 @@ footer{max-width:1240px;margin:0 auto;padding:18px 20px 40px;color:var(--ink2);f
       <div class="legend">
         <span><span class="dot ok"></span>Documenté</span>
         <span><span class="dot warn"></span>À confirmer</span>
-        <span><span class="dot no"></span>Non recommandé ou hors données</span>
+        <span><span class="dot no"></span>Écarté</span>
       </div>
       <div id="results"></div>
     </div>
@@ -258,7 +257,7 @@ footer{max-width:1240px;margin:0 auto;padding:18px 20px 40px;color:var(--ink2);f
 
 <!-- ============ Y ============ -->
 <section id="p-y" class="panel" role="tabpanel">
-  <div class="alert">La plupart des compatibilités en Y de la base locale n’ont pas de source rattachée. Les couples vérifiés dans la littérature sont sourcés et prévalent. Les compatibilités dépendent des concentrations : vérifier dans Stabilis avant toute administration.</div>
+  <div class="alert">Base locale non sourcée, sauf couples marqués *. Compatibilité concentration-dépendante : vérifier dans Stabilis.</div>
   <div class="ybox">
     <div class="field" style="margin:0"><label for="yA">Premier médicament</label><input type="text" id="yA" list="yList" autocomplete="off"></div>
     <div style="padding-bottom:10px;color:var(--ink2)">avec</div>
@@ -343,68 +342,68 @@ function containerRule(dev, r, pvcBags){
   const target = (dev.dev === "micrel" || (dev.dev === "poche" && pvcBags)) ? "PVC" : (dev.dev === "poche" || dev.dev === "pse") ? "nonPVC" : dev.dev;
   if (target === "PVC"){
     if (k !== "PVC") return null;
-    if (dev.dev === r.dev || (dev.dev === "poche" && /PVC/.test(r.mat))) return {st:"ok", msg:"Donnée obtenue en contenant PVC"};
-    return {st:"ok", msg:`Donnée obtenue dans un autre contenant PVC (${r.dev === "micrel" ? "réservoir Rythmic" : "poche PVC"}) : contenant similaire exigé par SPILF R-8`};
+    if (dev.dev === r.dev || (dev.dev === "poche" && /PVC/.test(r.mat))) return {st:"ok", msg:"Donnée en contenant PVC"};
+    return {st:"ok", msg:`Donnée PVC (${r.dev === "micrel" ? "réservoir Rythmic" : "poche PVC"}), contenant similaire (R-8)`};
   }
   if (target === "nonPVC"){
     if (!["nonPVC","PVC","unknown"].includes(k)) return null;
-    if (dev.dev === r.dev && k !== "PVC" && k !== "unknown") return {st:"ok", msg:"Donnée obtenue dans ce type de contenant"};
-    const from = k === "PVC" ? "un contenant PVC" : k === "unknown" ? "un contenant non précisé" : r.dev === "pse" ? "une seringue polypropylène" : "une poche sans PVC";
-    return {st:"ok", msg:`Extrapolation depuis ${from} vers un contenant sans PVC, admise par SPILF R-8`};
+    if (dev.dev === r.dev && k !== "PVC" && k !== "unknown") return {st:"ok", msg:"Donnée dans ce contenant"};
+    const from = k === "PVC" ? "contenant PVC" : k === "unknown" ? "contenant non précisé" : r.dev === "pse" ? "seringue PP" : "poche sans PVC";
+    return {st:"ok", msg:`Extrapolation depuis ${from} (R-8)`};
   }
-  if (dev.dev === "elastomere") return (r.dev === "elastomere" && matClass(r.mat) === dev.mat) ? {st:"ok", msg:`Donnée obtenue sur diffuseur en ${r.mat} : matériau identique à ce diffuseur (silicone et polyisoprène non interchangeables, SPILF R-8)`} : null;
+  if (dev.dev === "elastomere") return (r.dev === "elastomere" && matClass(r.mat) === dev.mat) ? {st:"ok", msg:`Donnée en ${r.mat} (R-8)`} : null;
   return r.dev === dev.dev ? {st:"ok", msg:null} : null;
 }
 const TOL = 0.10;
 
 /* ---------- stability engine ---------- */
 function concCheck(c, rc, unit, legacy){
-  if (!rc) return {st:"warn", msg:"Concentration non précisée par la source"};
-  if ((rc.u||"mg") !== (unit === "MUI" ? "MUI" : "mg")) return {st:"warn", msg:`Unité de la source (${rc.u}/mL) différente de la dose saisie`};
+  if (!rc) return {st:"warn", msg:"Concentration non précisée"};
+  if ((rc.u||"mg") !== (unit === "MUI" ? "MUI" : "mg")) return {st:"warn", msg:`Unité source ${rc.u}/mL ≠ dose saisie`};
   const u = `${rc.u||"mg"}/mL`, eps = 0.01;
   const ref = rc.kind === "range" ? `plage ${fmt(rc.cmin)} à ${fmt(rc.cmax)} ${u}` : rc.kind === "max" ? `maximum ${fmt(rc.cmax)} ${u}` : (rc.points && rc.points.length > 1) ? `valeurs ${rc.points.map(p => fmt(p)).join(" et ")} ${u}` : `valeur ${fmt(rc.cmin)} ${u}`;
   const hi = rc.cmax, lo = rc.kind === "max" ? null : rc.cmin;
-  if (c > hi*(1+eps)) return {st:"no", msg:`${fmt(c)} ${u}, supérieure à ce qui est validé (${ref}) : pas d’extrapolation vers le haut (SPILF R-5)`};
-  if (lo == null) return {st:"ok", msg:`${fmt(c)} ${u}, sous le maximum déclaré par la source (${ref})`};
+  if (c > hi*(1+eps)) return {st:"no", msg:`${fmt(c)} ${u} > validé (${ref}) (R-5)`};
+  if (lo == null) return {st:"ok", msg:`${fmt(c)} ${u} ≤ ${ref}`};
   if (c >= lo*(1-eps)){
     const between = rc.kind === "points" && c > lo*(1+eps) && c < hi*(1-eps);
-    return {st:"ok", msg: between ? `${fmt(c)} ${u}, entre deux valeurs validées (${ref}) : interpolation admise (SPILF R-5)` : `${fmt(c)} ${u}, couverte par les données (${ref})`};
+    return {st:"ok", msg: between ? `${fmt(c)} ${u}, interpolation (${ref}) (R-5)` : `${fmt(c)} ${u}, dans ${ref}`};
   }
-  if (legacy) return {st:"ok", msg:`${fmt(c)} ${u}, inférieure à ce qui est validé (${ref}) : acceptée par l’ancienne règle « valeur unique = maximum »`};
-  if (c >= lo/1.5) return {st:"warn", msg:`${fmt(c)} ${u}, inférieure à ce qui est validé (${ref}), dilution ≤ ×1,5 : extrapolation au cas par cas (SPILF R-5)`};
-  return {st:"warn", msg:`${fmt(c)} ${u}, nettement inférieure à ce qui est validé (${ref}), dilution > ×1,5 : extrapolation non couverte, à valider`};
+  if (legacy) return {st:"ok", msg:`${fmt(c)} ${u} < validé (${ref}), accepté (valeur unique = max)`};
+  if (c >= lo/1.5) return {st:"warn", msg:`${fmt(c)} ${u} < validé (${ref}), dilution ≤ ×1,5 (R-5)`};
+  return {st:"warn", msg:`${fmt(c)} ${u} < validé (${ref}), dilution > ×1,5`};
 }
 const worst = arr => arr.filter(x => x !== "info").reduce((a,b) => ST_RANK[b] > ST_RANK[a] ? b : a, "ok");
 
 function evalRecord(r, D, q){
   const checks = [];
   // solvent
-  if (r.solv.includes("?")) checks.push({st:"warn", msg:"Solvant non précisé par la source"});
-  else checks.push({st:"ok", msg:`Solvant ${solvLab(q.solv)} documenté`});
-  if (r.nonIV) checks.push({st:"no", msg:"Donnée hors voie IV standard (soluté de dialyse péritonéale)"});
+  if (r.solv.includes("?")) checks.push({st:"warn", msg:"Solvant non précisé"});
+  else checks.push({st:"ok", msg:`${solvLab(q.solv)}`});
+  if (r.nonIV) checks.push({st:"no", msg:"Donnée en soluté de dialyse péritonéale"});
   if (r.flag) checks.push({st:"warn", msg:r.flag});
   // temperature and interval
   const temps = r.temp;
   const usable = temps.some(t => t !== "fridge");
-  if (!usable){ checks.push({st:"no", msg:`Stabilité documentée uniquement au réfrigérateur (${fmt(r.h)} h) : non applicable pendant la perfusion`}); return {st:"no", checks}; }
+  if (!usable){ checks.push({st:"no", msg:`Stabilité réfrigérée seule (${fmt(r.h)} h)`}); return {st:"no", checks}; }
   let Ts;
   if (q.mode === "d"){
     Ts = [null];
-    checks.push(r.h >= 1 ? {st:"ok", msg:`Stabilité ${fmt(r.h)} h (${temps.map(t=>TEMP_LAB[t]).join(", ")}), suffisante pour une perfusion courte`} : {st:"no", msg:"Stabilité inférieure à 1 h"});
+    checks.push(r.h >= 1 ? {st:"ok", msg:`Stabilité ${fmt(r.h)} h, ${temps.map(t=>TEMP_LAB[t]).join(", ")}`} : {st:"no", msg:"Stabilité < 1 h"});
   } else {
     if (q.dev.forced){
-      if (r.h + 1e-6 < q.dev.forced){ checks.push({st:"no", msg:`Stabilité ${fmt(r.h)} h, inférieure à la durée du diffuseur (${q.dev.forced} h)`}); return {st:"no", checks}; }
+      if (r.h + 1e-6 < q.dev.forced){ checks.push({st:"no", msg:`Stabilité ${fmt(r.h)} h < ${q.dev.forced} h`}); return {st:"no", checks}; }
       Ts = [q.dev.forced];
     } else {
       Ts = INTERVALS.filter(i => r.h + 1e-6 >= i);
-      if (!Ts.length){ checks.push({st:"no", msg:`Stabilité ${fmt(r.h)} h, trop courte pour un schéma continu (minimum 4 h)`}); return {st:"no", checks}; }
+      if (!Ts.length){ checks.push({st:"no", msg:`Stabilité ${fmt(r.h)} h < 4 h`}); return {st:"no", checks}; }
     }
     const tl = temps.map(t => TEMP_LAB[t]).join(", ");
-    if (q.dev.worn && !temps.includes("warm")) checks.push({st:"warn", msg:`Stabilité ${fmt(r.h)} h, ${tl} : diffuseur porté au contact du patient, donnée à ≥ 30 °C manquante`});
-    else if (temps.includes("na")) checks.push({st:"ok", msg:`Stabilité ${fmt(r.h)} h (température non précisée par la source, ambiante présumée)`});
+    if (q.dev.worn && !temps.includes("warm")) checks.push({st:"warn", msg:`Stabilité ${fmt(r.h)} h, ${tl} ; pas de donnée ≥ 30 °C (R-7)`});
+    else if (temps.includes("na")) checks.push({st:"ok", msg:`Stabilité ${fmt(r.h)} h, température non précisée`});
     else checks.push({st:"ok", msg:`Stabilité ${fmt(r.h)} h, ${tl}`});
   }
-  if (q.dev.dev === "elastomere") checks.push({st:"ok", msg:`Diffuseur rempli à son volume nominal (${q.dev.vols[0]} mL) : débit fixe, pas de remplissage partiel`});
+  if (q.dev.dev === "elastomere") checks.push({st:"ok", msg:`Remplissage nominal ${q.dev.vols[0]} mL`});
   // interval + volume + concentration: longest interval first, then smallest volume
   let best = null;
   outer: for (const T of Ts){
@@ -416,14 +415,14 @@ function evalRecord(r, D, q){
       if (cc.st === "ok") break outer;
     }
   }
-  if (q.dev.lastResort) checks.push({st:"warn", msg:"Poche branchée sur la pompe Rythmic : manipulations supplémentaires (connexion, purge, risque infectieux), à réserver aux cas sans alternative ou à gain important"});
-  if (q.dev.dev === "micrel" || q.dev.lastResort) checks.push({st:"info", msg:"Pompe ambulatoire portée par le patient : SPILF R-7 n’exige ≥ 30 °C que pour les diffuseurs élastomériques ; vérifier les conditions de port (sacoche, contact cutané, saison)"});
+  if (q.dev.lastResort) checks.push({st:"warn", msg:"Poche sur Rythmic : manipulations supplémentaires, dernier recours"});
+  if (q.dev.dev === "micrel" || q.dev.lastResort) checks.push({st:"info", msg:"Pompe portée : vérifier les conditions de port (été, contact cutané)"});
   if (q.dev.fillNote){
     const full = q.dev.dev === "micrel" ? (best.V <= 100 ? 100 : 200) : q.dev.vols[0];
     const what = q.dev.dev === "micrel" ? `Réservoir ${full} mL` : `Seringue de ${full} mL`;
-    if (best.V < full) checks.push({st:"ok", msg:`${what} remplie à ${best.V} mL (remplissage ajustable de la moitié au plein, ${full/2} à ${full} mL, pour rester dans les concentrations décrites)`.replace("Réservoir " + full + " mL remplie", "Réservoir " + full + " mL rempli")});
+    if (best.V < full) checks.push({st:"ok", msg:`${what} remplie à ${best.V} mL (plage ${full/2} à ${full} mL)`.replace("Réservoir " + full + " mL remplie", "Réservoir " + full + " mL rempli")});
   }
-  if (best.T && q.mode === "c" && !q.dev.forced && best.T < Ts[0]) checks.push({st:"ok", msg:`Changement toutes les ${best.T} h pour rester dans les concentrations documentées (stabilité permettrait ${Ts[0]} h)`});
+  if (best.T && q.mode === "c" && !q.dev.forced && best.T < Ts[0]) checks.push({st:"ok", msg:`Changement /${best.T} h imposé par la concentration (stabilité ${Ts[0]} h)`});
   checks.push(best.cc);
   return {st: worst(checks.map(c => c.st)), checks, T:best.T, V:best.V, conc:best.c, perContainer:best.perContainer};
 }
@@ -451,21 +450,21 @@ function evaluate(q){
         if (stricter.length && item.st === "ok"){
           item.st = "warn";
           const c0 = stricter[0], why = (c0.checks.find(x => x.st === "no") || {}).msg || "";
-          pick.checks.push({st:"warn", msg:`Source de meilleur niveau plus restrictive dans le même contenant : ${SRC[c0.r.src]?.lab||c0.r.src} (${why.charAt(0).toLowerCase() + why.slice(1)})`});
+          pick.checks.push({st:"warn", msg:`Plus restrictif : ${SRC[c0.r.src]?.lab||c0.r.src}, ${why.charAt(0).toLowerCase() + why.slice(1)}`});
         }
         const stronger = nr.filter(n => LVL_RANK[n.lvl] < LVL_RANK[pick.r.lvl]);
-        if (stronger.length && item.st === "ok"){ item.st = "warn"; pick.checks.push({st:"warn", msg:`Avis discordant d’une source de meilleur niveau : ${stronger.map(n => `${SRC[n.src]?.lab||n.src}, « ${n.raw} »`).join(" ; ")}`}); }
+        if (stronger.length && item.st === "ok"){ item.st = "warn"; pick.checks.push({st:"warn", msg:`Avis contraire : ${stronger.map(n => `${SRC[n.src]?.lab||n.src}, « ${n.raw} »`).join(" ; ")}`}); }
       }
       if (item.pick && q.mode === "c" && DB.noCont[q.mol] && item.st !== "no"){
         if (item.st === "ok") item.st = "warn";
-        item.pick.checks.push({st:"warn", msg:`${DB.noCont[q.mol].map(k => SRC[k]?.lab||k).join(", ")} ne recommande pas l’administration continue de cette molécule`});
+        item.pick.checks.push({st:"warn", msg:`${DB.noCont[q.mol].map(k => SRC[k]?.lab||k).join(", ")} : perfusion continue non recommandée`});
       }
       if (solv === "g5" && item.st === "na") continue;
       if (item.pick && item.st !== "no" && item.st !== "na"){
         item.changes = q.mode === "d" ? q.freq : 24 / item.pick.T;
         item.cost = computeCost(q, dev, item);
-        if (q.ctx === "HAD" && item.changes > 3) item.pick.checks.push({st:"info", msg:`${fmt(item.changes)} passages infirmiers par jour : organisation lourde à domicile`});
-        else if (q.ctx === "H" && item.changes > 4) item.pick.checks.push({st:"info", msg:`${fmt(item.changes)} préparations par jour : charge de préparation élevée`});
+        if (q.ctx === "HAD" && item.changes > 3) item.pick.checks.push({st:"info", msg:`${fmt(item.changes)} passages IDE/j`});
+        else if (q.ctx === "H" && item.changes > 4) item.pick.checks.push({st:"info", msg:`${fmt(item.changes)} préparations/j`});
       }
       out.push(item);
     }
@@ -476,8 +475,8 @@ function evaluate(q){
     if (!it.dev.lastResort) return true;
     if (!usable(it)) return false;
     const res = out.filter(o => o.dev.id === "rythmic" && o.solv === it.solv && usable(o)).sort((a,b) => ST_RANK[a.st]-ST_RANK[b.st] || a.changes-b.changes)[0];
-    if (!res) { it.pick.checks.push({st:"info", msg:"Retenu car aucun réservoir Rythmic (50 à 200 mL) ne tient dans les données"}); return true; }
-    if (it.changes <= res.changes/2) { it.pick.checks.push({st:"info", msg:`Retenu pour un gain important : ${fmt(it.changes)} changement(s) par jour au lieu de ${fmt(res.changes)} avec le réservoir`}); return true; }
+    if (!res) { it.pick.checks.push({st:"info", msg:"Aucun réservoir Rythmic possible"}); return true; }
+    if (it.changes <= res.changes/2) { it.pick.checks.push({st:"info", msg:`${fmt(it.changes)} changement(s)/j contre ${fmt(res.changes)} avec réservoir`}); return true; }
     return false;
   });
 }
@@ -568,7 +567,7 @@ const doseLabel = q => q.unit === "MUI" ? `${fmt(q.dose)} MUI` : q.doseMg >= 100
 const amount = (q, mg) => q.unit === "MUI" ? `${fmt(mg)} MUI` : mg >= 1000 ? `${fmt(mg/1000)} g` : `${fmt(mg)} mg`;
 
 function strip(n){ const k = Math.max(1, Math.round(n)); return `<div class="strip" aria-hidden="true">${"<span></span>".repeat(Math.min(k, 12))}</div>`; }
-const ST_LAB = {ok:"Documenté", warn:"À confirmer", no:"Non recommandé ou hors données", na:"Aucune donnée"};
+const ST_LAB = {ok:"Documenté", warn:"À confirmer", no:"Écarté", na:"Aucune donnée"};
 
 function optHtml(it, q, idx){
   const p = it.pick, dev = it.dev;
@@ -600,33 +599,33 @@ function optHtml(it, q, idx){
 function detailHtml(it, q){
   const p = it.pick; let h = "";
   if (p){
-    h += `<h4>Pourquoi ce verdict</h4><ul class="checks">${p.checks.map(c => `<li class="${c.st}">${esc(c.msg)}</li>`).join("")}</ul>`;
+    h += `<h4>Justification</h4><ul class="checks">${p.checks.map(c => `<li class="${c.st}">${esc(c.msg)}</li>`).join("")}</ul>`;
     const fr = p.r.row === "LIT" ? null : DB.fiche[q.mol]?.find(e => e.row === p.r.row) || (DB.fiche[q.mol]||[]).find(e => e.src === p.r.src && e.dev[it.dev.dev]);
     const raw = fr?.dev?.[it.dev.dev];
-    h += `<h4>Donnée source retenue</h4>${srcChip(p.r.src)} <span class="hint">matériau : ${esc(p.r.mat)}${p.r.row !== "LIT" ? `, ligne ${esc(p.r.row)} de la base` : ""}</span>`;
+    h += `<h4>Source</h4>${srcChip(p.r.src)} <span class="hint">${esc(p.r.mat)}${p.r.row !== "LIT" ? `, ligne ${esc(p.r.row)}` : ""}</span>`;
     if (p.r.ref) h += `<div class="raw">${esc(p.r.ref)}${p.r.note ? `. ${esc(p.r.note)}` : ""}${p.r.url ? ` · ${refLink(p.r.url, p.r.urlType)}` : ""}</div>`;
     if (raw) h += `<div class="raw">${esc(raw)}</div>`;
     if (fr?.url) h += `<div class="hint">Référence : ${refLink(fr.url, fr.urlType)}</div>`;
   }
-  if (it.nr.length) h += `<h4>Avis contraires dans la base</h4>` + it.nr.map(n => `<div>${srcChip(n.src)}</div><div class="raw">${esc(n.raw)}</div>`).join("");
+  if (it.nr.length) h += `<h4>Avis contraires</h4>` + it.nr.map(n => `<div>${srcChip(n.src)}</div><div class="raw">${esc(n.raw)}</div>`).join("");
   if (it.cost){
     const c = it.cost, r = x => `<td class="n">${fmt(x[0])} €</td><td class="n">${fmt(x[1])} kg</td>`;
-    h += `<h4>Coût et CO₂ par jour ${q.med ? "(médicament inclus)" : "(hors médicament)"}</h4><div class="scroll"><table class="cost">
+    h += `<h4>Coût et CO₂ /j ${q.med ? "(médicament inclus)" : "(hors médicament)"}</h4><div class="scroll"><table class="cost">
       <thead><tr><th>Poste</th><th class="n">€/j</th><th class="n">kg CO₂e/j</th></tr></thead><tbody>
       <tr><td>Dispositifs de perfusion (${fmt(it.changes)} par jour)</td>${r(c.dm)}</tr>
       <tr><td>Reconstitution</td>${r(c.recon)}</tr>
-      <tr><td>Déchets (CO₂ de fin de vie déjà inclus dans les facteurs Carebone)</td>${r(c.waste)}</tr>
+      <tr><td>Déchets (traitement)</td>${r(c.waste)}</tr>
       <tr><td>${q.ctx === "H" ? "Pompe amortie" : "Location"}</td>${r([c.loc[0]+c.equip[0], c.loc[1]+c.equip[1]])}</tr>
       <tr><td>${q.ctx === "HAD" ? `Passages infirmiers (${fmt(it.changes)} × ${fmt(C.had.eur)} €) et trajets` : "Temps soignant et préparation"}</td>${r([c.staff[0], c.transport[1]])}</tr>
       ${q.med ? `<tr><td>Médicament</td>${r(c.med)}</tr>` : ""}
       <tr class="tot"><td>Total</td><td class="n">${fmt(c.eur)} €</td><td class="n">${fmt(c.co2)} kg</td></tr></tbody></table></div>`;
-    if (c.vials) h += `<p class="hint">Flacons : ${esc(c.vials)}. Médicament : ${fmt(c.med[1])} kg CO₂e/j (méthode Carebone : substance active, formulation, emballage).</p>`;
+    if (c.vials) h += `<p class="hint">Flacons : ${esc(c.vials)}. Médicament : ${fmt(c.med[1])} kg CO₂e/j.</p>`;
     if (c.warn.length) h += `<ul class="checks">${c.warn.map(w => `<li class="warn">${esc(w)}</li>`).join("")}</ul>`;
   }
   const seenAlt = new Set([`${p?.r.src}|${p?.r.ref||p?.r.row}`]);
   const alts = (it.alts||[]).filter(a => { const k = `${a.r.src}|${a.r.ref||a.r.row}`; if (seenAlt.has(k)) return false; seenAlt.add(k); return true; });
   if (alts.length){
-    h += `<details class="more"><summary>Autres sources pour ce contenant (${alts.length})</summary>` + alts.map(a =>
+    h += `<details class="more"><summary>Autres sources (${alts.length})</summary>` + alts.map(a =>
       `<div style="margin-top:8px">${srcChip(a.r.src)} <span class="status ${a.st}">${ST_LAB[a.st]}</span>${a.r.url ? ` <span class="hint">${refLink(a.r.url, a.r.urlType)}</span>` : ""}<ul class="checks">${a.checks.map(c => `<li class="${c.st}">${esc(c.msg)}</li>`).join("")}</ul></div>`).join("") + `</details>`;
   }
   return h;
@@ -639,7 +638,7 @@ function render(){
   const el = $("#results");
   if (!q.mol || !(q.dose > 0)){
     $("#resTitle").textContent = "Méthodes possibles"; $("#resSub").textContent = "";
-    el.innerHTML = `<div class="empty"><b>Choisissez une molécule et une dose par 24 h.</b><br>L’outil compare les contenants documentés pour ce schéma : nombre de changements par jour, concentration, niveau de preuve, coût et CO₂.</div>`;
+    el.innerHTML = `<div class="empty"><b>Molécule et dose par 24 h.</b></div>`;
     return;
   }
   if (q.unit === "MUI" && q.mol !== "Benzylpénicilline") { /* allowed but rarely relevant */ }
@@ -659,11 +658,11 @@ function render(){
   const nOk = good.filter(i => i.st === "ok").length;
   let h = "";
   const vague = DB.unparsed.filter(u => u.mol === q.mol);
-  if (!good.length) h += `<div class="empty"><b>Aucune méthode documentée pour ce schéma.</b><br>Essayez l’autre mode d’administration, l’autre lieu de soin, ou le G5 dans les options. Les contenants écartés sont listés ci-dessous avec la raison.</div>`;
-  else if (!nOk) h += `<div class="alert">Aucune méthode entièrement documentée : chaque proposition ci-dessous repose sur une extrapolation à vérifier.</div>`;
+  if (!good.length) h += `<div class="empty"><b>Aucune méthode documentée.</b></div>`;
+  else if (!nOk) h += `<div class="alert">Aucune méthode entièrement documentée.</div>`;
   h += good.map((it,i) => optHtml(it, q, i)).join("");
-  if (bad.length) h += `<details class="more excluded"><summary>Contenants écartés (${bad.length}), avec la raison</summary>${bad.map((it,i) => optHtml(it, q, good.length + i)).join("")}</details>`;
-  if (vague.length) h += `<p class="hint">${vague.length} donnée(s) non quantifiée(s) pour cette molécule sont visibles dans la fiche molécule.</p>`;
+  if (bad.length) h += `<details class="more excluded"><summary>Écartés (${bad.length})</summary>${bad.map((it,i) => optHtml(it, q, good.length + i)).join("")}</details>`;
+  if (vague.length) h += `<p class="hint">${vague.length} donnée(s) non chiffrée(s) : voir fiche molécule.</p>`;
   el.innerHTML = h;
 }
 $("#results").addEventListener("click", e => {
@@ -675,7 +674,7 @@ $("#mol").addEventListener("input", () => {
   const m = findMol($("#mol").value);
   if (m && m !== lastMol){ lastMol = m; const r = DB.rcp[m]; if (r) $("#freq").value = String(r.freq); }
   const r = m && DB.rcp[m];
-  $("#rcpHint").textContent = r ? `${r.lab}. À adapter à l’indication et à la fonction rénale.` : "";
+  $("#rcpHint").textContent = r ? r.lab : "";
 });
 ["#mol","#dose","#unit","#freq","#g5","#pvc","#med","#legacy","#sort"].forEach(s => $(s).addEventListener("input", render));
 document.querySelectorAll('input[name=mode],input[name=ctx]').forEach(r => r.addEventListener("change", render));
@@ -684,7 +683,7 @@ document.querySelectorAll('input[name=mode],input[name=ctx]').forEach(r => r.add
 const DEV_LAB = {poche:"Poche", pse:"Seringue PP (PSE)", elastomere:"Diffuseur élastomère", anapa:"ANAPA", micrel:"Rythmic (PVC)"};
 function renderFiche(){
   const m = findMol($("#fMol").value); const el = $("#fiche");
-  if (!m){ el.innerHTML = `<div class="empty"><b>Choisissez une molécule</b> pour voir toutes les données de la base, source par source, et les contenants sans donnée.</div>`; return; }
+  if (!m){ el.innerHTML = `<div class="empty"><b>Molécule.</b></div>`; return; }
   const entries = (DB.fiche[m] || []).slice().sort((a,b) => LVL_RANK[a.lvl]-LVL_RANK[b.lvl]);
   const recs = DB.recs.filter(r => r.mol === m);
   const pvc = recs.some(r => /PVC/.test(r.mat));
@@ -694,8 +693,8 @@ function renderFiche(){
     const warm = rs.some(r => r.temp.includes("warm"));
     return `<div class="cell ${rs.length ? "has" : "gap"}"><div class="t">${lab}</div><div class="s">${rs.length ? `${srcs.map(s => SRC[s]?.lab||s).join(", ")}${k === "elastomere" || k === "anapa" ? (warm ? ", données ≥ 30 °C" : ", sans donnée ≥ 30 °C") : ""}` : "Aucune donnée quantifiée"}</div></div>`;
   }).join("") + `</div>`;
-  if (!pvc) h += `<div class="alert info">Aucune donnée de stabilité en contenant PVC pour cette molécule (poche PVC ou réservoir Rythmic).</div>`;
-  h += entries.map(e => `<div class="entry"><div class="hd">${srcChip(e.src)}${e.row !== "LIT" ? `<span class="hint">ligne ${esc(e.row)} de la base</span>` : ""}</div>
+  if (!pvc) h += `<div class="alert info">Aucune donnée PVC.</div>`;
+  h += entries.map(e => `<div class="entry"><div class="hd">${srcChip(e.src)}${e.row !== "LIT" ? `<span class="hint">ligne ${esc(e.row)}</span>` : ""}</div>
     <dl>${e.mode ? `<dt>Mode</dt><dd>${esc(e.mode)}</dd>` : ""}
     ${Object.entries(e.dev).map(([k,v]) => `<dt>${DEV_LAB[k]}</dt><dd>${esc(v)}</dd>`).join("")}
     ${e.reco ? `<dt>Recommandation</dt><dd>${esc(e.reco)}</dd>` : ""}${e.note ? `<dt>Note</dt><dd>${esc(e.note)}</dd>` : ""}
@@ -719,16 +718,16 @@ function renderY(){
     h += `<div class="yverdict ${ycls(shown)}"><b>${esc(a)}</b> et <b>${esc(b)}</b> : ${Y_LAB[shown] || shown}`;
     if (lit) h += `<div style="font-size:.92rem;margin-top:8px">${esc(lit.cond)}.<br><span class="hint">Source : ${esc(lit.ref)}${lit.url ? ` · ${refLink(lit.url, lit.urlType)}` : ""}${lit.url2 ? ` · ${refLink(lit.url2, "pmc")}` : ""}</span></div>`;
     if (lit && s !== "U" && lit.st !== s) h += `<div class="alert" style="margin:10px 0 0">La base locale indiquait « ${Y_LAB[s] || s} » sans source : la littérature retrouvée l’emporte.</div>`;
-    if (!lit) h += `<div class="hint" style="margin-top:6px">Statut de la base locale, sans source rattachée.</div>`;
+    if (!lit) h += `<div class="hint" style="margin-top:6px">Base locale, non sourcé.</div>`;
     h += `</div>`;
   }
   if (a && (DB.Y[a] || DB.YL[a])){
     const groups = {C:[], I:[], "C/I":[]};
     const all = {...(DB.Y[a]||{})}; Object.entries(DB.YL[a]||{}).forEach(([k,v]) => all[k] = v.st);
     Object.entries(all).forEach(([k,v]) => (groups[v] || (groups[v] = [])).push(k));
-    h += `<h3>Tous les médicaments renseignés avec ${esc(a)}</h3><p class="hint">Un astérisque signale un couple vérifié dans la littérature.</p>` + Object.entries(groups).filter(([,v]) => v.length).map(([k,v]) =>
+    h += `<h3>Tous les médicaments renseignés avec ${esc(a)}</h3><p class="hint">* sourcé.</p>` + Object.entries(groups).filter(([,v]) => v.length).map(([k,v]) =>
       `<p class="hint" style="margin-top:12px"><b>${Y_LAB[k]}</b></p><div class="chips">${v.sort().map(x => `<button class="chip ${ycls(k)}" type="button" data-y="${esc(x)}">${esc(x)}${DB.YL[a]?.[x] ? " *" : ""}</button>`).join("")}</div>`).join("");
-  } else if (!a) h += `<div class="empty" style="margin-top:16px"><b>Saisissez un premier médicament</b> pour voir ses compatibilités renseignées, puis un second pour un couple précis.</div>`;
+  } else if (!a) h += `<div class="empty" style="margin-top:16px"><b>Premier médicament.</b></div>`;
   el.innerHTML = h;
 }
 $("#yOut").addEventListener("click", e => { const c = e.target.closest("[data-y]"); if (c){ $("#yB").value = c.dataset.y; renderY(); } });
@@ -744,43 +743,43 @@ function renderMethod(){
   const elWarm = new Set(DB.recs.filter(r => r.dev === "elastomere" && r.temp.includes("warm")).map(r => r.mol)).size;
   const elAny = new Set(DB.recs.filter(r => r.dev === "elastomere").map(r => r.mol)).size;
   $("#method").innerHTML = `
-  <h2>Ce que fait l’outil</h2>
-  <p>Pour une molécule, une dose par 24 h, un mode et un lieu de soin, l’outil teste chaque contenant disponible dans ce lieu. Pour chacun, il cherche dans la base une donnée de stabilité correspondant au contenant et au solvant, en déduit l’intervalle de changement possible, calcule la concentration obtenue et la confronte aux concentrations testées par la source. Il estime ensuite le coût et l’empreinte carbone par jour du schéma retenu.</p>
-  <h2>Règles de décision</h2>
-  <p>Les règles d’extrapolation reprennent celles des recommandations SPILF/SFPC 2025 (Infect Dis Now 2025;55:105018).</p>
+  <h2>Principe</h2>
+  <p>Pour chaque contenant : stabilité (contenant, matériau, solvant, température) → intervalle de changement → concentration → confrontation aux concentrations validées → coût et CO₂ par jour.</p>
+  <h2>Règles (SPILF/SFPC 2025)</h2>
   <ul>
-    <li>Contenants (R-8) : une donnée obtenue en polyéthylène, polyoléfine ou polypropylène vaut pour les autres contenants sans PVC, poche comme seringue. Une donnée obtenue en PVC ou en contenant non précisé peut aussi servir pour un contenant sans PVC. L’inverse est refusé : un contenant PVC (poche PVC, réservoir Rythmic) exige une donnée PVC. Les diffuseurs en silicone et en polyisoprène ne sont pas interchangeables.</li>
-    <li>Concentrations (R-5) : documentée dans la plage validée ou entre deux concentrations validées. En dessous, l’extrapolation est au cas par cas (« à confirmer »), avec une mention particulière au-delà d’une dilution ×1,5. Au-dessus, le contenant est écarté.</li>
-    <li>Solvants (R-6) : pas d’extrapolation entre NaCl 0,9 % et G5.</li>
-    <li>Température (R-7) : 18 à 25 °C pour les pompes et seringues ; au moins 30 °C pour un diffuseur porté par le patient, faute de quoi le verdict est « à confirmer ». Une stabilité seulement réfrigérée n’autorise pas de perfusion.</li>
-    <li>Une plage de stabilité (par exemple 6 à 8 h) est lue par sa borne basse. L’intervalle de changement est le plus long parmi 24, 12, 8, 6 et 4 h couvert par la stabilité et compatible avec les concentrations validées.</li>
-    <li>Diffuseurs élastomériques : polyisoprène et silicone sont évalués séparément, chacun en 250 et 500 mL, sur 12 h et sur 24 h ; une donnée n’est utilisée que pour le même matériau (SPILF R-8). Un diffuseur est toujours rempli à son volume nominal, son débit étant fixe.</li>
-    <li>Pompes : seringues et réservoirs peuvent être remplis de la moitié au plein (seringue 48 mL : 24 à 48 mL ; 24 mL : 12 à 24 mL). L’outil part du plein et ne réduit le volume que pour entrer dans une concentration documentée.</li>
-    <li>Pompe Rythmic : réservoir 100 mL rempli de 50 à 100 mL et réservoir 200 mL rempli de 100 à 200 mL, en partant du plein et en ne réduisant le volume que pour entrer dans une concentration documentée. Brancher une poche sur la pompe n’est proposé qu’en dernier recours : si aucun réservoir ne tient dans les données, ou si la poche divise au moins par deux le nombre de changements. Ce montage reste « à confirmer » à cause des manipulations supplémentaires.</li>
-    <li>Quand plusieurs sources existent, l’outil retient la meilleure conclusion, puis le meilleur niveau de preuve, puis une donnée native plutôt qu’extrapolée. Un avis défavorable d’une source de meilleur niveau fait passer une proposition en « à confirmer ».</li>
+    <li>R-5, concentration : plage validée ou interpolation entre deux valeurs. En dessous : à confirmer (seuil ×1,5). Au-dessus : écarté.</li>
+    <li>R-6, solvant : pas d’extrapolation NaCl 0,9 % ↔ G5.</li>
+    <li>R-7, température : 18 à 25 °C pour pompes et seringues, ≥ 30 °C pour les diffuseurs. Stabilité réfrigérée seule : écarté.</li>
+    <li>R-8, contenant : PE/PO/PP interchangeables ; PVC ou non précisé → sans PVC admis ; contenant PVC → donnée PVC exigée ; silicone ≠ polyisoprène.</li>
+    <li>Plage de stabilité : borne basse. Intervalles testés : 24, 12, 8, 6, 4 h.</li>
+    <li>Diffuseurs élastomériques : polyisoprène et silicone, 250 et 500 mL, 12 et 24 h, remplissage nominal.</li>
+    <li>Pompes : remplissage de la moitié au plein (seringue 48 mL : 24 à 48 ; 24 mL : 12 à 24 ; Rythmic 100 mL : 50 à 100 ; 200 mL : 100 à 200), réduit seulement pour entrer dans une concentration validée.</li>
+    <li>Poche sur Rythmic : dernier recours (aucun réservoir possible ou changements divisés par 2), toujours à confirmer.</li>
+    <li>Plusieurs sources : meilleur verdict, puis donnée native, puis niveau de preuve. Source de meilleur niveau plus restrictive ou défavorable : à confirmer.</li>
   </ul>
   <h2>Niveaux de preuve</h2>
-  <p>${srcChip("SPILF25")} référentiel de société savante. ${srcChip("Stabilis")} ${srcChip("Loeuille22")} ${srcChip("LitPVC")} base documentaire ou littérature. ${srcChip("Micrel")} ${srcChip("NEOPUMP")} données fabricant. Les protocoles locaux (CHICAS, Tourcoing, Centre Léon Bérard, Pharmacie interjurassienne) ne sont plus utilisés.</p>
-  <h2>Contenu de la base</h2>
+  <p>${srcChip("SPILF25")} recommandation nationale. ${srcChip("Stabilis")} ${srcChip("Loeuille22")} ${srcChip("LitPVC")} littérature. ${srcChip("Micrel")} ${srcChip("NEOPUMP")} fabricant. Protocoles locaux exclus.</p>
+  <h2>Base</h2>
   <div class="stats">
     <div class="stat"><b>${mols}</b><span>molécules</span></div>
-    <div class="stat"><b>${nEntries}</b><span>fiches source après dédoublonnage</span></div>
-    <div class="stat"><b>${DB.recs.length}</b><span>conditions de stabilité chiffrées</span></div>
-    <div class="stat"><b>${withPVC} / ${mols}</b><span>molécules avec une donnée en PVC</span></div>
-    <div class="stat"><b>${elWarm} / ${elAny}</b><span>molécules en élastomère avec donnée ≥ 30 °C</span></div>
-    <div class="stat"><b>${DB.unparsed.length}</b><span>données non quantifiées, affichées sans calcul</span></div>
+    <div class="stat"><b>${nEntries}</b><span>fiches source</span></div>
+    <div class="stat"><b>${DB.recs.length}</b><span>conditions chiffrées</span></div>
+    <div class="stat"><b>${withPVC} / ${mols}</b><span>avec donnée PVC</span></div>
+    <div class="stat"><b>${elWarm} / ${elAny}</b><span>élastomère ≥ 30 °C</span></div>
   </div>
-  <p>Répartition des fiches par source : ${Object.entries(bySrc).sort((a,b)=>b[1]-a[1]).map(([k,v]) => `${esc(SRC[k]?.lab||k)} ${v}`).join(", ")}.</p>
+  <p>${Object.entries(bySrc).sort((a,b)=>b[1]-a[1]).map(([k,v]) => `${esc(SRC[k]?.lab||k)} ${v}`).join(", ")}.</p>
   <h2>Coût et CO₂</h2>
-  <p>Le calcul raisonne par jour et, par défaut, hors médicament : dispositifs consommés à chaque préparation, reconstitution, traitement des déchets, location ou amortissement de la pompe, temps soignant à l’hôpital, et à domicile les passages infirmiers (${fmt(C.had.eur)} € par passage) avec leurs trajets (${fmt(C.had.co2)} kg CO₂e par passage, soit ${fmt(C.had.km)} km à ${fmt(C.had.kgkm,3)} kg CO₂e/km).</p>
-  <p>Facteurs d’émission : outil Carebone v46 et base des facteurs calculés par l’AP-HP (avril 2024). ${Object.values(C.items).filter(i => i.cb && i.inc === "direct").length} consommables ont un facteur Carebone direct, ${Object.values(C.items).filter(i => i.cb && /proxy|composé/.test(i.inc)).length} un proxy Carebone, ${Object.values(C.items).filter(i => i.inc === "estimé").length} une estimation selon la méthode Carebone (masse × facteur matériau × ratio d’étapes) faute de fiche. Ces facteurs incluent la fin de vie : le CO₂ des déchets n’est pas ajouté une seconde fois.</p>
-  <p>Médicament : facteur de la substance active issu de la base Carebone quand il existe (amoxicilline, vancomycine), sinon choisi par la grille Carebone à quatre critères (600, 1500 ou 7000 kg CO₂e/kg). Formulation selon l’hypothèse moyenne Carebone. La méthode reproduit la valeur AP-HP de l’amoxicilline/acide clavulanique 2 g (1,147 kg CO₂e).</p>
-  <h2>Limites connues</h2>
   <ul>
-    <li>Hors couples sourcés dans la littérature, les compatibilités en Y n’ont pas de source par ligne.</li>
-    <li>Les pompes et pousse-seringues gardent des valeurs d’ACV d’origine non sourcées ; les masses des diffuseurs et réservoirs sont à peser.</li>
-    <li>Toutes les lignes de la base sont au statut « à valider ».</li>
-    <li>La lecture des champs de stabilité est automatique à partir de texte libre : la donnée source est toujours affichée à côté du calcul pour vérification.</li>
+    <li>Par jour, hors médicament par défaut : dispositifs, reconstitution, déchets, location ou amortissement, temps soignant (hôpital), passages IDE ${fmt(C.had.eur)} € et trajets ${fmt(C.had.co2)} kg CO₂e (${fmt(C.had.km)} km × ${fmt(C.had.kgkm,3)}) en HAD.</li>
+    <li>Facteurs : Carebone v46 et base AP-HP 04/2024. ${Object.values(C.items).filter(i => i.cb && i.inc === "direct").length} directs, ${Object.values(C.items).filter(i => i.cb && /proxy|composé/.test(i.inc)).length} proxys, ${Object.values(C.items).filter(i => i.inc === "estimé").length} estimés (masse × facteur matériau × ratio). Fin de vie incluse.</li>
+    <li>Médicament : FE substance active Carebone (amoxicilline, vancomycine) ou grille Carebone 600/1500/7000 kg CO₂e/kg ; formulation hypothèse moyenne. Contrôle : amoxicilline/acide clavulanique 2 g = 1,147 kg CO₂e (valeur AP-HP).</li>
+  </ul>
+  <h2>Limites</h2>
+  <ul>
+    <li>Compatibilités en Y non sourcées hors couples marqués.</li>
+    <li>ACV pompes et pousse-seringues non sourcées ; masses des diffuseurs et réservoirs à peser.</li>
+    <li>Base au statut « à valider ».</li>
+    <li>Lecture automatique de texte libre : donnée source affichée à côté du calcul.</li>
   </ul>`;
 }
 
@@ -788,9 +787,9 @@ function renderMethod(){
 function renderRefs(){
   const groups = {};
   DB.refs.forEach(r => (groups[r.g] = groups[r.g] || []).push(r));
-  $("#refs").innerHTML = `<p>Référentiels à consulter pour la stabilité, l’administration et les compatibilités des anti-infectieux injectables. Ils s’ouvrent dans un nouvel onglet.</p>` +
+  $("#refs").innerHTML = ``+
     Object.entries(groups).map(([g, rs]) => `<h2>${esc(g)}</h2><ul class="reflist">${rs.map(r => `<li><a href="${esc(r.u)}" target="_blank" rel="noopener">${esc(r.t)}</a>${r.u2 ? ` · <a href="${esc(r.u2)}" target="_blank" rel="noopener">${esc(r.l2)}</a>` : ""}</li>`).join("")}</ul>`).join("") +
-    `<h2>Littérature utilisée par l’outil</h2><ul class="reflist">${[...new Map(DB.recs.filter(r => r.url).map(r => [r.url, r])).values()].map(r => `<li>${esc(r.ref.replace(/, tableau.*$/,""))} · ${refLink(r.url, r.urlType)}</li>`).join("")}${Object.entries(DB.fiche).flatMap(([m, es]) => es.filter(e => e.src === "PubMed" && e.url).map(e => `<li>${esc(e.ref || "Synthèse de littérature")}, ${esc(m)} · ${refLink(e.url, e.urlType)}</li>`)).join("")}</ul>
+    `<h2>Littérature intégrée</h2><ul class="reflist">${[...new Map(DB.recs.filter(r => r.url).map(r => [r.url, r])).values()].map(r => `<li>${esc(r.ref.replace(/, tableau.*$/,""))} · ${refLink(r.url, r.urlType)}</li>`).join("")}${Object.entries(DB.fiche).flatMap(([m, es]) => es.filter(e => e.src === "PubMed" && e.url).map(e => `<li>${esc(e.ref || "Synthèse de littérature")}, ${esc(m)} · ${refLink(e.url, e.urlType)}</li>`)).join("")}</ul>
     <h2>Compatibilités en Y vérifiées</h2><ul class="reflist">${[...new Map(Object.values(DB.YL).flatMap(o => Object.values(o)).map(v => [v.ref, v])).values()].map(v => `<li>${esc(v.ref)}${v.url ? ` · ${refLink(v.url, v.urlType)}` : ""}</li>`).join("")}</ul>`;
 }
 /* ---------- boot ---------- */
